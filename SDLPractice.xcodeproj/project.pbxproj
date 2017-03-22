@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		70E747101E829DFB000FEBED /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70E7470F1E829DFB000FEBED /* main.cpp */; };
+		70E747181E829E19000FEBED /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747171E829E19000FEBED /* SDL2.framework */; };
+		70E7471A1E829E39000FEBED /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747191E829E39000FEBED /* SDL2_image.framework */; };
+		70E7471C1E829E47000FEBED /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E7471B1E829E47000FEBED /* SDL2_mixer.framework */; };
+		70E7471E1E829E5A000FEBED /* SDL2_net.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E7471D1E829E5A000FEBED /* SDL2_net.framework */; };
+		70E747201E829E6A000FEBED /* SDL2_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E7471F1E829E6A000FEBED /* SDL2_ttf.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +30,11 @@
 /* Begin PBXFileReference section */
 		70E7470C1E829DFB000FEBED /* SDLPractice */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLPractice; sourceTree = BUILT_PRODUCTS_DIR; };
 		70E7470F1E829DFB000FEBED /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		70E747171E829E19000FEBED /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
+		70E747191E829E39000FEBED /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../Library/Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
+		70E7471B1E829E47000FEBED /* SDL2_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_mixer.framework; path = ../../../../Library/Frameworks/SDL2_mixer.framework; sourceTree = "<group>"; };
+		70E7471D1E829E5A000FEBED /* SDL2_net.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_net.framework; path = ../../../../Library/Frameworks/SDL2_net.framework; sourceTree = "<group>"; };
+		70E7471F1E829E6A000FEBED /* SDL2_ttf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_ttf.framework; path = ../../../../Library/Frameworks/SDL2_ttf.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +42,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70E747181E829E19000FEBED /* SDL2.framework in Frameworks */,
+				70E7471A1E829E39000FEBED /* SDL2_image.framework in Frameworks */,
+				70E7471C1E829E47000FEBED /* SDL2_mixer.framework in Frameworks */,
+				70E7471E1E829E5A000FEBED /* SDL2_net.framework in Frameworks */,
+				70E747201E829E6A000FEBED /* SDL2_ttf.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -43,6 +58,7 @@
 			children = (
 				70E7470E1E829DFB000FEBED /* SDLPractice */,
 				70E7470D1E829DFB000FEBED /* Products */,
+				70E747161E829E19000FEBED /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -60,6 +76,18 @@
 				70E7470F1E829DFB000FEBED /* main.cpp */,
 			);
 			path = SDLPractice;
+			sourceTree = "<group>";
+		};
+		70E747161E829E19000FEBED /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				70E7471F1E829E6A000FEBED /* SDL2_ttf.framework */,
+				70E7471D1E829E5A000FEBED /* SDL2_net.framework */,
+				70E7471B1E829E47000FEBED /* SDL2_mixer.framework */,
+				70E747191E829E39000FEBED /* SDL2_image.framework */,
+				70E747171E829E19000FEBED /* SDL2.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -216,14 +244,24 @@
 		70E747141E829DFB000FEBED /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LOCAL_LIBRARY_DIR)/Frameworks",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "/Library/Frameworks/SDL2.framework/Headers /Library/Frameworks/SDL2_image.framework/Headers /Library/Frameworks/SDL2_mixer.framework/Headers /Library/Frameworks/SDL2_net.framework/Headers /Library/Frameworks/SDL2_ttf.framework/Headers";
 			};
 			name = Debug;
 		};
 		70E747151E829DFB000FEBED /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LOCAL_LIBRARY_DIR)/Frameworks",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "/Library/Frameworks/SDL2.framework/Headers /Library/Frameworks/SDL2_image.framework/Headers /Library/Frameworks/SDL2_mixer.framework/Headers /Library/Frameworks/SDL2_net.framework/Headers /Library/Frameworks/SDL2_ttf.framework/Headers";
 			};
 			name = Release;
 		};
