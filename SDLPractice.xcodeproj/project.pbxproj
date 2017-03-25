@@ -7,12 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		70E747101E829DFB000FEBED /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70E7470F1E829DFB000FEBED /* main.cpp */; };
+		700E30CE1E86888300C698A3 /* main2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 700E30CC1E8687F900C698A3 /* main2.cpp */; };
 		70E747181E829E19000FEBED /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747171E829E19000FEBED /* SDL2.framework */; };
 		70E7471A1E829E39000FEBED /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747191E829E39000FEBED /* SDL2_image.framework */; };
 		70E7471C1E829E47000FEBED /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E7471B1E829E47000FEBED /* SDL2_mixer.framework */; };
 		70E7471E1E829E5A000FEBED /* SDL2_net.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E7471D1E829E5A000FEBED /* SDL2_net.framework */; };
 		70E747201E829E6A000FEBED /* SDL2_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E7471F1E829E6A000FEBED /* SDL2_ttf.framework */; };
+		70E747221E82C04C000FEBED /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747211E82C04C000FEBED /* GLUT.framework */; };
+		70E747241E82C056000FEBED /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747231E82C056000FEBED /* OpenGL.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +30,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		700E30CC1E8687F900C698A3 /* main2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main2.cpp; sourceTree = "<group>"; };
 		70E7470C1E829DFB000FEBED /* SDLPractice */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLPractice; sourceTree = BUILT_PRODUCTS_DIR; };
 		70E7470F1E829DFB000FEBED /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		70E747171E829E19000FEBED /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
@@ -35,6 +38,8 @@
 		70E7471B1E829E47000FEBED /* SDL2_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_mixer.framework; path = ../../../../Library/Frameworks/SDL2_mixer.framework; sourceTree = "<group>"; };
 		70E7471D1E829E5A000FEBED /* SDL2_net.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_net.framework; path = ../../../../Library/Frameworks/SDL2_net.framework; sourceTree = "<group>"; };
 		70E7471F1E829E6A000FEBED /* SDL2_ttf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_ttf.framework; path = ../../../../Library/Frameworks/SDL2_ttf.framework; sourceTree = "<group>"; };
+		70E747211E82C04C000FEBED /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+		70E747231E82C056000FEBED /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,6 +47,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70E747241E82C056000FEBED /* OpenGL.framework in Frameworks */,
+				70E747221E82C04C000FEBED /* GLUT.framework in Frameworks */,
 				70E747181E829E19000FEBED /* SDL2.framework in Frameworks */,
 				70E7471A1E829E39000FEBED /* SDL2_image.framework in Frameworks */,
 				70E7471C1E829E47000FEBED /* SDL2_mixer.framework in Frameworks */,
@@ -74,6 +81,7 @@
 			isa = PBXGroup;
 			children = (
 				70E7470F1E829DFB000FEBED /* main.cpp */,
+				700E30CC1E8687F900C698A3 /* main2.cpp */,
 			);
 			path = SDLPractice;
 			sourceTree = "<group>";
@@ -81,6 +89,8 @@
 		70E747161E829E19000FEBED /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				70E747231E82C056000FEBED /* OpenGL.framework */,
+				70E747211E82C04C000FEBED /* GLUT.framework */,
 				70E7471F1E829E6A000FEBED /* SDL2_ttf.framework */,
 				70E7471D1E829E5A000FEBED /* SDL2_net.framework */,
 				70E7471B1E829E47000FEBED /* SDL2_mixer.framework */,
@@ -147,7 +157,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				70E747101E829DFB000FEBED /* main.cpp in Sources */,
+				700E30CE1E86888300C698A3 /* main2.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -284,6 +294,7 @@
 				70E747151E829DFB000FEBED /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
