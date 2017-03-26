@@ -1,17 +1,13 @@
 #include <SDL2/SDL.h>
 #include <SDL2_image/SDL_image.h>
-#include <SDL2_mixer/SDL_mixer.h>
-#include <SDL2_net/SDL_net.h>
-#include <SDL2_ttf/SDL_ttf.h>
-
-#include <stdio.h>
 #include <string>
+#include "ltexture.h"
 
 // スクリーンの幅と高さを定義
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+static const int SCREEN_WIDTH = 640;
+static const int SCREEN_HEIGHT = 480;
 
-// 読込サーフェスID
+// キー操作表示用テクスチャID
 enum KeyPressTextures
 {
     KEY_PRESS_TEXTURE_DEFAULT,
@@ -24,29 +20,24 @@ enum KeyPressTextures
 
 // ウィンドウ, レンダラ, SDL, SDL_image の初期化
 bool init();
-
 // データ読み込み
 bool loadMedia();
-
 //　メディア解放、ウィンドウクローズ
 void close();
 
-// テクスチャをロードする
-// bmp, jpg, png を読込可能
-SDL_Texture* loadTexture( std::string path );
-
 // 描画用ウィンドウ
 SDL_Window* gWindow = NULL;
-
-// 読込テクスチャ
-SDL_Texture* gKeyPressTextures[ KEY_PRESS_TEXTURE_TOTAL ];
-
 // 描画用レンダラ
 SDL_Renderer* gRenderer = NULL;
 
-//　表示用テクスチャ
-SDL_Texture* gTexture = NULL;
-
+// キー操作表示用テクスチャ
+LTexture* gKeyPressTextures[ KEY_PRESS_TEXTURE_TOTAL ];
+LTexture* gPresentTexture = NULL;
+// スプライト表示用テクスチャ
+LTexture* gSpriteSheetTexture = NULL;
+SDL_Rect gSpriteClips[ 4 ];
+// 色抜表示用テクスチャ
+LTexture* gColorKeyTexture = NULL;
 
 bool init()
 {
@@ -111,6 +102,13 @@ bool init()
                         printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
                         success = false;
                     }
+                    
+                    // **** メモリ割当 ****
+                    for (int i=0; i<KEY_PRESS_TEXTURE_TOTAL; i++) {
+                        gKeyPressTextures[i] = new LTexture();
+                    }
+                    gSpriteSheetTexture = new LTexture();
+                    gColorKeyTexture = new LTexture();
                 }
             }
         }
@@ -125,57 +123,107 @@ bool loadMedia()
     // 成功フラグ
     bool success = true;
     
-    // 初期画像
-    gKeyPressTextures[ KEY_PRESS_TEXTURE_DEFAULT ] = loadTexture( "loaded.png" );
+    // キー操作表示用テクスチャ読込
+    // 初期テクスチャ
+    gKeyPressTextures[ KEY_PRESS_TEXTURE_DEFAULT ]->loadFromFile( "loaded.png" );
     if( gKeyPressTextures[ KEY_PRESS_TEXTURE_DEFAULT ] == NULL )
     {
         printf( "Failed to load default image!\n" );
         success = false;
     }
     
-    // 上画像
-    gKeyPressTextures[ KEY_PRESS_TEXTURE_UP ] = loadTexture( "up.bmp" );
+    // 上テクスチャ
+    gKeyPressTextures[ KEY_PRESS_TEXTURE_UP ]->loadFromFile( "up.bmp" );
     if( gKeyPressTextures[ KEY_PRESS_TEXTURE_UP ] == NULL )
     {
         printf( "Failed to load up image!\n" );
         success = false;
     }
     
-    // 下画像
-    gKeyPressTextures[ KEY_PRESS_TEXTURE_DOWN ] = loadTexture( "down.bmp" );
+    // 下テクスチャ
+    gKeyPressTextures[ KEY_PRESS_TEXTURE_DOWN ]->loadFromFile( "down.bmp" );
     if( gKeyPressTextures[ KEY_PRESS_TEXTURE_DOWN ] == NULL )
     {
         printf( "Failed to load down image!\n" );
         success = false;
     }
     
-    // 左画像
-    gKeyPressTextures[ KEY_PRESS_TEXTURE_LEFT ] = loadTexture( "left.bmp" );
+    // 左テクスチャ
+    gKeyPressTextures[ KEY_PRESS_TEXTURE_LEFT ]->loadFromFile( "left.bmp" );
     if( gKeyPressTextures[ KEY_PRESS_TEXTURE_LEFT ] == NULL )
     {
         printf( "Failed to load left image!\n" );
         success = false;
     }
     
-    // 右画像
-    gKeyPressTextures[ KEY_PRESS_TEXTURE_RIGHT ] = loadTexture( "right.bmp" );
+    // 右テクスチャ
+    gKeyPressTextures[ KEY_PRESS_TEXTURE_RIGHT ]->loadFromFile( "right.bmp" );
     if( gKeyPressTextures[ KEY_PRESS_TEXTURE_RIGHT ] == NULL )
     {
         printf( "Failed to load right image!\n" );
         success = false;
     }
+
+    // スプライト表示用テクスチャ読込
+    gSpriteSheetTexture->loadFromFile( "dots.png" );
+    if( gSpriteSheetTexture == NULL )
+    {
+        printf( "Failed to load sprite sheet texture!\n" );
+        success = false;
+    }
+    else
+    {
+        //**** アルファブレンディング設定 ****
+        gSpriteSheetTexture->setBlendMode( SDL_BLENDMODE_BLEND );
+
+        // 左上スプライト位置
+        gSpriteClips[ 0 ].x =   0;
+        gSpriteClips[ 0 ].y =   0;
+        gSpriteClips[ 0 ].w = 100;
+        gSpriteClips[ 0 ].h = 100;
+        
+        // 右上スプライト位置
+        gSpriteClips[ 1 ].x = 100;
+        gSpriteClips[ 1 ].y =   0;
+        gSpriteClips[ 1 ].w = 100;
+        gSpriteClips[ 1 ].h = 100;
+        
+        // 左下スプライト位置
+        gSpriteClips[ 2 ].x =   0;
+        gSpriteClips[ 2 ].y = 100;
+        gSpriteClips[ 2 ].w = 100;
+        gSpriteClips[ 2 ].h = 100;
+        
+        // 右下スプライト位置
+        gSpriteClips[ 3 ].x = 100;
+        gSpriteClips[ 3 ].y = 100;
+        gSpriteClips[ 3 ].w = 100;
+        gSpriteClips[ 3 ].h = 100;
+    }
     
+    // 色抜表示用テクスチャ読込
+    gColorKeyTexture->loadFromFile( "foo.png" );
+    if( gColorKeyTexture == NULL )
+    {
+        printf( "Failed to load default image!\n" );
+        success = false;
+    }
+
     // ビットマップロード成功ならtrue
     return success;
 }
 
 void close()
 {
-    // 読込テクスチャを解放する
+    // **** メモリ解放 ****
     for (int i=0; i<KEY_PRESS_TEXTURE_TOTAL; i++) {
-        SDL_DestroyTexture(gKeyPressTextures[i]) ;
+        gKeyPressTextures[i]->free();
         gKeyPressTextures[i] = NULL;
     }
+    gSpriteSheetTexture->free();
+    gSpriteSheetTexture = NULL;
+    gColorKeyTexture->free();
+    gColorKeyTexture = NULL;
 
     // レンダラ,ウィンドウを破棄する
     SDL_DestroyRenderer( gRenderer );
@@ -186,33 +234,6 @@ void close()
     // SDL, SDL_image の解放
     IMG_Quit();
     SDL_Quit();
-}
-
-SDL_Texture* loadTexture( std::string path )
-{
-    // 返却用のテクスチャ
-    SDL_Texture* newTexture = NULL;
-    
-    // テクスチャをロードする
-    SDL_Surface* loadedSurface = IMG_Load( path.c_str() );
-    if( loadedSurface == NULL )
-    {
-        printf( "Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError() );
-    }
-    else
-    {
-        // サーフェス上のピクセルからテクスチャを作成する
-        newTexture = SDL_CreateTextureFromSurface( gRenderer, loadedSurface );
-        if( newTexture == NULL )
-        {
-            printf( "Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
-        }
-        
-        // テクスチャに読み込んだのでサーフェスは解放する
-        SDL_FreeSurface( loadedSurface );
-    }
-    // テクスチャ返却
-    return newTexture;
 }
 
 int main( int argc, char* args[] )
@@ -237,8 +258,18 @@ int main( int argc, char* args[] )
             // イベントハンドラ
             SDL_Event ev;
             
-            // 表示用テクスチャをデフォルトのテクスチャに設定
-            gTexture = gKeyPressTextures[ KEY_PRESS_TEXTURE_DEFAULT ];
+            // キー操作表示用テクスチャをデフォルトのテクスチャに設定
+            gPresentTexture = gKeyPressTextures[ KEY_PRESS_TEXTURE_DEFAULT ];
+            
+            // スプライト表示用テクスチャの色調整
+            Uint8 r = 255;
+            Uint8 g = 255;
+            Uint8 b = 255;
+            Uint8 a = 255;
+            
+            // 色抜テクスチャ表示位置
+            int gX = 0;
+            int gY = 0;
             
             // 周期イベント
             while( !quit )
@@ -251,71 +282,141 @@ int main( int argc, char* args[] )
                     {
                         quit = true;
                     }
-                    // キーを押した時、画像を変更する
+                    
+                    // キーダウンイベント処理
                     else if( ev.type == SDL_KEYDOWN )
                     {
+                        gPresentTexture = gKeyPressTextures[ KEY_PRESS_TEXTURE_DEFAULT ];
+                        
                         switch( ev.key.keysym.sym )
                         {
+                            // キー操作で表示テクスチャを切り替える
+                            // 色抜テクスチャの表示位置を移動する
                             case SDLK_UP:
-                                gTexture = gKeyPressTextures[ KEY_PRESS_TEXTURE_UP ];
+                                gPresentTexture = gKeyPressTextures[ KEY_PRESS_TEXTURE_UP ];
+                                gY -= 100;
                                 break;
                                 
                             case SDLK_DOWN:
-                                gTexture = gKeyPressTextures[ KEY_PRESS_TEXTURE_DOWN ];
+                                gPresentTexture = gKeyPressTextures[ KEY_PRESS_TEXTURE_DOWN ];
+                                gY += 100;
                                 break;
                                 
                             case SDLK_LEFT:
-                                gTexture = gKeyPressTextures[ KEY_PRESS_TEXTURE_LEFT ];
+                                gPresentTexture = gKeyPressTextures[ KEY_PRESS_TEXTURE_LEFT ];
+                                gX -= 100;
                                 break;
                                 
                             case SDLK_RIGHT:
-                                gTexture = gKeyPressTextures[ KEY_PRESS_TEXTURE_RIGHT ];
+                                gPresentTexture = gKeyPressTextures[ KEY_PRESS_TEXTURE_RIGHT ];
+                                gX += 100;
+                                break;
+                            
+                            // qwer,asdf キーでスプライト表示用テクスチャの色を調整する
+                            case SDLK_q:
+                                // 色調整　赤　濃くする
+                                if( r + 32 > 255 )
+                                {
+                                    r = 255;
+                                }
+                                else
+                                {
+                                    r += 32;
+                                }
+                                break;
+
+                                
+                            case SDLK_w:
+                                // 色調整　緑　濃くする
+                                if( g + 32 > 255 )
+                                {
+                                    g = 255;
+                                }
+                                else
+                                {
+                                    g += 32;
+                                }
                                 break;
                                 
-                            default:
-                                gTexture = gKeyPressTextures[ KEY_PRESS_TEXTURE_DEFAULT ];
+                            case SDLK_e:
+                                // 色調整　青　濃くする
+                                if( b + 32 > 255 )
+                                {
+                                    b = 255;
+                                }
+                                else
+                                {
+                                    b += 32;
+                                }
+                                break;
+                                
+                            case SDLK_r:
+                                // 不透明度　濃くする
+                                if( a + 32 > 255 )
+                                {
+                                    a = 255;
+                                }
+                                else
+                                {
+                                    a += 32;
+                                }
+                                break;
+                                
+                            case SDLK_a:
+                                // 色調整　赤　薄くする
+                                if( r - 32 < 0 )
+                                {
+                                    r = 0;
+                                }
+                                else
+                                {
+                                    r -= 32;
+                                }
+                                break;
+                                
+                            case SDLK_s:
+                                // 色調整　緑　薄くする
+                                if( g - 32 < 0 )
+                                {
+                                    g = 0;
+                                }
+                                else
+                                {
+                                    g -= 32;
+                                }
+                                break;
+                                
+                            case SDLK_d:
+                                // 色調整　青　薄くする
+                                if( b - 32 < 0 )
+                                {
+                                    b = 0;
+                                }
+                                else
+                                {
+                                    b -= 32;
+                                }
+                                break;
+                                
+                            case SDLK_f:
+                                // 不透明度　薄くする
+                                if( a - 32 < 0 )
+                                {
+                                    a = 0;
+                                }
+                                else
+                                {
+                                    a -= 32;
+                                }
                                 break;
                         }
                     }
-                    
                 }
                 
+                // **** 前処理 ****
                 //　設定したクリア色でクリアする
                 SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
                 SDL_RenderClear( gRenderer );
-                
-                // ビューポートを左上四角に設定
-                SDL_Rect topLeftViewport;
-                topLeftViewport.x = 0;
-                topLeftViewport.y = 0;
-                topLeftViewport.w = SCREEN_WIDTH / 2;
-                topLeftViewport.h = SCREEN_HEIGHT / 2;
-                SDL_RenderSetViewport( gRenderer, &topLeftViewport );
-                
-                // テクスチャを描画
-                SDL_RenderCopy( gRenderer, gTexture, NULL, NULL );
-
-                // ビューポートを右上四角に設定
-                SDL_Rect topRightViewport;
-                topRightViewport.x = SCREEN_WIDTH / 2;
-                topRightViewport.y = 0;
-                topRightViewport.w = SCREEN_WIDTH / 2;
-                topRightViewport.h = SCREEN_HEIGHT / 2;
-                SDL_RenderSetViewport( gRenderer, &topRightViewport );
-                
-                //Render texture to screen
-                SDL_RenderCopy( gRenderer, gTexture, NULL, NULL );
-                
-                // ビューポートを下四角に設定
-                SDL_Rect bottomViewport;
-                bottomViewport.x = 0;
-                bottomViewport.y = SCREEN_HEIGHT / 2;
-                bottomViewport.w = SCREEN_WIDTH;
-                bottomViewport.h = SCREEN_HEIGHT / 2;
-                SDL_RenderSetViewport( gRenderer, &bottomViewport );
-                
-                //Render texture to screen
-                SDL_RenderCopy( gRenderer, gTexture, NULL, NULL );
                 
                 // ビューポートをスクリーン全体に設定
                 SDL_Rect normalViewport;
@@ -325,6 +426,25 @@ int main( int argc, char* args[] )
                 normalViewport.h = SCREEN_HEIGHT;
                 SDL_RenderSetViewport( gRenderer, &normalViewport );
                 
+                
+                // **** キー操作表示用テクスチャ描画 ****
+                gPresentTexture->render(0,0);
+                
+                // **** スプライト表示用テクスチャ描画 ****
+                // 色調整設定
+                gSpriteSheetTexture->setColor( r, g, b );
+                gSpriteSheetTexture->setAlpha( a );
+                
+                // 左上スプライト描画
+                gSpriteSheetTexture->render( 0, 0, &gSpriteClips[ 0 ] );
+                // 右上スプライト描画
+                gSpriteSheetTexture->render( SCREEN_WIDTH - gSpriteClips[ 1 ].w, 0, &gSpriteClips[ 1 ] );
+                // 左下スプライト描画
+                gSpriteSheetTexture->render( 0, SCREEN_HEIGHT - gSpriteClips[ 2 ].h, &gSpriteClips[ 2 ] );
+                // 右下スプライト描画
+                gSpriteSheetTexture->render( SCREEN_WIDTH - gSpriteClips[ 3 ].w, SCREEN_HEIGHT - gSpriteClips[ 3 ].h, &gSpriteClips[ 3 ] );
+                
+                // **** プリミティブ描画 ****
                 // 赤の塗りつぶし四角を描画
                 SDL_Rect fillRect = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
                 SDL_SetRenderDrawColor( gRenderer, 0xFF, 0x00, 0x00, 0xFF );
@@ -346,9 +466,13 @@ int main( int argc, char* args[] )
                     SDL_RenderDrawPoint( gRenderer, SCREEN_WIDTH / 2, i );
                 }
                 
-                // レンダラからスクリーンに転送
+                // **** 色抜表示用テクスチャ描画 ****
+                gColorKeyTexture->render(gX, gY);
+                
+                // **** 後処理 ****
+                // オフスクリーンバッファからスクリーンに転送
                 SDL_RenderPresent( gRenderer );
-
+                
             }
         }
     }

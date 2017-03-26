@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		700E30CE1E86888300C698A3 /* main2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 700E30CC1E8687F900C698A3 /* main2.cpp */; };
+		70C040981E86B79C000977A5 /* ltexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70C040961E86B79C000977A5 /* ltexture.cpp */; };
 		70E747181E829E19000FEBED /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747171E829E19000FEBED /* SDL2.framework */; };
 		70E7471A1E829E39000FEBED /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747191E829E39000FEBED /* SDL2_image.framework */; };
 		70E7471C1E829E47000FEBED /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E7471B1E829E47000FEBED /* SDL2_mixer.framework */; };
@@ -31,6 +32,8 @@
 
 /* Begin PBXFileReference section */
 		700E30CC1E8687F900C698A3 /* main2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main2.cpp; sourceTree = "<group>"; };
+		70C040961E86B79C000977A5 /* ltexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ltexture.cpp; sourceTree = "<group>"; };
+		70C040971E86B79C000977A5 /* ltexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ltexture.h; sourceTree = "<group>"; };
 		70E7470C1E829DFB000FEBED /* SDLPractice */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLPractice; sourceTree = BUILT_PRODUCTS_DIR; };
 		70E7470F1E829DFB000FEBED /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		70E747171E829E19000FEBED /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
@@ -82,6 +85,8 @@
 			children = (
 				70E7470F1E829DFB000FEBED /* main.cpp */,
 				700E30CC1E8687F900C698A3 /* main2.cpp */,
+				70C040961E86B79C000977A5 /* ltexture.cpp */,
+				70C040971E86B79C000977A5 /* ltexture.h */,
 			);
 			path = SDLPractice;
 			sourceTree = "<group>";
@@ -157,6 +162,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70C040981E86B79C000977A5 /* ltexture.cpp in Sources */,
 				700E30CE1E86888300C698A3 /* main2.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
