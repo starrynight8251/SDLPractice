@@ -1,65 +1,67 @@
 #include <SDL2/SDL.h>
 #include <SDL2_image/SDL_image.h>
-#include <string>
+#include <SDL2_mixer/SDL_mixer.h>
+#include <SDL2_ttf/SDL_ttf.h>
 #include "ltexture.h"
+#include "lbutton.h"
 
-// スクリーンの幅と高さを定義
-static const int SCREEN_WIDTH = 640;
-static const int SCREEN_HEIGHT = 480;
+static const int SCREEN_WIDTH  =  640;
+static const int SCREEN_HEIGHT =  480;
+// コントローラアナログスティックの無反応範囲
+const int JOYSTICK_DEAD_ZONE   = 8000;
 
-// キー操作表示用テクスチャID
-enum KeyPressTextures
-{
-    KEY_PRESS_TEXTURE_DEFAULT,
-    KEY_PRESS_TEXTURE_UP,
-    KEY_PRESS_TEXTURE_DOWN,
-    KEY_PRESS_TEXTURE_LEFT,
-    KEY_PRESS_TEXTURE_RIGHT,
-    KEY_PRESS_TEXTURE_TOTAL
-};
-
-// ウィンドウ, レンダラ, SDL, SDL_image の初期化
 bool init();
-// データ読み込み
 bool loadMedia();
-//　メディア解放、ウィンドウクローズ
 void close();
 
-// 描画用ウィンドウ
 SDL_Window* gWindow = NULL;
-// 描画用レンダラ
 SDL_Renderer* gRenderer = NULL;
 
-// キー操作表示用テクスチャ
-LTexture* gKeyPressTextures[ KEY_PRESS_TEXTURE_TOTAL ];
-LTexture* gPresentTexture = NULL;
-// スプライト表示用テクスチャ
-LTexture* gSpriteSheetTexture = NULL;
-SDL_Rect gSpriteClips[ 4 ];
-// 色抜表示用テクスチャ
-LTexture* gColorKeyTexture = NULL;
+// **** グラフィック ****
+// キャラクタ
+LTexture* gPlayerTexture = NULL;
+const int WALKING_ANIMATION_FRAMES = 4;
+SDL_Rect gPlayerClips[ WALKING_ANIMATION_FRAMES ];
+
+// ボタン
+LTexture* gButtonTexture = NULL;
+LButton gButtons[ TOTAL_BUTTONS ];
+SDL_Rect gButtonClips[ BUTTON_SPRITE_TOTAL ];
+
+// テキスト
+LTexture* gTextTexture = NULL;
+TTF_Font* gFont = NULL;
+
+// **** サウンド　****
+// サウンド
+Mix_Music *gMusic = NULL;
+Mix_Chunk *gScratch = NULL;
+Mix_Chunk *gHigh = NULL;
+Mix_Chunk *gMedium = NULL;
+Mix_Chunk *gLow = NULL;
+
+// **** 操作 ****
+// コントローラ１
+SDL_Joystick* gGameController = NULL;
+SDL_Haptic* gControllerHaptic = NULL;
 
 bool init()
 {
-    // 成功フラグ
     bool success = true;
-    
     // SDL初期化
-    if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
+    // SDL_INIT_VIDEO グラフィック
+    // SDL_INIT_AUDIO サウンド
+    // SDL_INIT_JOYSTICK コントローラ
+    // SDL_INIT_HAPTIC コントローラ振動機能
+    if( SDL_Init( SDL_INIT_VIDEO    | SDL_INIT_AUDIO |
+                  SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC ) < 0 )
     {
-        // 初期化失敗
         printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
         success = false;
     }
     else
     {
-        // テクスチャフィルタリングを線形にする
-        if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) )
-        {
-            printf( "Warning: Linear texture filtering not enabled!" );
-        }
-        
-        // SDL初期化成功、ウィンドウ作成
+        // ウィンドウ作成
         gWindow = SDL_CreateWindow( "starrynight8251",
                                    SDL_WINDOWPOS_UNDEFINED,
                                    SDL_WINDOWPOS_UNDEFINED,
@@ -68,14 +70,16 @@ bool init()
                                    SDL_WINDOW_SHOWN );
         if( gWindow == NULL )
         {
-            // ウィンドウ作成失敗
             printf( "Window could not be created! SDL_Error: %s\n", SDL_GetError() );
             success = false;
         }
         else
         {
-            // ウィンドウに対してレンダラを作成する
-            gRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED );
+            // レンダラ作成
+            // SDL_RENDERER_ACCELERATED ハードウェア支援機能有り
+            // SDL_RENDERER_PRESENTVSYNC 画面の更新タイミングを待つ(垂直同期)
+            gRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED |
+                                           SDL_RENDERER_PRESENTVSYNC );
             if( gRenderer == NULL )
             {
                 printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
@@ -83,198 +87,305 @@ bool init()
             }
             else
             {
+                // レンダラのクリア色を設定する
+                SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+                
                 // JPG,PNG 読込のために SDL_image を初期化
-                int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG;
+                int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG ;
                 if( !( IMG_Init( imgFlags ) & imgFlags ) )
                 {
                     printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
                     success = false;
                 }
+                
+                // TTF 読み込みのために SDL_ttf を初期化
+                if( TTF_Init() == -1 )
+                {
+                    printf( "SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError() );
+                    success = false;
+                }
+                
+                // WAV,OGG,MP3 読込のために SDL_mixer を初期化
+                if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 4096 ) < 0 )
+                {
+                    printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+                    success = false;
+                }
+                
+            }
+        }
+        
+        // 接続されているコントローラの数をチェックする
+        // 一つもなかったら警告
+        if( SDL_NumJoysticks() < 1 )
+        {
+            printf( "Warning: No joysticks connected!\n" );
+        }
+        else
+        {
+            // コントローラを取得
+            gGameController = SDL_JoystickOpen( 0 );
+            if( gGameController == NULL )
+            {
+                printf( "Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError() );
+            }
+            else
+            {
+                // コントローラ振動機能を取得
+                gControllerHaptic = SDL_HapticOpenFromJoystick( gGameController );
+                if( gControllerHaptic == NULL )
+                {
+                    printf( "Warning: Controller does not support haptics! SDL Error: %s\n", SDL_GetError() );
+                }
                 else
                 {
-                    // レンダラのクリア色を設定する
-                    SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
-                    
-                    // SDL_image で jpg, png を読込可能にする
-                    int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG;
-                    if( !( IMG_Init( imgFlags ) & imgFlags ) )
+                    // コントローラ振動機能を初期化
+                    if( SDL_HapticRumbleInit( gControllerHaptic ) < 0 )
                     {
-                        printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
-                        success = false;
+                        printf( "Warning: Unable to initialize rumble! SDL Error: %s\n", SDL_GetError() );
                     }
-                    
-                    // **** メモリ割当 ****
-                    for (int i=0; i<KEY_PRESS_TEXTURE_TOTAL; i++) {
-                        gKeyPressTextures[i] = new LTexture();
-                    }
-                    gSpriteSheetTexture = new LTexture();
-                    gColorKeyTexture = new LTexture();
                 }
             }
         }
+        
+        // テクスチャフィルタリングを線形にする
+        if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) )
+        {
+            printf( "Warning: Linear texture filtering not enabled!" );
+        }
+
     }
+
+    // **** メモリ割当 ****
+    gPlayerTexture = new LTexture();
+    gButtonTexture = new LTexture();
+    gTextTexture = new LTexture();
     
-    // SDL初期化,ウィンドウ作成ともに成功ならtrue
     return success;
 }
 
 bool loadMedia()
 {
-    // 成功フラグ
     bool success = true;
-    
-    // キー操作表示用テクスチャ読込
-    // 初期テクスチャ
-    gKeyPressTextures[ KEY_PRESS_TEXTURE_DEFAULT ]->loadFromFile( "loaded.png" );
-    if( gKeyPressTextures[ KEY_PRESS_TEXTURE_DEFAULT ] == NULL )
+ 
+    // キャラクタ
+    gPlayerTexture->loadFromFile( "graphic/walk.png" );
+    if( gPlayerTexture == NULL )
     {
-        printf( "Failed to load default image!\n" );
-        success = false;
-    }
-    
-    // 上テクスチャ
-    gKeyPressTextures[ KEY_PRESS_TEXTURE_UP ]->loadFromFile( "up.bmp" );
-    if( gKeyPressTextures[ KEY_PRESS_TEXTURE_UP ] == NULL )
-    {
-        printf( "Failed to load up image!\n" );
-        success = false;
-    }
-    
-    // 下テクスチャ
-    gKeyPressTextures[ KEY_PRESS_TEXTURE_DOWN ]->loadFromFile( "down.bmp" );
-    if( gKeyPressTextures[ KEY_PRESS_TEXTURE_DOWN ] == NULL )
-    {
-        printf( "Failed to load down image!\n" );
-        success = false;
-    }
-    
-    // 左テクスチャ
-    gKeyPressTextures[ KEY_PRESS_TEXTURE_LEFT ]->loadFromFile( "left.bmp" );
-    if( gKeyPressTextures[ KEY_PRESS_TEXTURE_LEFT ] == NULL )
-    {
-        printf( "Failed to load left image!\n" );
-        success = false;
-    }
-    
-    // 右テクスチャ
-    gKeyPressTextures[ KEY_PRESS_TEXTURE_RIGHT ]->loadFromFile( "right.bmp" );
-    if( gKeyPressTextures[ KEY_PRESS_TEXTURE_RIGHT ] == NULL )
-    {
-        printf( "Failed to load right image!\n" );
-        success = false;
-    }
-
-    // スプライト表示用テクスチャ読込
-    gSpriteSheetTexture->loadFromFile( "dots.png" );
-    if( gSpriteSheetTexture == NULL )
-    {
-        printf( "Failed to load sprite sheet texture!\n" );
+        printf( "Failed to load walking animation texture!\n" );
         success = false;
     }
     else
     {
-        //**** アルファブレンディング設定 ****
-        gSpriteSheetTexture->setBlendMode( SDL_BLENDMODE_BLEND );
-
-        // 左上スプライト位置
-        gSpriteClips[ 0 ].x =   0;
-        gSpriteClips[ 0 ].y =   0;
-        gSpriteClips[ 0 ].w = 100;
-        gSpriteClips[ 0 ].h = 100;
+        gPlayerClips[ 0 ].x =   0;
+        gPlayerClips[ 0 ].y =   0;
+        gPlayerClips[ 0 ].w =  32;
+        gPlayerClips[ 0 ].h =  32;
         
-        // 右上スプライト位置
-        gSpriteClips[ 1 ].x = 100;
-        gSpriteClips[ 1 ].y =   0;
-        gSpriteClips[ 1 ].w = 100;
-        gSpriteClips[ 1 ].h = 100;
+        gPlayerClips[ 1 ].x =  32;
+        gPlayerClips[ 1 ].y =   0;
+        gPlayerClips[ 1 ].w =  32;
+        gPlayerClips[ 1 ].h =  32;
         
-        // 左下スプライト位置
-        gSpriteClips[ 2 ].x =   0;
-        gSpriteClips[ 2 ].y = 100;
-        gSpriteClips[ 2 ].w = 100;
-        gSpriteClips[ 2 ].h = 100;
+        gPlayerClips[ 2 ].x =  64;
+        gPlayerClips[ 2 ].y =   0;
+        gPlayerClips[ 2 ].w =  32;
+        gPlayerClips[ 2 ].h =  32;
         
-        // 右下スプライト位置
-        gSpriteClips[ 3 ].x = 100;
-        gSpriteClips[ 3 ].y = 100;
-        gSpriteClips[ 3 ].w = 100;
-        gSpriteClips[ 3 ].h = 100;
+        gPlayerClips[ 3 ].x =  32;
+        gPlayerClips[ 3 ].y =   0;
+        gPlayerClips[ 3 ].w =  32;
+        gPlayerClips[ 3 ].h =  32;
     }
-    
-    // 色抜表示用テクスチャ読込
-    gColorKeyTexture->loadFromFile( "foo.png" );
-    if( gColorKeyTexture == NULL )
+
+    // ボタン
+    if( !gButtonTexture->loadFromFile( "graphic/button.png" ) )
     {
-        printf( "Failed to load default image!\n" );
+        printf( "Failed to load button sprite texture!\n" );
         success = false;
     }
-
+    else
+    {
+        //Set sprites
+        for( int i = 0; i < BUTTON_SPRITE_TOTAL; ++i )
+        {
+            gButtonClips[ i ].x = 0;
+            gButtonClips[ i ].y = i * 200;
+            gButtonClips[ i ].w = BUTTON_WIDTH;
+            gButtonClips[ i ].h = BUTTON_HEIGHT;
+        }
+        
+        //Set buttons in corners
+        gButtons[ 0 ].setPosition( SCREEN_WIDTH/2 - BUTTON_WIDTH*2,
+                                  SCREEN_HEIGHT  - BUTTON_HEIGHT*2 );
+        gButtons[ 1 ].setPosition( SCREEN_WIDTH/2 - BUTTON_WIDTH,
+                                  SCREEN_HEIGHT - BUTTON_HEIGHT*2 );
+        gButtons[ 2 ].setPosition( SCREEN_WIDTH/2,
+                                  SCREEN_HEIGHT - BUTTON_HEIGHT*2 );
+        gButtons[ 3 ].setPosition( SCREEN_WIDTH/2 + BUTTON_WIDTH,
+                                  SCREEN_HEIGHT - BUTTON_HEIGHT*2 );
+    }
+    
+    // テキスト
+    gFont = TTF_OpenFont( "font/lazy.ttf", 28 );
+    if( gFont == NULL )
+    {
+        printf( "Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError() );
+        success = false;
+    }
+    else
+    {
+        //Render text
+        SDL_Color textColor = { 255, 0, 255 };
+        gTextTexture->loadFromRenderedText( "Starrynight8251 ttf test", textColor );
+        if( gTextTexture == NULL )
+        {
+            printf( "Failed to render text texture!\n" );
+            success = false;
+        }
+    }
+    
+    // サウンド
+    gMusic = Mix_LoadMUS( "sound/mario.mp3" );
+    if( gMusic == NULL )
+    {
+        printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
+        success = false;
+    }
+    
+    gScratch = Mix_LoadWAV( "sound/scratch.wav" );
+    if( gScratch == NULL )
+    {
+        printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+        success = false;
+    }
+    
+    gHigh = Mix_LoadWAV( "sound/high.wav" );
+    if( gHigh == NULL )
+    {
+        printf( "Failed to load high sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+        success = false;
+    }
+    
+    gMedium = Mix_LoadWAV( "sound/medium.wav" );
+    if( gMedium == NULL )
+    {
+        printf( "Failed to load medium sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+        success = false;
+    }
+    
+    gLow = Mix_LoadWAV( "sound/low.wav" );
+    if( gLow == NULL )
+    {
+        printf( "Failed to load low sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+        success = false;
+    }
+    
     // ビットマップロード成功ならtrue
     return success;
 }
 
 void close()
 {
-    // **** メモリ解放 ****
-    for (int i=0; i<KEY_PRESS_TEXTURE_TOTAL; i++) {
-        gKeyPressTextures[i]->free();
-        gKeyPressTextures[i] = NULL;
+    // 再生中かチェック
+    if( Mix_PlayingMusic() != 0 )
+    {
+        // 一時停止していなければ一時停止する
+        if( Mix_PausedMusic() != 1 )
+        {
+            Mix_PauseMusic();
+        }
     }
-    gSpriteSheetTexture->free();
-    gSpriteSheetTexture = NULL;
-    gColorKeyTexture->free();
-    gColorKeyTexture = NULL;
+    // 再生中であれば停止
+    Mix_HaltMusic();
 
-    // レンダラ,ウィンドウを破棄する
+    // **** メモリ解放 ****
+    // グラフィック
+    gPlayerTexture->free();
+    gPlayerTexture = NULL;
+    gButtonTexture->free();
+    gButtonTexture = NULL;
+    gTextTexture->free();
+    gTextTexture = NULL;
+    TTF_CloseFont( gFont );
+    gFont = NULL;
+    
+    // サウンド
+    Mix_FreeChunk( gScratch );
+    Mix_FreeChunk( gHigh );
+    Mix_FreeChunk( gMedium );
+    Mix_FreeChunk( gLow );
+    gScratch = NULL;
+    gHigh = NULL;
+    gMedium = NULL;
+    gLow = NULL;
+    Mix_FreeMusic( gMusic );
+    gMusic = NULL;
+    
+    // 操作
+    SDL_HapticClose( gControllerHaptic );
+    SDL_JoystickClose( gGameController );
+    gGameController = NULL;
+    gControllerHaptic = NULL;
+
+    // レンダラ,ウィンドウ
     SDL_DestroyRenderer( gRenderer );
     SDL_DestroyWindow( gWindow );
     gRenderer = NULL;
     gWindow = NULL;
     
-    // SDL, SDL_image の解放
+    // SDL_ttf, SDL_mixer, SDL_image, SDL の解放
+    TTF_Quit();
+    Mix_Quit();
     IMG_Quit();
     SDL_Quit();
 }
 
 int main( int argc, char* args[] )
 {
-    // SDL初期化、ウィンドウ作成
     if( !init() )
     {
         printf( "Failed to initialize!\n" );
     }
     else
     {
-        // 画像読み込み
         if( !loadMedia() )
         {
             printf( "Failed to load media!\n" );
         }
         else
         {
-            // 周期イベントフラグ
             bool quit = false;
             
-            // イベントハンドラ
             SDL_Event ev;
+
+            // 現在のフレーム
+            int frame = 0;
             
-            // キー操作表示用テクスチャをデフォルトのテクスチャに設定
-            gPresentTexture = gKeyPressTextures[ KEY_PRESS_TEXTURE_DEFAULT ];
+            // キャラクタ位置
+            int px = 0;
+            int py = 0;
+            // キャラクタ位置差分
+            int dx = 0;
+            int dy = 0;
+            // キャラクタ向き
+            int dir = 3;
             
-            // スプライト表示用テクスチャの色調整
+            // キャラクタ回転角
+            double degrees = 0;
+            // キャラクタ反転
+            SDL_RendererFlip flipType = SDL_FLIP_NONE;
+            
+            // キャラクタの色調整
             Uint8 r = 255;
             Uint8 g = 255;
             Uint8 b = 255;
             Uint8 a = 255;
             
-            // 色抜テクスチャ表示位置
-            int gX = 0;
-            int gY = 0;
-            
-            // 周期イベント
+            // メインイベントループ
             while( !quit )
             {
-                //　イベントを読み取る
+                // イベント判別処理
                 while( SDL_PollEvent( &ev ) != 0 )
                 {
                     //　ウィンドウを閉じる
@@ -286,33 +397,30 @@ int main( int argc, char* args[] )
                     // キーダウンイベント処理
                     else if( ev.type == SDL_KEYDOWN )
                     {
-                        gPresentTexture = gKeyPressTextures[ KEY_PRESS_TEXTURE_DEFAULT ];
-                        
                         switch( ev.key.keysym.sym )
                         {
-                            // キー操作で表示テクスチャを切り替える
-                            // 色抜テクスチャの表示位置を移動する
-                            case SDLK_UP:
-                                gPresentTexture = gKeyPressTextures[ KEY_PRESS_TEXTURE_UP ];
-                                gY -= 100;
-                                break;
-                                
-                            case SDLK_DOWN:
-                                gPresentTexture = gKeyPressTextures[ KEY_PRESS_TEXTURE_DOWN ];
-                                gY += 100;
-                                break;
-                                
+                            // 矢印 キーでキャラクタの位置、向きを変更する
                             case SDLK_LEFT:
-                                gPresentTexture = gKeyPressTextures[ KEY_PRESS_TEXTURE_LEFT ];
-                                gX -= 100;
+                                px -= 100;
+                                dir = 0;
                                 break;
                                 
                             case SDLK_RIGHT:
-                                gPresentTexture = gKeyPressTextures[ KEY_PRESS_TEXTURE_RIGHT ];
-                                gX += 100;
+                                px += 100;
+                                dir = 1;
+                                break;
+                                
+                            case SDLK_UP:
+                                py -= 100;
+                                dir = 2;
+                                break;
+                                
+                            case SDLK_DOWN:
+                                py += 100;
+                                dir = 3;
                                 break;
                             
-                            // qwer,asdf キーでスプライト表示用テクスチャの色を調整する
+                            // qwer,asdf キーでキャラクタの色を調整する
                             case SDLK_q:
                                 // 色調整　赤　濃くする
                                 if( r + 32 > 255 )
@@ -409,9 +517,152 @@ int main( int argc, char* args[] )
                                     a -= 32;
                                 }
                                 break;
+                                
+                            case SDLK_t:
+                                // 反時計回り回転
+                                degrees -= 60;
+                                break;
+                                
+                            case SDLK_g:
+                                // 時計回り回転
+                                degrees += 60;
+                                break;
+                                
+                            case SDLK_y:
+                                // 左右反転
+                                flipType = SDL_FLIP_HORIZONTAL;
+                                break;
+                                
+                            case SDLK_h:
+                                // 上下反転
+                                flipType = SDL_FLIP_NONE;
+                                break;
+                                
+                            case SDLK_n:
+                                // 反転なし
+                                flipType = SDL_FLIP_VERTICAL;
+                                break;
                         }
                     }
+                    // コントローラ十字キー
+                    else if( ev.type == SDL_JOYAXISMOTION )
+                    {
+                        //　コントローラ１
+                        if( ev.jaxis.which == 0 )
+                        {
+                            // コントローラ左右キー
+                            if( ev.jaxis.axis == 0 )
+                            {
+                                // 左
+                                if( ev.jaxis.value < -JOYSTICK_DEAD_ZONE )
+                                {
+                                    dir = 0;
+                                    dx = -5;
+                                }
+                                // 右
+                                else if( ev.jaxis.value > JOYSTICK_DEAD_ZONE )
+                                {
+                                    dir = 1;
+                                    dx = 5;
+                                }
+                                // 左右ニュートラル
+                                else
+                                {
+                                    dx = 0;
+                                }
+                            }
+                            // コントローラ上下キー
+                            else if( ev.jaxis.axis == 1 )
+                            {
+                                // 上
+                                if( ev.jaxis.value < -JOYSTICK_DEAD_ZONE )
+                                {
+                                    dir = 2;
+                                    dy = -5;
+                                }
+                                // 下
+                                else if( ev.jaxis.value > JOYSTICK_DEAD_ZONE )
+                                {
+                                    dir = 3;
+                                    dy =  5;
+                                }
+                                // 上下ニュートラル
+                                else
+                                {
+                                    dy = 0;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // コントローラボタン
+                    else if( ev.type == SDL_JOYBUTTONDOWN)
+                    {
+                        // コントローラ１
+                        if( ev.jbutton.which == 0 )
+                        {
+                            // 各ボタン番号で分岐
+                            switch ( ev.jbutton.button+1 ) {
+                                case 1:
+                                    Mix_PlayChannel( -1, gHigh, 0 );
+                                    break;
+                                    
+                                case 2:
+                                    Mix_PlayChannel( -1, gMedium, 0 );
+                                    break;
+                                    
+                                case 3:
+                                    Mix_PlayChannel( -1, gLow, 0 );
+                                    break;
+                                    
+                                case 4:
+                                    Mix_PlayChannel( -1, gScratch, 0 );
+                                    break;
+                                    
+                                case 9:
+                                    // 音楽が停止中なら
+                                    if( Mix_PlayingMusic() == 0 )
+                                    {
+                                        // 音楽を再生
+                                        Mix_PlayMusic( gMusic, -1 );
+                                    }
+                                    // 音楽が再生中なら
+                                    else
+                                    {
+                                        // 一時停止中なら
+                                        if( Mix_PausedMusic() == 1 )
+                                        {
+                                            // 一時停止解除
+                                            Mix_ResumeMusic();
+                                        }
+                                        // 一時停止していなければ
+                                        else
+                                        {
+                                            // 一時停止
+                                            Mix_PauseMusic();
+                                        }
+                                    }
+                                    break;
+                                    
+                                case 10:
+                                    // 音楽を停止
+                                    Mix_HaltMusic();
+                                    break;
+                            }
+                        }
+                    }
+
+                    // ボタン判定処理（マウスクリック、マウスオーバー）
+                    for( int i = 0; i < TOTAL_BUTTONS; ++i )
+                    {
+                        gButtons[ i ].handleEvent( &ev );
+                    }
                 }
+                
+                // **** 更新処理　****
+                // キャラクタ表示位置更新
+                px += dx;
+                py += dy;
                 
                 // **** 前処理 ****
                 //　設定したクリア色でクリアする
@@ -426,53 +677,51 @@ int main( int argc, char* args[] )
                 normalViewport.h = SCREEN_HEIGHT;
                 SDL_RenderSetViewport( gRenderer, &normalViewport );
                 
+                // **** グラフィック描画 ****
+//                // 赤の塗りつぶし四角を描画
+//                SDL_Rect fillRect = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
+//                SDL_SetRenderDrawColor( gRenderer, 0xFF, 0x00, 0x00, 0xFF );
+//                SDL_RenderFillRect( gRenderer, &fillRect );
+//                
+//                //　緑の四角を描画
+//                SDL_Rect outlineRect = { SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, SCREEN_WIDTH * 2 / 3, SCREEN_HEIGHT * 2 / 3 };
+//                SDL_SetRenderDrawColor( gRenderer, 0x00, 0xFF, 0x00, 0xFF );
+//                SDL_RenderDrawRect( gRenderer, &outlineRect );
+//                
+//                // 青の水平線を描画
+//                SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0xFF, 0xFF );
+//                SDL_RenderDrawLine( gRenderer, 0, SCREEN_HEIGHT / 2 + 20, SCREEN_WIDTH, SCREEN_HEIGHT / 2 + 20);
+//                
+//                // 黄色の点を垂直に描画
+//                SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0x00, 0xFF );
+//                for( int i = 0; i < SCREEN_HEIGHT; i += 4 )
+//                {
+//                    SDL_RenderDrawPoint( gRenderer, SCREEN_WIDTH / 2, i );
+//                }
                 
-                // **** キー操作表示用テクスチャ描画 ****
-                gPresentTexture->render(0,0);
+                // キャラクタ描画
+                gPlayerTexture->setColor( r, g, b );
+                gPlayerTexture->setAlpha( a );
                 
-                // **** スプライト表示用テクスチャ描画 ****
-                // 色調整設定
-                gSpriteSheetTexture->setColor( r, g, b );
-                gSpriteSheetTexture->setAlpha( a );
+                int dir_off[] = { 3, 1, 0, 2 };
+                SDL_Rect* currentClip = &gPlayerClips[ (frame % 16)/4 ];
+                currentClip->y = dir_off[dir]*32;
+                gPlayerTexture->render( px, py, 4, currentClip, degrees, NULL, flipType );
                 
-                // 左上スプライト描画
-                gSpriteSheetTexture->render( 0, 0, &gSpriteClips[ 0 ] );
-                // 右上スプライト描画
-                gSpriteSheetTexture->render( SCREEN_WIDTH - gSpriteClips[ 1 ].w, 0, &gSpriteClips[ 1 ] );
-                // 左下スプライト描画
-                gSpriteSheetTexture->render( 0, SCREEN_HEIGHT - gSpriteClips[ 2 ].h, &gSpriteClips[ 2 ] );
-                // 右下スプライト描画
-                gSpriteSheetTexture->render( SCREEN_WIDTH - gSpriteClips[ 3 ].w, SCREEN_HEIGHT - gSpriteClips[ 3 ].h, &gSpriteClips[ 3 ] );
+                // テキスト描画
+                gTextTexture->render( ( SCREEN_WIDTH - gTextTexture->getWidth() ) / 2, SCREEN_HEIGHT - gTextTexture->getHeight() );
                 
-                // **** プリミティブ描画 ****
-                // 赤の塗りつぶし四角を描画
-                SDL_Rect fillRect = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
-                SDL_SetRenderDrawColor( gRenderer, 0xFF, 0x00, 0x00, 0xFF );
-                SDL_RenderFillRect( gRenderer, &fillRect );
-                
-                //　緑の四角を描画
-                SDL_Rect outlineRect = { SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, SCREEN_WIDTH * 2 / 3, SCREEN_HEIGHT * 2 / 3 };
-                SDL_SetRenderDrawColor( gRenderer, 0x00, 0xFF, 0x00, 0xFF );
-                SDL_RenderDrawRect( gRenderer, &outlineRect );
-                
-                // 青の水平線を描画
-                SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0xFF, 0xFF );
-                SDL_RenderDrawLine( gRenderer, 0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2 );
-                
-                // 黄色の点を垂直に描画
-                SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0x00, 0xFF );
-                for( int i = 0; i < SCREEN_HEIGHT; i += 4 )
+                // ボタン描画
+                for( int i = 0; i < TOTAL_BUTTONS; ++i )
                 {
-                    SDL_RenderDrawPoint( gRenderer, SCREEN_WIDTH / 2, i );
+                    gButtons[ i ].render();
                 }
-                
-                // **** 色抜表示用テクスチャ描画 ****
-                gColorKeyTexture->render(gX, gY);
-                
-                // **** 後処理 ****
-                // オフスクリーンバッファからスクリーンに転送
+ 
+                // 描きこまれた裏側スクリーンを表側スクリーンに転送
                 SDL_RenderPresent( gRenderer );
-                
+ 
+                // 次フレーム
+                ++frame;
             }
         }
     }
