@@ -1,8 +1,6 @@
 #include "ltexture.h"
-
-// 描画用レンダラ
 extern SDL_Renderer* gRenderer;
-extern TTF_Font *gFont;
+extern TTF_Font* gFont;
 
 LTexture::LTexture()
 {

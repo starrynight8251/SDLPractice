@@ -12,12 +12,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2_image/SDL_image.h>
 
-
-//Button constants
-const int BUTTON_WIDTH = 60;
-const int BUTTON_HEIGHT = 40;
-const int TOTAL_BUTTONS = 4;
-
 enum LButtonSprite
 {
     BUTTON_SPRITE_MOUSE_OUT = 0,

@@ -8,6 +8,10 @@
 #include "ltexture.h"
 #include "lbutton.h"
 
+extern const int BUTTON_WIDTH;
+extern const int BUTTON_HEIGHT;
+extern const int TOTAL_BUTTONS;
+
 extern LTexture* gButtonTexture;
 extern SDL_Rect gButtonClips[ BUTTON_SPRITE_TOTAL ];
 

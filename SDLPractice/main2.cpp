@@ -2,17 +2,24 @@
 #include <SDL2_image/SDL_image.h>
 #include <SDL2_mixer/SDL_mixer.h>
 #include <SDL2_ttf/SDL_ttf.h>
+#include <sstream>
+
 #include "ltexture.h"
 #include "lbutton.h"
+#include "ltimer.h"
+#include "dot.h"
+#include "player.h"
 
-static const int SCREEN_WIDTH  =  640;
-static const int SCREEN_HEIGHT =  480;
+extern const int SCREEN_WIDTH = 640;
+extern const int SCREEN_HEIGHT = 480;
 // コントローラアナログスティックの無反応範囲
-const int JOYSTICK_DEAD_ZONE   = 8000;
+extern const int JOYSTICK_DEAD_ZONE = 8000;
 
 bool init();
 bool loadMedia();
 void close();
+extern bool cneckCollision( SDL_Rect a, SDL_Rect b );
+
 
 SDL_Window* gWindow = NULL;
 SDL_Renderer* gRenderer = NULL;
@@ -24,9 +31,17 @@ const int WALKING_ANIMATION_FRAMES = 4;
 SDL_Rect gPlayerClips[ WALKING_ANIMATION_FRAMES ];
 
 // ボタン
+//Button constants
+extern const int BUTTON_WIDTH = 60;
+extern const int BUTTON_HEIGHT = 40;
+extern const int TOTAL_BUTTONS = 4;
+
 LTexture* gButtonTexture = NULL;
 LButton gButtons[ TOTAL_BUTTONS ];
 SDL_Rect gButtonClips[ BUTTON_SPRITE_TOTAL ];
+
+// テキスト
+LTexture* gDotTexture = NULL;
 
 // テキスト
 LTexture* gTextTexture = NULL;
@@ -48,6 +63,7 @@ SDL_Haptic* gControllerHaptic = NULL;
 bool init()
 {
     bool success = true;
+	
     // SDL初期化
     // SDL_INIT_VIDEO グラフィック
     // SDL_INIT_AUDIO サウンド
@@ -78,8 +94,7 @@ bool init()
             // レンダラ作成
             // SDL_RENDERER_ACCELERATED ハードウェア支援機能有り
             // SDL_RENDERER_PRESENTVSYNC 画面の更新タイミングを待つ(垂直同期)
-            gRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED |
-                                           SDL_RENDERER_PRESENTVSYNC );
+            gRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED |SDL_RENDERER_PRESENTVSYNC );
             if( gRenderer == NULL )
             {
                 printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
@@ -160,7 +175,7 @@ bool init()
     gPlayerTexture = new LTexture();
     gButtonTexture = new LTexture();
     gTextTexture = new LTexture();
-    
+    gDotTexture = new LTexture();
     return success;
 }
 
@@ -169,7 +184,7 @@ bool loadMedia()
     bool success = true;
  
     // キャラクタ
-    gPlayerTexture->loadFromFile( "graphic/walk.png" );
+    gPlayerTexture->loadFromFile( "graphics/walk.png" );
     if( gPlayerTexture == NULL )
     {
         printf( "Failed to load walking animation texture!\n" );
@@ -199,7 +214,7 @@ bool loadMedia()
     }
 
     // ボタン
-    if( !gButtonTexture->loadFromFile( "graphic/button.png" ) )
+    if( !gButtonTexture->loadFromFile( "graphics/button.png" ) )
     {
         printf( "Failed to load button sprite texture!\n" );
         success = false;
@@ -216,65 +231,61 @@ bool loadMedia()
         }
         
         //Set buttons in corners
-        gButtons[ 0 ].setPosition( SCREEN_WIDTH/2 - BUTTON_WIDTH*2,
-                                  SCREEN_HEIGHT  - BUTTON_HEIGHT*2 );
-        gButtons[ 1 ].setPosition( SCREEN_WIDTH/2 - BUTTON_WIDTH,
+        gButtons[ 0 ].setPosition( SCREEN_WIDTH - BUTTON_WIDTH*4,
                                   SCREEN_HEIGHT - BUTTON_HEIGHT*2 );
-        gButtons[ 2 ].setPosition( SCREEN_WIDTH/2,
+        gButtons[ 1 ].setPosition( SCREEN_WIDTH - BUTTON_WIDTH*3,
                                   SCREEN_HEIGHT - BUTTON_HEIGHT*2 );
-        gButtons[ 3 ].setPosition( SCREEN_WIDTH/2 + BUTTON_WIDTH,
+        gButtons[ 2 ].setPosition( SCREEN_WIDTH - BUTTON_WIDTH*2,
+                                  SCREEN_HEIGHT - BUTTON_HEIGHT*2 );
+        gButtons[ 3 ].setPosition( SCREEN_WIDTH - BUTTON_WIDTH,
                                   SCREEN_HEIGHT - BUTTON_HEIGHT*2 );
     }
     
+    //Load dot texture
+    if( !gDotTexture->loadFromFile( "graphics/dot.bmp" ) )
+    {
+        printf( "Failed to load dot texture!\n" );
+        success = false;
+    }
+    
     // テキスト
-    gFont = TTF_OpenFont( "font/lazy.ttf", 28 );
+    gFont = TTF_OpenFont( "fonts/lazy.ttf", 28 );
     if( gFont == NULL )
     {
         printf( "Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError() );
         success = false;
     }
-    else
-    {
-        //Render text
-        SDL_Color textColor = { 255, 0, 255 };
-        gTextTexture->loadFromRenderedText( "Starrynight8251 ttf test", textColor );
-        if( gTextTexture == NULL )
-        {
-            printf( "Failed to render text texture!\n" );
-            success = false;
-        }
-    }
     
     // サウンド
-    gMusic = Mix_LoadMUS( "sound/mario.mp3" );
+    gMusic = Mix_LoadMUS( "sounds/mario.mp3" );
     if( gMusic == NULL )
     {
         printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
         success = false;
     }
     
-    gScratch = Mix_LoadWAV( "sound/scratch.wav" );
+    gScratch = Mix_LoadWAV( "sounds/scratch.wav" );
     if( gScratch == NULL )
     {
         printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
         success = false;
     }
     
-    gHigh = Mix_LoadWAV( "sound/high.wav" );
+    gHigh = Mix_LoadWAV( "sounds/high.wav" );
     if( gHigh == NULL )
     {
         printf( "Failed to load high sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
         success = false;
     }
     
-    gMedium = Mix_LoadWAV( "sound/medium.wav" );
+    gMedium = Mix_LoadWAV( "sounds/medium.wav" );
     if( gMedium == NULL )
     {
         printf( "Failed to load medium sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
         success = false;
     }
     
-    gLow = Mix_LoadWAV( "sound/low.wav" );
+    gLow = Mix_LoadWAV( "sounds/low.wav" );
     if( gLow == NULL )
     {
         printf( "Failed to load low sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
@@ -296,7 +307,7 @@ void close()
             Mix_PauseMusic();
         }
     }
-    // 再生中であれば停止
+    // 停止しておく
     Mix_HaltMusic();
 
     // **** メモリ解放 ****
@@ -307,6 +318,8 @@ void close()
     gButtonTexture = NULL;
     gTextTexture->free();
     gTextTexture = NULL;
+    gDotTexture->free();
+    gDotTexture = NULL;
     TTF_CloseFont( gFont );
     gFont = NULL;
     
@@ -341,6 +354,52 @@ void close()
     SDL_Quit();
 }
 
+bool checkCollision( SDL_Rect a, SDL_Rect b )
+{
+    //The sides of the rectangles
+    int leftA, leftB;
+    int rightA, rightB;
+    int topA, topB;
+    int bottomA, bottomB;
+
+    //Calculate the sides of rect A
+    leftA = a.x;
+    rightA = a.x + a.w;
+    topA = a.y;
+    bottomA = a.y + a.h;
+
+    //Calculate the sides of rect B
+    leftB = b.x;
+    rightB = b.x + b.w;
+    topB = b.y;
+    bottomB = b.y + b.h;
+
+    //If any of the sides from A are outside of B
+    if( bottomA <= topB )
+    {
+        return false;
+    }
+
+    if( topA >= bottomB )
+    {
+        return false;
+    }
+
+    if( rightA <= leftB )
+    {
+        return false;
+    }
+
+    if( leftA >= rightB )
+    {
+        return false;
+    }
+
+    //If none of the sides from A are outside B
+    return true;
+}
+
+
 int main( int argc, char* args[] )
 {
     if( !init() )
@@ -359,9 +418,6 @@ int main( int argc, char* args[] )
             
             SDL_Event ev;
 
-            // 現在のフレーム
-            int frame = 0;
-            
             // キャラクタ位置
             int px = 0;
             int py = 0;
@@ -382,6 +438,30 @@ int main( int argc, char* args[] )
             Uint8 b = 255;
             Uint8 a = 255;
             
+            //The dot that will be moving around on the screen
+            Dot dot;
+            Player player;
+            
+            //Set the wall
+            SDL_Rect wall;
+            wall.x = 320;
+            wall.y = 64;
+            wall.w = 128;
+            wall.h = 320;
+            
+            // テキストカラー
+            SDL_Color textColor = { 255, 0, 255 };
+            
+            //The frames per second timer
+            LTimer fpsTimer;
+            
+            //In memory text stream
+            std::stringstream timeText;
+            
+            //Start counting frames per second
+            int frame = 0;
+            fpsTimer.start();
+
             // メインイベントループ
             while( !quit )
             {
@@ -393,7 +473,6 @@ int main( int argc, char* args[] )
                     {
                         quit = true;
                     }
-                    
                     // キーダウンイベント処理
                     else if( ev.type == SDL_KEYDOWN )
                     {
@@ -542,6 +621,29 @@ int main( int argc, char* args[] )
                                 // 反転なし
                                 flipType = SDL_FLIP_VERTICAL;
                                 break;
+                                
+                            case SDLK_u:
+                                if( fpsTimer.isStarted() )
+                                {
+                                    fpsTimer.stop();
+                                }
+                                else
+                                {
+                                    fpsTimer.start();
+                                }
+                                break;
+                                
+                            case SDLK_j:
+                                if( fpsTimer.isPaused() )
+                                {
+                                    fpsTimer.unpause();
+                                }
+                                else
+                                {
+                                    fpsTimer.pause();
+                                }
+                                break;
+                                
                         }
                     }
                     // コントローラ十字キー
@@ -657,12 +759,36 @@ int main( int argc, char* args[] )
                     {
                         gButtons[ i ].handleEvent( &ev );
                     }
+                    
+                    //Handle input for the dot
+                    dot.handleEvent( ev );
+                    player.handleEvent( ev );
                 }
                 
                 // **** 更新処理　****
+                //Calculate and correct fps
+                float avgFPS = frame / ( fpsTimer.getTicks() / 1000.f );
+                if( avgFPS > 2000000 )
+                {
+                    avgFPS = 0;
+                }
+                //Set text to be rendered
+                timeText.str( "" );
+                timeText << "Average Frames Per Second " << avgFPS;
+                
+                //Render text
+                if( !gTextTexture->loadFromRenderedText( timeText.str().c_str(), textColor ) )
+                {
+                    printf( "Unable to render FPS texture!\n" );
+                }
+                
                 // キャラクタ表示位置更新
                 px += dx;
                 py += dy;
+                
+                //Move the dot
+                dot.move( wall );
+                player.move( wall );
                 
                 // **** 前処理 ****
                 //　設定したクリア色でクリアする
@@ -698,6 +824,10 @@ int main( int argc, char* args[] )
 //                {
 //                    SDL_RenderDrawPoint( gRenderer, SCREEN_WIDTH / 2, i );
 //                }
+
+                //Render wall
+                SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
+                SDL_RenderDrawRect( gRenderer, &wall );
                 
                 // キャラクタ描画
                 gPlayerTexture->setColor( r, g, b );
@@ -707,6 +837,10 @@ int main( int argc, char* args[] )
                 SDL_Rect* currentClip = &gPlayerClips[ (frame % 16)/4 ];
                 currentClip->y = dir_off[dir]*32;
                 gPlayerTexture->render( px, py, 4, currentClip, degrees, NULL, flipType );
+                
+                //Render objects
+                player.render( frame );
+                dot.render();
                 
                 // テキスト描画
                 gTextTexture->render( ( SCREEN_WIDTH - gTextTexture->getWidth() ) / 2, SCREEN_HEIGHT - gTextTexture->getHeight() );

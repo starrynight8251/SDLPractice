@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		700E30CE1E86888300C698A3 /* main2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 700E30CC1E8687F900C698A3 /* main2.cpp */; };
+		702E648E1E988DD000C41058 /* ltimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 702E648C1E988DD000C41058 /* ltimer.cpp */; };
+		702E64901E98BEB800C41058 /* dot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 702E648F1E98BEB800C41058 /* dot.cpp */; };
 		70C040981E86B79C000977A5 /* ltexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70C040961E86B79C000977A5 /* ltexture.cpp */; };
 		70C5C4BE1E8FC65F00F56A89 /* lbutton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70C5C4BC1E8FC65F00F56A89 /* lbutton.cpp */; };
 		70E747181E829E19000FEBED /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747171E829E19000FEBED /* SDL2.framework */; };
@@ -17,6 +19,7 @@
 		70E747201E829E6A000FEBED /* SDL2_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E7471F1E829E6A000FEBED /* SDL2_ttf.framework */; };
 		70E747221E82C04C000FEBED /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747211E82C04C000FEBED /* GLUT.framework */; };
 		70E747241E82C056000FEBED /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747231E82C056000FEBED /* OpenGL.framework */; };
+		70F6FD0D1E9A204A00DFBBDE /* player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70F6FD0C1E9A204A00DFBBDE /* player.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -33,12 +36,15 @@
 
 /* Begin PBXFileReference section */
 		700E30CC1E8687F900C698A3 /* main2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main2.cpp; sourceTree = "<group>"; };
+		702E648C1E988DD000C41058 /* ltimer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ltimer.cpp; sourceTree = "<group>"; };
+		702E648D1E988DD000C41058 /* ltimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ltimer.h; sourceTree = "<group>"; };
+		702E648F1E98BEB800C41058 /* dot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dot.cpp; sourceTree = "<group>"; };
+		702E64911E98BECD00C41058 /* dot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dot.h; sourceTree = "<group>"; };
 		70C040961E86B79C000977A5 /* ltexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ltexture.cpp; sourceTree = "<group>"; };
 		70C040971E86B79C000977A5 /* ltexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ltexture.h; sourceTree = "<group>"; };
 		70C5C4BC1E8FC65F00F56A89 /* lbutton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lbutton.cpp; sourceTree = "<group>"; };
 		70C5C4BD1E8FC65F00F56A89 /* lbutton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lbutton.h; sourceTree = "<group>"; };
 		70E7470C1E829DFB000FEBED /* SDLPractice */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLPractice; sourceTree = BUILT_PRODUCTS_DIR; };
-		70E7470F1E829DFB000FEBED /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		70E747171E829E19000FEBED /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
 		70E747191E829E39000FEBED /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../Library/Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
 		70E7471B1E829E47000FEBED /* SDL2_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_mixer.framework; path = ../../../../Library/Frameworks/SDL2_mixer.framework; sourceTree = "<group>"; };
@@ -46,6 +52,8 @@
 		70E7471F1E829E6A000FEBED /* SDL2_ttf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_ttf.framework; path = ../../../../Library/Frameworks/SDL2_ttf.framework; sourceTree = "<group>"; };
 		70E747211E82C04C000FEBED /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		70E747231E82C056000FEBED /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		70F6FD0B1E9A18A400DFBBDE /* player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = player.h; sourceTree = "<group>"; };
+		70F6FD0C1E9A204A00DFBBDE /* player.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = player.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,12 +94,17 @@
 		70E7470E1E829DFB000FEBED /* SDLPractice */ = {
 			isa = PBXGroup;
 			children = (
-				70E7470F1E829DFB000FEBED /* main.cpp */,
+				70F6FD0C1E9A204A00DFBBDE /* player.cpp */,
+				70F6FD0B1E9A18A400DFBBDE /* player.h */,
 				700E30CC1E8687F900C698A3 /* main2.cpp */,
 				70C040961E86B79C000977A5 /* ltexture.cpp */,
 				70C040971E86B79C000977A5 /* ltexture.h */,
 				70C5C4BC1E8FC65F00F56A89 /* lbutton.cpp */,
 				70C5C4BD1E8FC65F00F56A89 /* lbutton.h */,
+				702E648C1E988DD000C41058 /* ltimer.cpp */,
+				702E648D1E988DD000C41058 /* ltimer.h */,
+				702E648F1E98BEB800C41058 /* dot.cpp */,
+				702E64911E98BECD00C41058 /* dot.h */,
 			);
 			path = SDLPractice;
 			sourceTree = "<group>";
@@ -167,7 +180,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				702E648E1E988DD000C41058 /* ltimer.cpp in Sources */,
 				70C040981E86B79C000977A5 /* ltexture.cpp in Sources */,
+				70F6FD0D1E9A204A00DFBBDE /* player.cpp in Sources */,
+				702E64901E98BEB800C41058 /* dot.cpp in Sources */,
 				70C5C4BE1E8FC65F00F56A89 /* lbutton.cpp in Sources */,
 				700E30CE1E86888300C698A3 /* main2.cpp in Sources */,
 			);
