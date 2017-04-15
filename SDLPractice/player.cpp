@@ -6,6 +6,7 @@
 //  Copyright © 2017年 NoCompany. All rights reserved.
 //
 #include <SDL2_image/SDL_image.h>
+#include "lwindow.h"
 #include "ltexture.h"
 #include "player.h"
 
@@ -13,19 +14,19 @@ extern const int SCREEN_WIDTH;
 extern const int SCREEN_HEIGHT;
 extern const int JOYSTICK_DEAD_ZONE;
 extern bool checkCollision( SDL_Rect a, SDL_Rect b );
+extern LWindow* gWindow;
 
 Player::Player()
 {
-    //Initialize the offsets
     mPosX = PLAYER_X;
     mPosY = PLAYER_Y;
     mDir  = DOWN;
 
-    //Initialize the velocity
-    mVelX = 0;
-    mVelY = 0;
+    mVelX = mVelY = 0;
+    mR = mG = mB = mA = 255;
+    mDegrees = 0;
+    mFlipType = SDL_FLIP_NONE;
 
-    //Set collision box dimension
     mCollider.x = mPosX + PLAYER_COLLIDE_X;
     mCollider.y = mPosY + PLAYER_COLLIDE_Y;
     mCollider.w = PLAYER_COLLIDE_W;
@@ -69,10 +70,8 @@ Player::~Player()
 
 void Player::handleEvent( SDL_Event& e )
 {
-    //If a key was pressed
     if( e.type == SDL_KEYDOWN && e.key.repeat == 0 )
     {
-        //Adjust the velocity
         switch( e.key.keysym.sym )
         {
             case SDLK_LEFT:
@@ -91,13 +90,137 @@ void Player::handleEvent( SDL_Event& e )
                 mDir = DOWN;
                 mVelY += PLAYER_VEL;
                 break;
+                
+            // qwer,asdf キーでキャラクタの色を調整する
+            case SDLK_q:
+                // 色調整　赤　濃くする
+                if( mR + 32 > 255 )
+                {
+                    mR = 255;
+                }
+                else
+                {
+                    mR += 32;
+                }
+                break;
+                
+                
+            case SDLK_w:
+                // 色調整　緑　濃くする
+                if( mG + 32 > 255 )
+                {
+                    mG = 255;
+                }
+                else
+                {
+                    mG += 32;
+                }
+                break;
+                
+            case SDLK_e:
+                // 色調整　青　濃くする
+                if( mB + 32 > 255 )
+                {
+                    mB = 255;
+                }
+                else
+                {
+                    mB += 32;
+                }
+                break;
+                
+            case SDLK_r:
+                // 不透明度　濃くする
+                if( mA + 32 > 255 )
+                {
+                    mA = 255;
+                }
+                else
+                {
+                    mA += 32;
+                }
+                break;
+                
+            case SDLK_a:
+                // 色調整　赤　薄くする
+                if( mR - 32 < 0 )
+                {
+                    mR = 0;
+                }
+                else
+                {
+                    mR -= 32;
+                }
+                break;
+                
+            case SDLK_s:
+                // 色調整　緑　薄くする
+                if( mG - 32 < 0 )
+                {
+                    mG = 0;
+                }
+                else
+                {
+                    mG -= 32;
+                }
+                break;
+                
+            case SDLK_d:
+                // 色調整　青　薄くする
+                if( mB - 32 < 0 )
+                {
+                    mB = 0;
+                }
+                else
+                {
+                    mB -= 32;
+                }
+                break;
+                
+            case SDLK_f:
+                // 不透明度　薄くする
+                if( mA - 32 < 0 )
+                {
+                    mA = 0;
+                }
+                else
+                {
+                    mA -= 32;
+                }
+                break;
+                
+            case SDLK_t:
+                // 反時計回り回転
+                mDegrees -= 60;
+                break;
+                
+            case SDLK_g:
+                // 時計回り回転
+                mDegrees += 60;
+                break;
+                
+            case SDLK_y:
+                // 左右反転
+                mFlipType = SDL_FLIP_HORIZONTAL;
+                break;
+                
+            case SDLK_h:
+                // 反転なし
+                mFlipType = SDL_FLIP_NONE;
+                break;
+                
+            case SDLK_n:
+                // 上下反転
+                mFlipType = SDL_FLIP_VERTICAL;
+                break;
         }
+        mPlayerTexture->setColor(mR, mG, mB);
+        mPlayerTexture->setAlpha(mA);
     }
-    //If a key was released
+
     else if( e.type == SDL_KEYUP && e.key.repeat == 0 )
     {
-        //Adjust the velocity
-        switch( e.key.keysym.sym )
+         switch( e.key.keysym.sym )
         {
             case SDLK_LEFT: mVelX += PLAYER_VEL; break;
             case SDLK_RIGHT: mVelX -= PLAYER_VEL; break;
@@ -118,13 +241,13 @@ void Player::handleEvent( SDL_Event& e )
                 if( e.jaxis.value < -JOYSTICK_DEAD_ZONE )
                 {
                     mDir = LEFT;
-                    mVelX -= PLAYER_VEL;
+                    mVelX = -PLAYER_VEL;
                 }
                 // 右
                 else if( e.jaxis.value > JOYSTICK_DEAD_ZONE )
                 {
                     mDir = RIGHT;
-                    mVelX += PLAYER_VEL;
+                    mVelX = PLAYER_VEL;
                 }
                 // 左右ニュートラル
                 else
@@ -139,13 +262,13 @@ void Player::handleEvent( SDL_Event& e )
                 if( e.jaxis.value < -JOYSTICK_DEAD_ZONE )
                 {
                     mDir = UP;
-                    mVelY -= PLAYER_VEL;
+                    mVelY = -PLAYER_VEL;
                 }
                 // 下
                 else if( e.jaxis.value > JOYSTICK_DEAD_ZONE )
                 {
                     mDir = DOWN;
-                    mVelY += PLAYER_VEL;
+                    mVelY = PLAYER_VEL;
                 }
                 // 上下ニュートラル
                 else
@@ -155,32 +278,30 @@ void Player::handleEvent( SDL_Event& e )
             }
         }
     }
-    
-
 }
 
 void Player::move( SDL_Rect& wall )
 {
-    //Move the player left or right
+    // 移動処理　X
     mPosX += mVelX;
 	mCollider.x = mPosX + PLAYER_COLLIDE_X;
 
-    //If the player collided or went too far to the left or right
-    if( (mCollider.x < 0 ) || ( mCollider.x + mCollider.w > SCREEN_WIDTH ) || checkCollision( mCollider, wall ) )
+    // ウィンドウ境界と壁との当たり判定　X
+    if( (mCollider.x < 0 ) || ( mCollider.x + mCollider.w > gWindow->getWidth() ) || checkCollision( mCollider, wall ) )
     {
-        //Move back
+        // 壁に入ってしまうので戻す
         mPosX -= mVelX;
 		mCollider.x = mPosX + PLAYER_COLLIDE_X;
     }
 
-    //Move the player up or down
+    // 移動処理 Y
    		mPosY += mVelY;
 		mCollider.y = mPosY + PLAYER_COLLIDE_Y;
 
-    //If the player collided or went too far up or down
-    if( ( mCollider.y < 0 ) || ( mCollider.y + mCollider.h > SCREEN_HEIGHT ) || checkCollision( mCollider, wall ) )
+    // ウィンドウ境界と壁との当たり判定　Y
+    if( ( mCollider.y < 0 ) || ( mCollider.y + mCollider.h > gWindow->getHeight() ) || checkCollision( mCollider, wall ) )
     {
-        //Move back
+        // 壁に入ってしまうので戻す
         mPosY -= mVelY;
 		mCollider.y = mPosY + PLAYER_COLLIDE_Y;
     }
@@ -189,8 +310,9 @@ void Player::move( SDL_Rect& wall )
 
 void Player::render( int frame )
 {
-    //Show the player
-	SDL_Rect* currentClip = &mPlayerClips[ (frame % 16)/4 ];
-	currentClip->y = mDir*32;
-	mPlayerTexture->render( mPosX, mPosY, 1, currentClip );
+    // プレイヤーの表示
+    int all_frames = WALKING_ANIM_DISPFRAME * WALKING_ANIM_CNT;
+	SDL_Rect* currentClip = &mPlayerClips[ (frame % all_frames)/WALKING_ANIM_CNT ];
+	currentClip->y = mDir*currentClip->w;
+	mPlayerTexture->render( mPosX, mPosY, currentClip, mDegrees, NULL, mFlipType );
 }

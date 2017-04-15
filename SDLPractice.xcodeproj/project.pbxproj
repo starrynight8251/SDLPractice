@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		700E30CE1E86888300C698A3 /* main2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 700E30CC1E8687F900C698A3 /* main2.cpp */; };
 		702E648E1E988DD000C41058 /* ltimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 702E648C1E988DD000C41058 /* ltimer.cpp */; };
-		702E64901E98BEB800C41058 /* dot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 702E648F1E98BEB800C41058 /* dot.cpp */; };
+		703531821E9E56D9003DE43D /* lwindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 703531801E9E56D9003DE43D /* lwindow.cpp */; };
 		70C040981E86B79C000977A5 /* ltexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70C040961E86B79C000977A5 /* ltexture.cpp */; };
 		70C5C4BE1E8FC65F00F56A89 /* lbutton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70C5C4BC1E8FC65F00F56A89 /* lbutton.cpp */; };
 		70E747181E829E19000FEBED /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747171E829E19000FEBED /* SDL2.framework */; };
@@ -38,8 +38,8 @@
 		700E30CC1E8687F900C698A3 /* main2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main2.cpp; sourceTree = "<group>"; };
 		702E648C1E988DD000C41058 /* ltimer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ltimer.cpp; sourceTree = "<group>"; };
 		702E648D1E988DD000C41058 /* ltimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ltimer.h; sourceTree = "<group>"; };
-		702E648F1E98BEB800C41058 /* dot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dot.cpp; sourceTree = "<group>"; };
-		702E64911E98BECD00C41058 /* dot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dot.h; sourceTree = "<group>"; };
+		703531801E9E56D9003DE43D /* lwindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lwindow.cpp; sourceTree = "<group>"; };
+		703531811E9E56D9003DE43D /* lwindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lwindow.h; sourceTree = "<group>"; };
 		70C040961E86B79C000977A5 /* ltexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ltexture.cpp; sourceTree = "<group>"; };
 		70C040971E86B79C000977A5 /* ltexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ltexture.h; sourceTree = "<group>"; };
 		70C5C4BC1E8FC65F00F56A89 /* lbutton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lbutton.cpp; sourceTree = "<group>"; };
@@ -103,8 +103,8 @@
 				70C5C4BD1E8FC65F00F56A89 /* lbutton.h */,
 				702E648C1E988DD000C41058 /* ltimer.cpp */,
 				702E648D1E988DD000C41058 /* ltimer.h */,
-				702E648F1E98BEB800C41058 /* dot.cpp */,
-				702E64911E98BECD00C41058 /* dot.h */,
+				703531801E9E56D9003DE43D /* lwindow.cpp */,
+				703531811E9E56D9003DE43D /* lwindow.h */,
 			);
 			path = SDLPractice;
 			sourceTree = "<group>";
@@ -182,8 +182,8 @@
 			files = (
 				702E648E1E988DD000C41058 /* ltimer.cpp in Sources */,
 				70C040981E86B79C000977A5 /* ltexture.cpp in Sources */,
+				703531821E9E56D9003DE43D /* lwindow.cpp in Sources */,
 				70F6FD0D1E9A204A00DFBBDE /* player.cpp in Sources */,
-				702E64901E98BEB800C41058 /* dot.cpp in Sources */,
 				70C5C4BE1E8FC65F00F56A89 /* lbutton.cpp in Sources */,
 				700E30CE1E86888300C698A3 /* main2.cpp in Sources */,
 			);

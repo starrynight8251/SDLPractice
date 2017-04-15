@@ -30,46 +30,45 @@ void LButton::setPosition( int x, int y )
 
 void LButton::handleEvent( SDL_Event* e )
 {
-    //If mouse event happened
     if( e->type == SDL_MOUSEMOTION || e->type == SDL_MOUSEBUTTONDOWN || e->type == SDL_MOUSEBUTTONUP )
     {
-        //Get mouse position
+        //　マウスの位置を取得する
         int x, y;
         SDL_GetMouseState( &x, &y );
         
-        //Check if mouse is in button
+        // マウスがボタンの内側にあるか判定する
         bool inside = true;
         
-        //Mouse is left of the button
+        // マウスがボタンの左側にある
         if( x < mPosition.x )
         {
             inside = false;
         }
-        //Mouse is right of the button
+        // マウスがボタンの右側にある
         else if( x > mPosition.x + BUTTON_WIDTH )
         {
             inside = false;
         }
-        //Mouse above the button
+        // マウスがボタンの上側にある
         else if( y < mPosition.y )
         {
             inside = false;
         }
-        //Mouse below the button
+        // マウスがボタンの下側にある
         else if( y > mPosition.y + BUTTON_HEIGHT )
         {
             inside = false;
         }
         
-        //Mouse is outside button
+        // マウスがボタンの外側にある
         if( !inside )
         {
             mCurrentSprite = BUTTON_SPRITE_MOUSE_OUT;
         }
-        //Mouse is inside button
+        // マウスがボタンの上にある
         else
         {
-            //Set mouse over sprite
+            // マウスイベントに応じてスプライト設定
             switch( e->type )
             {
                 case SDL_MOUSEMOTION:
@@ -90,8 +89,8 @@ void LButton::handleEvent( SDL_Event* e )
 
 void LButton::render()
 {
-    //Show current button sprite
-    gButtonTexture->render( mPosition.x, mPosition.y, 1, &gButtonClips[ mCurrentSprite ] );
+    // マウス用ボタン描画
+    gButtonTexture->render( mPosition.x, mPosition.y, &gButtonClips[ mCurrentSprite ] );
 }
 
 
