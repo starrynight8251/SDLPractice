@@ -10,26 +10,38 @@
 #define player_h
 
 #include <SDL2/SDL.h>
+#include <vector>
 
 class Player
 {
 public:
+    static const int PLAYER_WIDTH  = 32;
+    static const int PLAYER_HEIGHT = 32;
+
+    Player();
+    ~Player();
+    
+    void handleEvent( SDL_Event& e );
+    void move( std::vector<SDL_Rect>& otherColliders );
+    void render( int frame , int x, int y );
+    int getPosX();
+    int getPosY();
+    std::vector<SDL_Rect>& getColliders();
+
+private:
     // 歩行アニメーション
     // 種類と表示フレーム数
 	static const int WALKING_ANIM_CNT = 4;
     static const int WALKING_ANIM_DISPFRAME = 4;
  
     // 画像サイズ設定
-    static const int PLAYER_X      = 0;
-    static const int PLAYER_Y      = 0;
-    static const int PLAYER_WIDTH  = 32;
-    static const int PLAYER_HEIGHT = 32;
+    static const int PLAYER_X      = 304;
+    static const int PLAYER_Y      = 224;
     
-    // 当たり判定
-    static const int PLAYER_COLLIDE_X =  8;
-    static const int PLAYER_COLLIDE_Y =  0;
-    static const int PLAYER_COLLIDE_W = 16;
-    static const int PLAYER_COLLIDE_H = 32;
+    // 当たり判定用四角形（通常は１つだけ、拡張可能）
+    static const int COLLISION_NUM = 1;
+    SDL_Rect collisions[COLLISION_NUM] = {
+        {8,0,16,32}};
     
     // 移動単位
     static const int PLAYER_VEL = 8;
@@ -41,16 +53,7 @@ public:
         UP    = 0,
         DOWN  = 2,
     };
- 
-    Player();
-    ~Player(); 
 
-    void handleEvent( SDL_Event& e );
-
-    void move( SDL_Rect& wall );
-    void render( int frame );
-    
-private:
 	LTexture* mPlayerTexture;
 	SDL_Rect  mPlayerClips[ WALKING_ANIM_CNT ];
 
@@ -64,8 +67,8 @@ private:
     int mDegrees;
     SDL_RendererFlip mFlipType;
 
-    // 当たり判定
-    SDL_Rect mCollider;
+    std::vector<SDL_Rect> mColliders;
+    void shiftColliders();
 
 };
 

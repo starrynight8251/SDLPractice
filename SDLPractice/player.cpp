@@ -6,15 +6,17 @@
 //  Copyright © 2017年 NoCompany. All rights reserved.
 //
 #include <SDL2_image/SDL_image.h>
+#include <SDL2_mixer/SDL_mixer.h>
 #include "lwindow.h"
 #include "ltexture.h"
 #include "player.h"
+#include "helper.h"
 
-extern const int SCREEN_WIDTH;
-extern const int SCREEN_HEIGHT;
+extern const int LEVEL_WIDTH;
+extern const int LEVEL_HEIGHT;
 extern const int JOYSTICK_DEAD_ZONE;
-extern bool checkCollision( SDL_Rect a, SDL_Rect b );
 extern LWindow* gWindow;
+extern Mix_Chunk *gLow;
 
 Player::Player()
 {
@@ -27,10 +29,12 @@ Player::Player()
     mDegrees = 0;
     mFlipType = SDL_FLIP_NONE;
 
-    mCollider.x = mPosX + PLAYER_COLLIDE_X;
-    mCollider.y = mPosY + PLAYER_COLLIDE_Y;
-    mCollider.w = PLAYER_COLLIDE_W;
-    mCollider.h = PLAYER_COLLIDE_H;
+    mColliders.resize( COLLISION_NUM );
+    for(int i=0; i<COLLISION_NUM; i++){
+        mColliders[i].w = collisions[i].w;
+        mColliders[i].h = collisions[i].h;
+    }
+    shiftColliders();
     
     mPlayerTexture = new LTexture();
     mPlayerTexture->loadFromFile( "graphics/walk.png" );
@@ -90,7 +94,7 @@ void Player::handleEvent( SDL_Event& e )
                 mDir = DOWN;
                 mVelY += PLAYER_VEL;
                 break;
-                
+
             // qwer,asdf キーでキャラクタの色を調整する
             case SDLK_q:
                 // 色調整　赤　濃くする
@@ -222,10 +226,10 @@ void Player::handleEvent( SDL_Event& e )
     {
          switch( e.key.keysym.sym )
         {
-            case SDLK_LEFT: mVelX += PLAYER_VEL; break;
-            case SDLK_RIGHT: mVelX -= PLAYER_VEL; break;
-            case SDLK_UP: mVelY += PLAYER_VEL; break;
-            case SDLK_DOWN: mVelY -= PLAYER_VEL; break;
+                case SDLK_LEFT: mVelX += PLAYER_VEL; break;
+                case SDLK_RIGHT: mVelX -= PLAYER_VEL; break;
+                case SDLK_UP: mVelY += PLAYER_VEL; break;
+                case SDLK_DOWN: mVelY -= PLAYER_VEL; break;
         }
     }
     // コントローラ十字キー
@@ -278,41 +282,73 @@ void Player::handleEvent( SDL_Event& e )
             }
         }
     }
+    // 向き補正
+    if( mVelX < 0 && mVelY == 0 ) mDir = LEFT;
+    if( mVelX > 0 && mVelY == 0 ) mDir = RIGHT;
+    if( mVelX == 0 && mVelY < 0 ) mDir = UP;
+    if( mVelX == 0 && mVelY > 0 ) mDir = DOWN;
 }
 
-void Player::move( SDL_Rect& wall )
+void Player::move( std::vector<SDL_Rect>& otherColliders )
 {
     // 移動処理　X
     mPosX += mVelX;
-	mCollider.x = mPosX + PLAYER_COLLIDE_X;
+    shiftColliders();
 
     // ウィンドウ境界と壁との当たり判定　X
-    if( (mCollider.x < 0 ) || ( mCollider.x + mCollider.w > gWindow->getWidth() ) || checkCollision( mCollider, wall ) )
+    if( ( mPosX < 0 ) || ( mPosX + PLAYER_WIDTH > LEVEL_WIDTH ) || checkCollision( mColliders, otherColliders ) )
     {
         // 壁に入ってしまうので戻す
         mPosX -= mVelX;
-		mCollider.x = mPosX + PLAYER_COLLIDE_X;
+        shiftColliders();
+        if(Mix_Playing(1) != 1){
+            Mix_PlayChannel( 1, gLow, 0);
+        }
     }
 
     // 移動処理 Y
-   		mPosY += mVelY;
-		mCollider.y = mPosY + PLAYER_COLLIDE_Y;
-
+    mPosY += mVelY;
+    shiftColliders();
+    
     // ウィンドウ境界と壁との当たり判定　Y
-    if( ( mCollider.y < 0 ) || ( mCollider.y + mCollider.h > gWindow->getHeight() ) || checkCollision( mCollider, wall ) )
+    if( ( mPosY < 0 ) || ( mPosY + PLAYER_HEIGHT > LEVEL_HEIGHT ) || checkCollision( mColliders, otherColliders ) )
     {
         // 壁に入ってしまうので戻す
         mPosY -= mVelY;
-		mCollider.y = mPosY + PLAYER_COLLIDE_Y;
+        shiftColliders();
+        if(Mix_Playing(1) != 1){
+            Mix_PlayChannel( 1, gLow, 0);
+        }
     }
 
 }
 
-void Player::render( int frame )
+void Player::render( int frame, int x, int y )
 {
     // プレイヤーの表示
     int all_frames = WALKING_ANIM_DISPFRAME * WALKING_ANIM_CNT;
 	SDL_Rect* currentClip = &mPlayerClips[ (frame % all_frames)/WALKING_ANIM_CNT ];
 	currentClip->y = mDir*currentClip->w;
-	mPlayerTexture->render( mPosX, mPosY, currentClip, mDegrees, NULL, mFlipType );
+	mPlayerTexture->render( mPosX-x, mPosY-y, currentClip, mDegrees, NULL, mFlipType );
+}
+
+int Player::getPosX(){
+    return mPosX;
+}
+
+int Player::getPosY(){
+    return mPosY;
+}
+
+void Player::shiftColliders(){
+    for( int i = 0; i < mColliders.size(); i++ )
+    {
+        mColliders[i].x = mPosX + collisions[i].x;
+        mColliders[i].y = mPosY + collisions[i].y;
+   }
+}
+
+std::vector<SDL_Rect>& Player::getColliders()
+{
+    return mColliders;
 }

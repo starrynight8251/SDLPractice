@@ -10,6 +10,7 @@
 
 extern const int SCREEN_WIDTH;
 extern const int SCREEN_HEIGHT;
+extern SDL_Renderer* gRenderer;
 
 LWindow::LWindow()
 {
@@ -25,7 +26,7 @@ LWindow::LWindow()
 bool LWindow::init()
 {
     // ウィンドウ作成
-    mWindow = SDL_CreateWindow( "starrynight8251", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
+    mWindow = SDL_CreateWindow( "ゲームっぽいなにか", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
     if( mWindow != NULL )
     {
         mMouseFocus = true;
@@ -100,20 +101,20 @@ void LWindow::handleEvent( SDL_Event& e )
     }
     
     // enterキーでウィンドウ最大化切替
-    else if( e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RETURN )
-    {
-        if( mFullScreen )
-        {
-            SDL_SetWindowFullscreen( mWindow, SDL_FALSE );
-            mFullScreen = false;
-        }
-        else
-        {
-            SDL_SetWindowFullscreen( mWindow, SDL_TRUE );
-            mFullScreen = true;
-            mMinimized = false;
-        }
-    }
+//    else if( e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RETURN )
+//    {
+//        if( mFullScreen )
+//        {
+//            SDL_SetWindowFullscreen( mWindow, SDL_FALSE );
+//            mFullScreen = false;
+//        }
+//        else
+//        {
+//            SDL_SetWindowFullscreen( mWindow, SDL_TRUE );
+//            mFullScreen = true;
+//            mMinimized = false;
+//        }
+//    }
 }
 
 void LWindow::free()
@@ -153,4 +154,3 @@ bool LWindow::isMinimized()
 {
     return mMinimized;
 }
-

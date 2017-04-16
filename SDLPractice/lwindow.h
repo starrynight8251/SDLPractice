@@ -38,8 +38,9 @@ private:
 
     bool mMouseFocus;
     bool mKeyboardFocus;
-    bool mFullScreen;
     bool mMinimized;
+    bool mFullScreen;
+
 };
 
 #endif /* lwindow_h */
