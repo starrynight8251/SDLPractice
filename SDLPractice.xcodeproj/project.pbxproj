@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		700D0AD81EA62C2200584920 /* tile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 700D0AD61EA62C2200584920 /* tile.cpp */; };
 		700E30CE1E86888300C698A3 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 700E30CC1E8687F900C698A3 /* main.cpp */; };
 		701563661EA3665D006DA97F /* helper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 701563651EA3665D006DA97F /* helper.cpp */; };
 		702E648E1E988DD000C41058 /* ltimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 702E648C1E988DD000C41058 /* ltimer.cpp */; };
@@ -35,6 +36,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		700D0AD61EA62C2200584920 /* tile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tile.cpp; sourceTree = "<group>"; };
+		700D0AD71EA62C2200584920 /* tile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tile.h; sourceTree = "<group>"; };
 		700E30CC1E8687F900C698A3 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		701563651EA3665D006DA97F /* helper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = helper.cpp; sourceTree = "<group>"; };
 		701563671EA36670006DA97F /* helper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = helper.h; sourceTree = "<group>"; };
@@ -94,6 +97,8 @@
 		70E7470E1E829DFB000FEBED /* SDLPractice */ = {
 			isa = PBXGroup;
 			children = (
+				700D0AD61EA62C2200584920 /* tile.cpp */,
+				700D0AD71EA62C2200584920 /* tile.h */,
 				70F6FD0C1E9A204A00DFBBDE /* player.cpp */,
 				70F6FD0B1E9A18A400DFBBDE /* player.h */,
 				700E30CC1E8687F900C698A3 /* main.cpp */,
@@ -182,6 +187,7 @@
 			files = (
 				702E648E1E988DD000C41058 /* ltimer.cpp in Sources */,
 				70C040981E86B79C000977A5 /* ltexture.cpp in Sources */,
+				700D0AD81EA62C2200584920 /* tile.cpp in Sources */,
 				703531821E9E56D9003DE43D /* lwindow.cpp in Sources */,
 				70F6FD0D1E9A204A00DFBBDE /* player.cpp in Sources */,
 				700E30CE1E86888300C698A3 /* main.cpp in Sources */,

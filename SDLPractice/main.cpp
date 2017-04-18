@@ -2,6 +2,7 @@
 #include <SDL2_image/SDL_image.h>
 #include <SDL2_mixer/SDL_mixer.h>
 #include <SDL2_ttf/SDL_ttf.h>
+#include <fstream>
 #include <sstream>
 #include <iomanip>
 #include <vector>
@@ -11,6 +12,7 @@
 #include "lbutton.h"
 #include "ltimer.h"
 #include "player.h"
+#include "tile.h"
 
 // 背景画像サイズ
 extern const int LEVEL_WIDTH = 1280;
@@ -23,14 +25,38 @@ extern const int SCREEN_HEIGHT = 480;
 // コントローラアナログスティックの無反応範囲
 extern const int JOYSTICK_DEAD_ZONE = 8000;
 
+
+//Tile constants
+extern const int TILE_WIDTH = 80;
+extern const int TILE_HEIGHT = 80;
+extern const int TOTAL_TILES = 192;
+extern const int TOTAL_TILE_SPRITES = 12;
+
+//The different tile sprites
+extern const int TILE_RED = 0;
+extern const int TILE_GREEN = 1;
+extern const int TILE_BLUE = 2;
+extern const int TILE_CENTER = 3;
+extern const int TILE_TOP = 4;
+extern const int TILE_TOPRIGHT = 5;
+extern const int TILE_RIGHT = 6;
+extern const int TILE_BOTTOMRIGHT = 7;
+extern const int TILE_BOTTOM = 8;
+extern const int TILE_BOTTOMLEFT = 9;
+extern const int TILE_LEFT = 10;
+extern const int TILE_TOPLEFT = 11;
+
 bool init();
 bool loadMedia();
 void close();
+bool setTiles(Tile *tiles[]);
 
 LWindow* gWindow = NULL;
 SDL_Renderer* gRenderer = NULL;
 
 // **** グラフィック ****
+LTexture* gTileTexture;
+std::vector<SDL_Rect> gTileClips;
 LTexture* gBGTexture;
 
 // テキスト
@@ -159,13 +185,29 @@ bool init()
 
     // **** メモリ割当 ****
     gBGTexture = new LTexture();
+    gTileTexture = new LTexture();
     gTextTexture = new LTexture();
+    gTileClips.resize( TOTAL_TILE_SPRITES );
     return success;
 }
 
-bool loadMedia()
+bool loadMedia( Tile* tiles[] )
 {
     bool success = true;
+    
+    //Load tile texture
+    if( !gTileTexture->loadFromFile( "graphics/tiles.png" ) )
+    {
+        printf( "Failed to load tile set texture!\n" );
+        success = false;
+    }
+    
+    //Load tile map
+    if( !setTiles( tiles ) )
+    {
+        printf( "Failed to load tile set!\n" );
+        success = false;
+    }
     
     // 背景
     if( !gBGTexture->loadFromFile( "graphics/BG.png" ) )
@@ -227,8 +269,18 @@ bool loadMedia()
     return success;
 }
 
-void close()
+void close( Tile* tiles[] )
 {
+    //Deallocate tiles
+    for( int i = 0; i < TOTAL_TILES; ++i )
+    {
+        if( tiles[ i ] != NULL )
+        {
+            delete tiles[ i ];
+            tiles[ i ] = NULL;
+        }
+    }
+    
     // 再生中かチェック
     if( Mix_PlayingMusic() != 0 )
     {
@@ -281,6 +333,145 @@ void close()
     SDL_Quit();
 }
 
+
+bool setTiles( Tile* tiles[] )
+{
+    //Success flag
+    bool tilesLoaded = true;
+    
+    //The tile offsets
+    int x = 0, y = 0;
+    
+    //Open the map
+    std::ifstream map( "graphics/lazy.map" );
+    
+    //If the map couldn't be loaded
+    if( !map )
+    {
+        printf( "Unable to load map file!\n" );
+        tilesLoaded = false;
+    }
+    else
+    {
+        //Initialize the tiles
+        for( int i = 0; i < TOTAL_TILES; ++i )
+        {
+            //Determines what kind of tile will be made
+            int tileType = -1;
+            
+            //Read tile from map file
+            map >> tileType;
+            
+            //If the was a problem in reading the map
+            if( map.fail() )
+            {
+                //Stop loading map
+                printf( "Error loading map: Unexpected end of file!\n" );
+                tilesLoaded = false;
+                break;
+            }
+            
+            //If the number is a valid tile number
+            if( ( tileType >= 0 ) && ( tileType < TOTAL_TILE_SPRITES ) )
+            {
+                tiles[ i ] = new Tile( x, y, tileType );
+            }
+            //If we don't recognize the tile type
+            else
+            {
+                //Stop loading map
+                printf( "Error loading map: Invalid tile type at %d!\n", i );
+                tilesLoaded = false;
+                break;
+            }
+            
+            //Move to next tile spot
+            x += TILE_WIDTH;
+            
+            //If we've gone too far
+            if( x >= LEVEL_WIDTH )
+            {
+                //Move back
+                x = 0;
+                
+                //Move to the next row
+                y += TILE_HEIGHT;
+            }
+        }
+        
+        //Clip the sprite sheet
+        if( tilesLoaded )
+        {
+            gTileClips[ TILE_RED ].x = 0;
+            gTileClips[ TILE_RED ].y = 0;
+            gTileClips[ TILE_RED ].w = TILE_WIDTH;
+            gTileClips[ TILE_RED ].h = TILE_HEIGHT;
+            
+            gTileClips[ TILE_GREEN ].x = 0;
+            gTileClips[ TILE_GREEN ].y = 80;
+            gTileClips[ TILE_GREEN ].w = TILE_WIDTH;
+            gTileClips[ TILE_GREEN ].h = TILE_HEIGHT;
+            
+            gTileClips[ TILE_BLUE ].x = 0;
+            gTileClips[ TILE_BLUE ].y = 160;
+            gTileClips[ TILE_BLUE ].w = TILE_WIDTH;
+            gTileClips[ TILE_BLUE ].h = TILE_HEIGHT;
+            
+            gTileClips[ TILE_TOPLEFT ].x = 80;
+            gTileClips[ TILE_TOPLEFT ].y = 0;
+            gTileClips[ TILE_TOPLEFT ].w = TILE_WIDTH;
+            gTileClips[ TILE_TOPLEFT ].h = TILE_HEIGHT;
+            
+            gTileClips[ TILE_LEFT ].x = 80;
+            gTileClips[ TILE_LEFT ].y = 80;
+            gTileClips[ TILE_LEFT ].w = TILE_WIDTH;
+            gTileClips[ TILE_LEFT ].h = TILE_HEIGHT;
+            
+            gTileClips[ TILE_BOTTOMLEFT ].x = 80;
+            gTileClips[ TILE_BOTTOMLEFT ].y = 160;
+            gTileClips[ TILE_BOTTOMLEFT ].w = TILE_WIDTH;
+            gTileClips[ TILE_BOTTOMLEFT ].h = TILE_HEIGHT;
+            
+            gTileClips[ TILE_TOP ].x = 160;
+            gTileClips[ TILE_TOP ].y = 0;
+            gTileClips[ TILE_TOP ].w = TILE_WIDTH;
+            gTileClips[ TILE_TOP ].h = TILE_HEIGHT;
+            
+            gTileClips[ TILE_CENTER ].x = 160;
+            gTileClips[ TILE_CENTER ].y = 80;
+            gTileClips[ TILE_CENTER ].w = TILE_WIDTH;
+            gTileClips[ TILE_CENTER ].h = TILE_HEIGHT;
+            
+            gTileClips[ TILE_BOTTOM ].x = 160;
+            gTileClips[ TILE_BOTTOM ].y = 160;
+            gTileClips[ TILE_BOTTOM ].w = TILE_WIDTH;
+            gTileClips[ TILE_BOTTOM ].h = TILE_HEIGHT;
+            
+            gTileClips[ TILE_TOPRIGHT ].x = 240;
+            gTileClips[ TILE_TOPRIGHT ].y = 0;
+            gTileClips[ TILE_TOPRIGHT ].w = TILE_WIDTH;
+            gTileClips[ TILE_TOPRIGHT ].h = TILE_HEIGHT;
+            
+            gTileClips[ TILE_RIGHT ].x = 240;
+            gTileClips[ TILE_RIGHT ].y = 80;
+            gTileClips[ TILE_RIGHT ].w = TILE_WIDTH;
+            gTileClips[ TILE_RIGHT ].h = TILE_HEIGHT;
+            
+            gTileClips[ TILE_BOTTOMRIGHT ].x = 240;
+            gTileClips[ TILE_BOTTOMRIGHT ].y = 160;
+            gTileClips[ TILE_BOTTOMRIGHT ].w = TILE_WIDTH;
+            gTileClips[ TILE_BOTTOMRIGHT ].h = TILE_HEIGHT;
+        }
+    }
+    
+    //Close the file
+    map.close();
+    
+    //If the map was loaded fine
+    return tilesLoaded;
+}
+
+
 int main( int argc, char* args[] )
 {
     if( !init() )
@@ -289,7 +480,10 @@ int main( int argc, char* args[] )
     }
     else
     {
-        if( !loadMedia() )
+        //The level tiles
+        Tile* tileSet[ TOTAL_TILES ];
+        
+        if( !loadMedia( tileSet ) )
         {
             printf( "Failed to load media!\n" );
         }
@@ -314,24 +508,6 @@ int main( int argc, char* args[] )
             
             // プレイヤー
             Player player;
-            
-            // 当たり判定用の壁
-            std::vector<SDL_Rect> walls;
-            walls.resize( 3 );
-            walls[0].x = 320;
-            walls[0].y = 64;
-            walls[0].w = 128;
-            walls[0].h = 120;
-            
-            walls[1].x = 0;
-            walls[1].y = 0;
-            walls[1].w = 128;
-            walls[1].h = 120;
-            
-            walls[2].x = 64;
-            walls[2].y = 240;
-            walls[2].w = 128;
-            walls[2].h = 120;
             
             // メインイベントループ
             while( !quit )
@@ -395,27 +571,8 @@ int main( int argc, char* args[] )
                     
                     // **** 更新処理　****
                     // プレイヤー・カメラ位置更新
-                    player.move( walls );
-                    
-                    camera.x = ( player.getPosX() + Player::PLAYER_WIDTH / 2 ) - SCREEN_WIDTH / 2;
-                    camera.y = ( player.getPosY() + Player::PLAYER_HEIGHT / 2 ) - SCREEN_HEIGHT / 2;
-                    
-                    if( camera.x < 0 )
-                    {
-                        camera.x = 0;
-                    }
-                    if( camera.y < 0 )
-                    {
-                        camera.y = 0;
-                    }
-                    if( camera.x > LEVEL_WIDTH - camera.w )
-                    {
-                        camera.x = LEVEL_WIDTH - camera.w;
-                    }
-                    if( camera.y > LEVEL_HEIGHT - camera.h )
-                    {
-                        camera.y = LEVEL_HEIGHT - camera.h;
-                    }
+                    player.move( tileSet );
+                    player.setCamera( camera );
                     
                     // FPS情報更新
                     timeText.str( "" );
@@ -434,18 +591,15 @@ int main( int argc, char* args[] )
                     // 背景
                     gBGTexture->render( 0, 0, &camera);
                     
-                    // キャラクタ
-                    player.render( frame, camera.x, camera.y );
-                    
-                    // 壁
-                    SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
-                    for(int i=0; i<walls.size(); i++){
-                        SDL_Rect renderRect = walls[i];
-                        renderRect.x -= camera.x;
-                        renderRect.y -= camera.y;
-                        SDL_RenderDrawRect(gRenderer, &renderRect);
+                    //Render level
+                    for( int i = 0; i < TOTAL_TILES; ++i )
+                    {
+                        tileSet[ i ]->render( camera );
                     }
                     
+                    // キャラクタ
+                    player.render( frame, camera );
+             
                     // FPS
                     gTextTexture->render( SCREEN_WIDTH - gTextTexture->getWidth(), 0 );
                
@@ -460,9 +614,9 @@ int main( int argc, char* args[] )
                 }
             }
         }
+        // 終了処理
+        close( tileSet );
     }
     
-    // 終了処理
-    close();
     return 0;
 }

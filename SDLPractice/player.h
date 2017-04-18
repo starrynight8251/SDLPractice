@@ -11,6 +11,7 @@
 
 #include <SDL2/SDL.h>
 #include <vector>
+#include "tile.h"
 
 class Player
 {
@@ -22,8 +23,9 @@ public:
     ~Player();
     
     void handleEvent( SDL_Event& e );
-    void move( std::vector<SDL_Rect>& otherColliders );
-    void render( int frame , int x, int y );
+    void move( Tile *tiles[] );
+    void setCamera(SDL_Rect& camera);
+    void render( int frame , SDL_Rect& camera );
     int getPosX();
     int getPosY();
     std::vector<SDL_Rect>& getColliders();
@@ -34,9 +36,8 @@ private:
 	static const int WALKING_ANIM_CNT = 4;
     static const int WALKING_ANIM_DISPFRAME = 4;
  
-    // 画像サイズ設定
-    static const int PLAYER_X      = 304;
-    static const int PLAYER_Y      = 224;
+    static const int PLAYER_X      = 0;
+    static const int PLAYER_Y      = 0;
     
     // 当たり判定用四角形（通常は１つだけ、拡張可能）
     static const int COLLISION_NUM = 1;

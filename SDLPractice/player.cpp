@@ -14,6 +14,8 @@
 
 extern const int LEVEL_WIDTH;
 extern const int LEVEL_HEIGHT;
+extern const int SCREEN_WIDTH;
+extern const int SCREEN_HEIGHT;
 extern const int JOYSTICK_DEAD_ZONE;
 extern LWindow* gWindow;
 extern Mix_Chunk *gLow;
@@ -289,14 +291,14 @@ void Player::handleEvent( SDL_Event& e )
     if( mVelX == 0 && mVelY > 0 ) mDir = DOWN;
 }
 
-void Player::move( std::vector<SDL_Rect>& otherColliders )
+void Player::move( Tile *tiles[] )
 {
     // 移動処理　X
     mPosX += mVelX;
     shiftColliders();
 
     // ウィンドウ境界と壁との当たり判定　X
-    if( ( mPosX < 0 ) || ( mPosX + PLAYER_WIDTH > LEVEL_WIDTH ) || checkCollision( mColliders, otherColliders ) )
+    if( ( mPosX < 0 ) || ( mPosX + PLAYER_WIDTH > LEVEL_WIDTH ) || touchesWall( mColliders, tiles ) )
     {
         // 壁に入ってしまうので戻す
         mPosX -= mVelX;
@@ -311,7 +313,7 @@ void Player::move( std::vector<SDL_Rect>& otherColliders )
     shiftColliders();
     
     // ウィンドウ境界と壁との当たり判定　Y
-    if( ( mPosY < 0 ) || ( mPosY + PLAYER_HEIGHT > LEVEL_HEIGHT ) || checkCollision( mColliders, otherColliders ) )
+    if( ( mPosY < 0 ) || ( mPosY + PLAYER_HEIGHT > LEVEL_HEIGHT ) || touchesWall( mColliders, tiles ) )
     {
         // 壁に入ってしまうので戻す
         mPosY -= mVelY;
@@ -323,13 +325,38 @@ void Player::move( std::vector<SDL_Rect>& otherColliders )
 
 }
 
-void Player::render( int frame, int x, int y )
+void Player::setCamera( SDL_Rect& camera )
+{
+    //Center the camera over the dot
+    camera.x = ( mPosX + PLAYER_WIDTH / 2 ) - SCREEN_WIDTH / 2;
+    camera.y = ( mPosY + PLAYER_HEIGHT / 2 ) - SCREEN_HEIGHT / 2;
+    
+    //Keep the camera in bounds
+    if( camera.x < 0 )
+    {
+        camera.x = 0;
+    }
+    if( camera.y < 0 )
+    {
+        camera.y = 0;
+    }
+    if( camera.x > LEVEL_WIDTH - camera.w )
+    {
+        camera.x = LEVEL_WIDTH - camera.w;
+    }
+    if( camera.y > LEVEL_HEIGHT - camera.h )
+    {
+        camera.y = LEVEL_HEIGHT - camera.h;
+    }
+}
+
+void Player::render( int frame, SDL_Rect& camera )
 {
     // プレイヤーの表示
     int all_frames = WALKING_ANIM_DISPFRAME * WALKING_ANIM_CNT;
 	SDL_Rect* currentClip = &mPlayerClips[ (frame % all_frames)/WALKING_ANIM_CNT ];
 	currentClip->y = mDir*currentClip->w;
-	mPlayerTexture->render( mPosX-x, mPosY-y, currentClip, mDegrees, NULL, mFlipType );
+	mPlayerTexture->render( mPosX-camera.x, mPosY-camera.y, currentClip, mDegrees, NULL, mFlipType );
 }
 
 int Player::getPosX(){
