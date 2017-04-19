@@ -12,6 +12,9 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include "tile.h"
+#include "particle.h"
+
+extern const int TOTAL_PARTICLES;
 
 class Player
 {
@@ -34,7 +37,7 @@ private:
     // 歩行アニメーション
     // 種類と表示フレーム数
 	static const int WALKING_ANIM_CNT = 4;
-    static const int WALKING_ANIM_DISPFRAME = 4;
+    static const int WALKING_ANIM_DISPFRAME = 8;
  
     static const int PLAYER_X      = 0;
     static const int PLAYER_Y      = 0;
@@ -58,6 +61,12 @@ private:
 	LTexture* mPlayerTexture;
 	SDL_Rect  mPlayerClips[ WALKING_ANIM_CNT ];
 
+    //The particles
+    std::vector<Particle*> particles;
+    
+    //Shows the particles
+    void renderParticles(SDL_Rect& camera);
+    
     int mPosX, mPosY;
     Dir mDir;
 

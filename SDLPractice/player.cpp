@@ -7,10 +7,11 @@
 //
 #include <SDL2_image/SDL_image.h>
 #include <SDL2_mixer/SDL_mixer.h>
+#include "helper.h"
 #include "lwindow.h"
 #include "ltexture.h"
+#include "particle.h"
 #include "player.h"
-#include "helper.h"
 
 extern const int LEVEL_WIDTH;
 extern const int LEVEL_HEIGHT;
@@ -66,12 +67,26 @@ Player::Player()
         mPlayerClips[ 3 ].w =  32;
         mPlayerClips[ 3 ].h =  32;
     }
+    
+    //Initialize particles
+    particles.resize( TOTAL_PARTICLES );
+    for( int i = 0; i < TOTAL_PARTICLES; ++i )
+    {
+        particles[ i ] = new Particle( mPosX, mPosY );
+    }
+
 }
 
 Player::~Player()
 {
     mPlayerTexture->free();
     mPlayerTexture = NULL;
+    //Delete particles
+    for( int i = 0; i < TOTAL_PARTICLES; ++i )
+    {
+        delete particles[ i ];
+    }
+    particles.clear();
 }
 
 void Player::handleEvent( SDL_Event& e )
@@ -322,6 +337,25 @@ void Player::move( Tile *tiles[] )
             Mix_PlayChannel( 1, gLow, 0);
         }
     }
+}
+
+void Player::renderParticles(SDL_Rect& camera){
+    //Go through particles
+    for( int i = 0; i < TOTAL_PARTICLES; ++i )
+    {
+        //Delete and replace dead particles
+        if( particles[ i ]->isDead() )
+        {
+            delete particles[ i ];
+            particles[ i ] = new Particle( mPosX, mPosY );
+        }
+    }
+    
+    //Show particles
+    for( int i = 0; i < TOTAL_PARTICLES; ++i )
+    {
+        particles[ i ]->render(camera);
+    }
 
 }
 
@@ -354,9 +388,10 @@ void Player::render( int frame, SDL_Rect& camera )
 {
     // プレイヤーの表示
     int all_frames = WALKING_ANIM_DISPFRAME * WALKING_ANIM_CNT;
-	SDL_Rect* currentClip = &mPlayerClips[ (frame % all_frames)/WALKING_ANIM_CNT ];
+	SDL_Rect* currentClip = &mPlayerClips[ (frame % all_frames)/WALKING_ANIM_DISPFRAME ];
 	currentClip->y = mDir*currentClip->w;
 	mPlayerTexture->render( mPosX-camera.x, mPosY-camera.y, currentClip, mDegrees, NULL, mFlipType );
+    renderParticles(camera);
 }
 
 int Player::getPosX(){

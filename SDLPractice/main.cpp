@@ -46,6 +46,9 @@ extern const int TILE_BOTTOMLEFT = 9;
 extern const int TILE_LEFT = 10;
 extern const int TILE_TOPLEFT = 11;
 
+//Particle count
+extern const int TOTAL_PARTICLES = 20;
+
 bool init();
 bool loadMedia();
 void close();
@@ -58,6 +61,10 @@ SDL_Renderer* gRenderer = NULL;
 LTexture* gTileTexture;
 std::vector<SDL_Rect> gTileClips;
 LTexture* gBGTexture;
+LTexture* gRedTexture;
+LTexture* gGreenTexture;
+LTexture* gBlueTexture;
+LTexture* gShimmerTexture;
 
 // テキスト
 LTexture* gTextTexture = NULL;
@@ -187,6 +194,12 @@ bool init()
     gBGTexture = new LTexture();
     gTileTexture = new LTexture();
     gTextTexture = new LTexture();
+    gBGTexture = new LTexture();
+    gRedTexture = new LTexture();
+    gGreenTexture = new LTexture();
+    gBlueTexture = new LTexture();
+    gShimmerTexture = new LTexture();
+
     gTileClips.resize( TOTAL_TILE_SPRITES );
     return success;
 }
@@ -196,7 +209,7 @@ bool loadMedia( Tile* tiles[] )
     bool success = true;
     
     //Load tile texture
-    if( !gTileTexture->loadFromFile( "graphics/tiles.png" ) )
+    if( !gTileTexture->loadFromFile( "graphics/tiles2.png" ) )
     {
         printf( "Failed to load tile set texture!\n" );
         success = false;
@@ -209,6 +222,41 @@ bool loadMedia( Tile* tiles[] )
         success = false;
     }
     
+    //Load red texture
+    if( !gRedTexture->loadFromFile( "graphics/red.bmp" ) )
+    {
+        printf( "Failed to load red texture!\n" );
+        success = false;
+    }
+    
+    //Load green texture
+    if( !gGreenTexture->loadFromFile( "graphics/green.bmp" ) )
+    {
+        printf( "Failed to load green texture!\n" );
+        success = false;
+    }
+    
+    //Load blue texture
+    if( !gBlueTexture->loadFromFile( "graphics/blue.bmp" ) )
+    {
+        printf( "Failed to load blue texture!\n" );
+        success = false;
+    }
+    
+    //Load shimmer texture
+    if( !gShimmerTexture->loadFromFile( "graphics/shimmer.bmp" ) )
+    {
+        printf( "Failed to load shimmer texture!\n" );
+        success = false;
+    }
+    
+    //Set texture transparency
+    gRedTexture->setAlpha( 192 );
+    gGreenTexture->setAlpha( 192 );
+    gBlueTexture->setAlpha( 192 );
+    gShimmerTexture->setAlpha( 192 );
+    
+
     // 背景
     if( !gBGTexture->loadFromFile( "graphics/BG.png" ) )
     {
