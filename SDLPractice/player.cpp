@@ -70,10 +70,10 @@ Player::Player()
     
     //Initialize particles
     particles.resize( TOTAL_PARTICLES );
-    for( int i = 0; i < TOTAL_PARTICLES; ++i )
-    {
-        particles[ i ] = new Particle( mPosX, mPosY );
-    }
+//    for( int i = 0; i < TOTAL_PARTICLES; ++i )
+//    {
+//        particles[ i ] = new Particle( mPosX, mPosY );
+//    }
 
 }
 
@@ -340,6 +340,13 @@ void Player::move( Tile *tiles[] )
 }
 
 void Player::renderParticles(SDL_Rect& camera){
+    for( int i = 0; i < TOTAL_PARTICLES; ++i )
+    {
+        if( particles[ i ] == NULL )
+        {
+            particles[ i ] = new Particle( mPosX, mPosY );
+        }
+    }
     //Go through particles
     for( int i = 0; i < TOTAL_PARTICLES; ++i )
     {
@@ -400,6 +407,14 @@ int Player::getPosX(){
 
 int Player::getPosY(){
     return mPosY;
+}
+
+void Player::setPosX(int posX){
+    mPosX = posX;
+}
+
+void Player::setPosY(int posY){
+    mPosY = posY;
 }
 
 void Player::shiftColliders(){

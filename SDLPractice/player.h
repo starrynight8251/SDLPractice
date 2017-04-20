@@ -31,26 +31,23 @@ public:
     void render( int frame , SDL_Rect& camera );
     int getPosX();
     int getPosY();
+    void setPosX(int posX);
+    void setPosY(int posY);
     std::vector<SDL_Rect>& getColliders();
 
 private:
-    // 歩行アニメーション
-    // 種類と表示フレーム数
 	static const int WALKING_ANIM_CNT = 4;
     static const int WALKING_ANIM_DISPFRAME = 8;
  
     static const int PLAYER_X      = 0;
     static const int PLAYER_Y      = 0;
     
-    // 当たり判定用四角形（通常は１つだけ、拡張可能）
     static const int COLLISION_NUM = 1;
     SDL_Rect collisions[COLLISION_NUM] = {
         {8,0,16,32}};
-    
-    // 移動単位
+ 
     static const int PLAYER_VEL = 8;
-    
-    // 向きと対応する画像位置
+
     enum Dir{
         LEFT  = 3,
         RIGHT = 1,
@@ -61,10 +58,7 @@ private:
 	LTexture* mPlayerTexture;
 	SDL_Rect  mPlayerClips[ WALKING_ANIM_CNT ];
 
-    //The particles
     std::vector<Particle*> particles;
-    
-    //Shows the particles
     void renderParticles(SDL_Rect& camera);
     
     int mPosX, mPosY;
@@ -76,7 +70,6 @@ private:
     
     int mDegrees;
     SDL_RendererFlip mFlipType;
-
     std::vector<SDL_Rect> mColliders;
     void shiftColliders();
 

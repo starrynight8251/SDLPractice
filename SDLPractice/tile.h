@@ -12,23 +12,23 @@
 class Tile
 {
 public:
-    //Initializes position and type
+    // 位置とタイルの種類を初期化する
     Tile( int x, int y, int tileType );
     
-    //Shows the tile
+    // タイルを描画
     void render( SDL_Rect& camera );
     
-    //Get the tile type
+    // タイルの種類を取得
     int getType();
     
-    //Get the collision box
+    // 当たり判定用四角を取得
     SDL_Rect getBox();
     
 private:
-    //The attributes of the tile
+    // 当たり判定用四角
     SDL_Rect mBox;
     
-    //The tile type
+    // タイルの種類
     int mType;
 };
 

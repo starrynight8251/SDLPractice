@@ -19,24 +19,24 @@ extern std::vector<SDL_Rect> gTileClips;
 
 Tile::Tile( int x, int y, int tileType )
 {
-    //Get the offsets
+    // オフセット位置
     mBox.x = x;
     mBox.y = y;
     
-    //Set the collision box
+    // 当たり判定用四角
     mBox.w = TILE_WIDTH;
     mBox.h = TILE_HEIGHT;
     
-    //Get the tile type
+    // タイルの種類を設定
     mType = tileType;
 }
 
 void Tile::render( SDL_Rect& camera )
 {
-    //If the tile is on screen
+    // タイルがスクリーン上にあるなら（クリッピング）
     if( checkCollision( camera, mBox ) )
     {
-        //Show the tile
+        // タイル描画
         gTileTexture->render( mBox.x - camera.x, mBox.y - camera.y, &gTileClips[ mType ] );
     }
 }

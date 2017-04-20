@@ -17,14 +17,14 @@ extern LTexture* gShimmerTexture;
 
 Particle::Particle( int x, int y )
 {
-    //Set offsets
+    // オフセット設定
     mPosX = x + 8 + ( rand() % 12 );
     mPosY = y + ( rand() % 28 );
     
-    //Initialize animation
+    // アニメーション初期化
     mFrame = rand() % 5;
     
-    //Set type
+    // パーティクル種類初期化
     switch( rand() % 3 )
     {
         case 0: mTexture = gRedTexture;break;
@@ -35,16 +35,15 @@ Particle::Particle( int x, int y )
 
 void Particle::render(SDL_Rect& camera)
 {
-    //Show image
+    // パーティクル描画
     mTexture->render( mPosX-camera.x, mPosY-camera.y);
     
-    //Show shimmer
+    // パーティクル輝　描画
     if( mFrame % 2 == 0 )
     {
         gShimmerTexture->render( mPosX-camera.x, mPosY-camera.y );
     }
     
-    //Animate
     mFrame++;
 }
 

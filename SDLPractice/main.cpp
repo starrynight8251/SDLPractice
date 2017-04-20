@@ -26,13 +26,13 @@ extern const int SCREEN_HEIGHT = 480;
 extern const int JOYSTICK_DEAD_ZONE = 8000;
 
 
-//Tile constants
+// タイルマップ用定数
 extern const int TILE_WIDTH = 80;
 extern const int TILE_HEIGHT = 80;
 extern const int TOTAL_TILES = 192;
 extern const int TOTAL_TILE_SPRITES = 12;
 
-//The different tile sprites
+// タイルの種別
 extern const int TILE_RED = 0;
 extern const int TILE_GREEN = 1;
 extern const int TILE_BLUE = 2;
@@ -46,8 +46,13 @@ extern const int TILE_BOTTOMLEFT = 9;
 extern const int TILE_LEFT = 10;
 extern const int TILE_TOPLEFT = 11;
 
-//Particle count
+// パーティクル（粒子）の数
 extern const int TOTAL_PARTICLES = 20;
+
+// セーブ用データ数
+const int TOTAL_DATA = 10;
+// セーブ用データ
+Sint32 gData[ TOTAL_DATA ];
 
 bool init();
 bool loadMedia();
@@ -58,27 +63,25 @@ LWindow* gWindow = NULL;
 SDL_Renderer* gRenderer = NULL;
 
 // **** グラフィック ****
+Player* gPlayer = NULL;
 LTexture* gTileTexture;
-std::vector<SDL_Rect> gTileClips;
+LTexture* gTextTexture = NULL;
 LTexture* gBGTexture;
 LTexture* gRedTexture;
 LTexture* gGreenTexture;
 LTexture* gBlueTexture;
 LTexture* gShimmerTexture;
-
-// テキスト
-LTexture* gTextTexture = NULL;
+std::vector<SDL_Rect> gTileClips;
 TTF_Font* gFont = NULL;
 
 // **** サウンド　****
-// サウンド
 Mix_Music *gMusic = NULL;
 Mix_Chunk *gScratch = NULL;
 Mix_Chunk *gHigh = NULL;
 Mix_Chunk *gMedium = NULL;
 Mix_Chunk *gLow = NULL;
 
-// **** 操作 ****
+// **** コントローラー ****
 // コントローラ１
 SDL_Joystick* gGameController = NULL;
 SDL_Haptic* gControllerHaptic = NULL;
@@ -191,7 +194,8 @@ bool init()
     }
 
     // **** メモリ割当 ****
-    gBGTexture = new LTexture();
+    // グローバル用、後で整理する!!
+    gPlayer = new Player();
     gTileTexture = new LTexture();
     gTextTexture = new LTexture();
     gBGTexture = new LTexture();
@@ -208,49 +212,99 @@ bool loadMedia( Tile* tiles[] )
 {
     bool success = true;
     
-    //Load tile texture
+    // **** データロード ****
+    // バイナリファイルを読み込みモードで開く
+    SDL_RWops* file = SDL_RWFromFile( "save/nums.bin", "r+b" );
+    
+    // ファイルが存在しなかった
+    if( file == NULL )
+    {
+        printf( "Warning: Unable to open file! SDL Error: %s\n", SDL_GetError() );
+        
+        // バイナリファイルを書き込みモードで開く（新規作成）
+        file = SDL_RWFromFile( "save/nums.bin", "w+b" );
+        if( file != NULL )
+        {
+            printf( "New file created!\n" );
+            
+            // データ初期化
+            for( int i = 0; i < TOTAL_DATA; ++i )
+            {
+                gData[ i ] = 0;
+                SDL_RWwrite( file, &gData[ i ], sizeof(Sint32), 1 );
+            }
+            
+            // ファイルを閉じる
+            SDL_RWclose( file );
+        }
+        else
+        {
+            printf( "Error: Unable to create file! SDL Error: %s\n", SDL_GetError() );
+            success = false;
+        }
+    }
+    // ファイルが存在する
+    else
+    {
+        // データをロードする
+        printf( "Reading file...!\n" );
+        for( int i = 0; i < TOTAL_DATA; ++i )
+        {
+            SDL_RWread( file, &gData[ i ], sizeof(Sint32), 1 );
+        }
+        
+        // ファイルを閉じる
+        SDL_RWclose( file );
+        
+        // 読み込んだデータを設定する
+        // 今のところはキャラクタの位置のみ
+        gPlayer->setPosX(gData[0]);
+        gPlayer->setPosY(gData[1]);
+    }
+
+    // タイルマップ用テクスチャ読込
     if( !gTileTexture->loadFromFile( "graphics/tiles2.png" ) )
     {
         printf( "Failed to load tile set texture!\n" );
         success = false;
     }
     
-    //Load tile map
+    // タイルマップ読込
     if( !setTiles( tiles ) )
     {
         printf( "Failed to load tile set!\n" );
         success = false;
     }
     
-    //Load red texture
+    // パーティクル赤
     if( !gRedTexture->loadFromFile( "graphics/red.bmp" ) )
     {
         printf( "Failed to load red texture!\n" );
         success = false;
     }
     
-    //Load green texture
+    // パーティクル緑
     if( !gGreenTexture->loadFromFile( "graphics/green.bmp" ) )
     {
         printf( "Failed to load green texture!\n" );
         success = false;
     }
     
-    //Load blue texture
+    // パーティクル青
     if( !gBlueTexture->loadFromFile( "graphics/blue.bmp" ) )
     {
         printf( "Failed to load blue texture!\n" );
         success = false;
     }
     
-    //Load shimmer texture
+    // パーティクル輝
     if( !gShimmerTexture->loadFromFile( "graphics/shimmer.bmp" ) )
     {
         printf( "Failed to load shimmer texture!\n" );
         success = false;
     }
     
-    //Set texture transparency
+    // アルファ値設定
     gRedTexture->setAlpha( 192 );
     gGreenTexture->setAlpha( 192 );
     gBlueTexture->setAlpha( 192 );
@@ -319,16 +373,6 @@ bool loadMedia( Tile* tiles[] )
 
 void close( Tile* tiles[] )
 {
-    //Deallocate tiles
-    for( int i = 0; i < TOTAL_TILES; ++i )
-    {
-        if( tiles[ i ] != NULL )
-        {
-            delete tiles[ i ];
-            tiles[ i ] = NULL;
-        }
-    }
-    
     // 再生中かチェック
     if( Mix_PlayingMusic() != 0 )
     {
@@ -340,13 +384,52 @@ void close( Tile* tiles[] )
     }
     // 停止しておく
     Mix_HaltMusic();
+    
+    // **** データセーブ ****
+    // データを書込用に設定する
+    gData[0] = gPlayer->getPosX();
+    gData[1] = gPlayer->getPosY();
+    for(int i=2; i<TOTAL_DATA; ++i){
+        gData[i] = 0;
+    }
+    
+    // バイナリファイルを書き込みモードで開く
+    SDL_RWops* file = SDL_RWFromFile( "save/nums.bin", "w+b" );
+    if( file != NULL )
+    {
+        // データをセーブする
+        for( int i = 0; i < TOTAL_DATA; ++i )
+        {
+            SDL_RWwrite( file, &gData[ i ], sizeof(Sint32), 1 );
+        }
+        
+        // ファイルを閉じる
+        SDL_RWclose( file );
+    }
+    else
+    {
+        printf( "Error: Unable to save file! %s\n", SDL_GetError() );
+    }
+    
 
     // **** メモリ解放 ****
+    delete gPlayer;
+    for( int i = 0; i < TOTAL_TILES; ++i )
+    {
+        if( tiles[ i ] != NULL )
+        {
+            delete tiles[ i ];
+            tiles[ i ] = NULL;
+        }
+    }
     // グラフィック
-    gBGTexture->free();
-    gBGTexture = NULL;
-    gTextTexture->free();
-    gTextTexture = NULL;
+    delete gTileTexture;
+    delete gTextTexture;
+    delete gBGTexture;
+    delete gRedTexture;
+    delete gGreenTexture;
+    delete gBlueTexture;
+    delete gShimmerTexture;
     TTF_CloseFont( gFont );
     gFont = NULL;
     
@@ -355,14 +438,14 @@ void close( Tile* tiles[] )
     Mix_FreeChunk( gHigh );
     Mix_FreeChunk( gMedium );
     Mix_FreeChunk( gLow );
+    Mix_FreeMusic( gMusic );
     gScratch = NULL;
     gHigh = NULL;
     gMedium = NULL;
     gLow = NULL;
-    Mix_FreeMusic( gMusic );
     gMusic = NULL;
     
-    // 操作
+    // コントローラ
     SDL_HapticClose( gControllerHaptic );
     SDL_JoystickClose( gGameController );
     gGameController = NULL;
@@ -370,9 +453,8 @@ void close( Tile* tiles[] )
 
     // レンダラ,ウィンドウ
     SDL_DestroyRenderer( gRenderer );
-    gWindow->free();
     gRenderer = NULL;
-    gWindow = NULL;
+    delete gWindow;
     
     // SDL_ttf, SDL_mixer, SDL_image, SDL の解放
     TTF_Quit();
@@ -384,16 +466,13 @@ void close( Tile* tiles[] )
 
 bool setTiles( Tile* tiles[] )
 {
-    //Success flag
     bool tilesLoaded = true;
     
-    //The tile offsets
+    // タイルのオフセット
     int x = 0, y = 0;
     
-    //Open the map
+    // マップ用ファイルを開く
     std::ifstream map( "graphics/lazy.map" );
-    
-    //If the map couldn't be loaded
     if( !map )
     {
         printf( "Unable to load map file!\n" );
@@ -401,53 +480,52 @@ bool setTiles( Tile* tiles[] )
     }
     else
     {
-        //Initialize the tiles
+        // タイルを初期化
         for( int i = 0; i < TOTAL_TILES; ++i )
         {
-            //Determines what kind of tile will be made
             int tileType = -1;
             
-            //Read tile from map file
+            // マップ用ファイルからタイル情報を読込
             map >> tileType;
             
-            //If the was a problem in reading the map
+            // 読込中に問題発生
             if( map.fail() )
             {
-                //Stop loading map
+                // 読込を停止する
                 printf( "Error loading map: Unexpected end of file!\n" );
                 tilesLoaded = false;
                 break;
             }
             
-            //If the number is a valid tile number
+            // タイル番号が適正なら
             if( ( tileType >= 0 ) && ( tileType < TOTAL_TILE_SPRITES ) )
             {
                 tiles[ i ] = new Tile( x, y, tileType );
             }
-            //If we don't recognize the tile type
+            // タイル番号が不適正なら
             else
             {
-                //Stop loading map
+                // 読込を停止する
                 printf( "Error loading map: Invalid tile type at %d!\n", i );
                 tilesLoaded = false;
                 break;
             }
             
-            //Move to next tile spot
+            // 次のタイルへ
             x += TILE_WIDTH;
             
-            //If we've gone too far
+            // 右端まで行ったら
             if( x >= LEVEL_WIDTH )
             {
-                //Move back
+                // 左端に戻る
                 x = 0;
                 
-                //Move to the next row
+                // 次の列へ
                 y += TILE_HEIGHT;
             }
         }
         
-        //Clip the sprite sheet
+        //　クリップ用四角形を定義
         if( tilesLoaded )
         {
             gTileClips[ TILE_RED ].x = 0;
@@ -512,10 +590,9 @@ bool setTiles( Tile* tiles[] )
         }
     }
     
-    //Close the file
+    // ファイルを閉じる
     map.close();
     
-    //If the map was loaded fine
     return tilesLoaded;
 }
 
@@ -528,7 +605,7 @@ int main( int argc, char* args[] )
     }
     else
     {
-        //The level tiles
+        // タイルマップ
         Tile* tileSet[ TOTAL_TILES ];
         
         if( !loadMedia( tileSet ) )
@@ -554,8 +631,6 @@ int main( int argc, char* args[] )
             // カメラ位置
             SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
             
-            // プレイヤー
-            Player player;
             
             // メインイベントループ
             while( !quit )
@@ -571,7 +646,7 @@ int main( int argc, char* args[] )
                     // プレイヤー用イベント判別処理
                     if( !gWindow->isMinimized() )
                     {
-                        player.handleEvent( ev );
+                        gPlayer->handleEvent( ev );
                     }
                     // ウィンドウ用イベント判別処理
                     gWindow->handleEvent( ev );
@@ -619,8 +694,8 @@ int main( int argc, char* args[] )
                     
                     // **** 更新処理　****
                     // プレイヤー・カメラ位置更新
-                    player.move( tileSet );
-                    player.setCamera( camera );
+                    gPlayer->move( tileSet );
+                    gPlayer->setCamera( camera );
                     
                     // FPS情報更新
                     timeText.str( "" );
@@ -646,7 +721,7 @@ int main( int argc, char* args[] )
                     }
                     
                     // キャラクタ
-                    player.render( frame, camera );
+                    gPlayer->render( frame, camera );
              
                     // FPS
                     gTextTexture->render( SCREEN_WIDTH - gTextTexture->getWidth(), 0 );
