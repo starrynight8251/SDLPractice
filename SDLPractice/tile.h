@@ -9,6 +9,7 @@
 #ifndef tile_h
 #define tile_h
 
+namespace mygame{
 class Tile
 {
 public:
@@ -31,6 +32,6 @@ private:
     // タイルの種類
     int mType;
 };
-
+}
 
 #endif /* tile_h */

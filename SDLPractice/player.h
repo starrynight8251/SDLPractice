@@ -14,7 +14,7 @@
 #include "tile.h"
 #include "particle.h"
 
-extern const int TOTAL_PARTICLES;
+namespace mygame{
 
 class Player
 {
@@ -26,7 +26,7 @@ public:
     ~Player();
     
     void handleEvent( SDL_Event& e );
-    void move( Tile *tiles[] );
+    void move( std::vector<Tile*>& tiles );
     void setCamera(SDL_Rect& camera);
     void render( int frame , SDL_Rect& camera );
     int getPosX();
@@ -74,6 +74,6 @@ private:
     void shiftColliders();
 
 };
-
+}
 
 #endif /* player_h */

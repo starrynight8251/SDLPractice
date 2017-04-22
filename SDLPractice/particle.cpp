@@ -9,14 +9,13 @@
 #include <stdio.h>
 #include "ltexture.h"
 #include "particle.h"
+#include "gamemanager.h"
 
-extern LTexture* gRedTexture;
-extern LTexture* gGreenTexture;
-extern LTexture* gBlueTexture;
-extern LTexture* gShimmerTexture;
+namespace mygame{
 
 Particle::Particle( int x, int y )
 {
+    GameManager* gm_manager = &GameManager::getInstance();
     // オフセット設定
     mPosX = x + 8 + ( rand() % 12 );
     mPosY = y + ( rand() % 28 );
@@ -27,21 +26,22 @@ Particle::Particle( int x, int y )
     // パーティクル種類初期化
     switch( rand() % 3 )
     {
-        case 0: mTexture = gRedTexture;break;
-        case 1: mTexture = gGreenTexture; break;
-        case 2: mTexture = gBlueTexture; break;
+        case 0: mTexture = gm_manager->gRedTexture;break;
+        case 1: mTexture = gm_manager->gGreenTexture; break;
+        case 2: mTexture = gm_manager->gBlueTexture; break;
     }
 }
 
 void Particle::render(SDL_Rect& camera)
 {
+    GameManager* gm_manager = &GameManager::getInstance();
     // パーティクル描画
     mTexture->render( mPosX-camera.x, mPosY-camera.y);
     
     // パーティクル輝　描画
     if( mFrame % 2 == 0 )
     {
-        gShimmerTexture->render( mPosX-camera.x, mPosY-camera.y );
+        gm_manager->gShimmerTexture->render( mPosX-camera.x, mPosY-camera.y );
     }
     
     mFrame++;
@@ -50,4 +50,5 @@ void Particle::render(SDL_Rect& camera)
 bool Particle::isDead()
 {
     return mFrame > 10;
+}
 }

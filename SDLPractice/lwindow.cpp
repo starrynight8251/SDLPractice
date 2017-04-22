@@ -7,10 +7,9 @@
 //
 
 #include "lwindow.h"
+#include "gamemanager.h"
 
-extern const int SCREEN_WIDTH;
-extern const int SCREEN_HEIGHT;
-extern SDL_Renderer* gRenderer;
+namespace mygame{
 
 LWindow::LWindow()
 {
@@ -26,13 +25,13 @@ LWindow::LWindow()
 bool LWindow::init()
 {
     // ウィンドウ作成
-    mWindow = SDL_CreateWindow( "ゲームっぽいなにか", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
+    mWindow = SDL_CreateWindow( "ゲームっぽいなにか", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, GameManager::SCREEN_WIDTH, GameManager::SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
     if( mWindow != NULL )
     {
         mMouseFocus = true;
         mKeyboardFocus = true;
-        mWidth = SCREEN_WIDTH;
-        mHeight = SCREEN_HEIGHT;
+        mWidth = GameManager::SCREEN_WIDTH;
+        mHeight = GameManager::SCREEN_HEIGHT;
     }
     
     return mWindow != NULL;
@@ -45,6 +44,7 @@ SDL_Renderer* LWindow::createRenderer()
 
 void LWindow::handleEvent( SDL_Event& e )
 {
+    GameManager* gm_manager = &GameManager::getInstance();
     // イベント判別処理
     if( e.type == SDL_WINDOWEVENT )
     {
@@ -54,12 +54,12 @@ void LWindow::handleEvent( SDL_Event& e )
             case SDL_WINDOWEVENT_SIZE_CHANGED:
                 mWidth = e.window.data1;
                 mHeight = e.window.data2;
-                SDL_RenderPresent( gRenderer );
+                SDL_RenderPresent( gm_manager->gRenderer );
                 break;
                 
             // エクスポージャで再描画
             case SDL_WINDOWEVENT_EXPOSED:
-                SDL_RenderPresent( gRenderer );
+                SDL_RenderPresent( gm_manager->gRenderer );
                 break;
                 
             // マウスがウィンドウに入った
@@ -153,4 +153,5 @@ bool LWindow::hasKeyboardFocus()
 bool LWindow::isMinimized()
 {
     return mMinimized;
+}
 }

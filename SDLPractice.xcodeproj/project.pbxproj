@@ -7,13 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7006D4301EA7941100B6466F /* particle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7006D42F1EA7941100B6466F /* particle.cpp */; };
-		700D0AD81EA62C2200584920 /* tile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 700D0AD61EA62C2200584920 /* tile.cpp */; };
 		700E30CE1E86888300C698A3 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 700E30CC1E8687F900C698A3 /* main.cpp */; };
-		701563661EA3665D006DA97F /* helper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 701563651EA3665D006DA97F /* helper.cpp */; };
-		702E648E1E988DD000C41058 /* ltimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 702E648C1E988DD000C41058 /* ltimer.cpp */; };
-		703531821E9E56D9003DE43D /* lwindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 703531801E9E56D9003DE43D /* lwindow.cpp */; };
-		70C040981E86B79C000977A5 /* ltexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70C040961E86B79C000977A5 /* ltexture.cpp */; };
+		70BBC9D51EAB38430074C493 /* tile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 700D0AD61EA62C2200584920 /* tile.cpp */; };
+		70BBC9D61EAB38430074C493 /* player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70F6FD0C1E9A204A00DFBBDE /* player.cpp */; };
+		70BBC9D71EAB38430074C493 /* ltexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70C040961E86B79C000977A5 /* ltexture.cpp */; };
+		70BBC9D81EAB38430074C493 /* ltimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 702E648C1E988DD000C41058 /* ltimer.cpp */; };
+		70BBC9D91EAB38430074C493 /* lwindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 703531801E9E56D9003DE43D /* lwindow.cpp */; };
+		70BBC9DA1EAB38430074C493 /* helper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 701563651EA3665D006DA97F /* helper.cpp */; };
+		70BBC9DB1EAB38430074C493 /* particle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7006D42F1EA7941100B6466F /* particle.cpp */; };
+		70BBC9DC1EAB38430074C493 /* gamemanager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70BBC9D21EAB0A650074C493 /* gamemanager.cpp */; };
 		70E747181E829E19000FEBED /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747171E829E19000FEBED /* SDL2.framework */; };
 		70E7471A1E829E39000FEBED /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747191E829E39000FEBED /* SDL2_image.framework */; };
 		70E7471C1E829E47000FEBED /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E7471B1E829E47000FEBED /* SDL2_mixer.framework */; };
@@ -21,7 +23,6 @@
 		70E747201E829E6A000FEBED /* SDL2_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E7471F1E829E6A000FEBED /* SDL2_ttf.framework */; };
 		70E747221E82C04C000FEBED /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747211E82C04C000FEBED /* GLUT.framework */; };
 		70E747241E82C056000FEBED /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747231E82C056000FEBED /* OpenGL.framework */; };
-		70F6FD0D1E9A204A00DFBBDE /* player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70F6FD0C1E9A204A00DFBBDE /* player.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -48,6 +49,8 @@
 		702E648D1E988DD000C41058 /* ltimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ltimer.h; sourceTree = "<group>"; };
 		703531801E9E56D9003DE43D /* lwindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lwindow.cpp; sourceTree = "<group>"; };
 		703531811E9E56D9003DE43D /* lwindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lwindow.h; sourceTree = "<group>"; };
+		70BBC9D21EAB0A650074C493 /* gamemanager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gamemanager.cpp; sourceTree = "<group>"; };
+		70BBC9D41EAB0A730074C493 /* gamemanager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gamemanager.h; sourceTree = "<group>"; };
 		70C040961E86B79C000977A5 /* ltexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ltexture.cpp; sourceTree = "<group>"; };
 		70C040971E86B79C000977A5 /* ltexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ltexture.h; sourceTree = "<group>"; };
 		70E7470C1E829DFB000FEBED /* SDLPractice */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLPractice; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -115,6 +118,8 @@
 				701563671EA36670006DA97F /* helper.h */,
 				7006D42F1EA7941100B6466F /* particle.cpp */,
 				7006D4311EA7942100B6466F /* particle.h */,
+				70BBC9D21EAB0A650074C493 /* gamemanager.cpp */,
+				70BBC9D41EAB0A730074C493 /* gamemanager.h */,
 			);
 			path = SDLPractice;
 			sourceTree = "<group>";
@@ -190,14 +195,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				702E648E1E988DD000C41058 /* ltimer.cpp in Sources */,
-				7006D4301EA7941100B6466F /* particle.cpp in Sources */,
-				70C040981E86B79C000977A5 /* ltexture.cpp in Sources */,
-				700D0AD81EA62C2200584920 /* tile.cpp in Sources */,
-				703531821E9E56D9003DE43D /* lwindow.cpp in Sources */,
-				70F6FD0D1E9A204A00DFBBDE /* player.cpp in Sources */,
+				70BBC9D51EAB38430074C493 /* tile.cpp in Sources */,
+				70BBC9D61EAB38430074C493 /* player.cpp in Sources */,
+				70BBC9D71EAB38430074C493 /* ltexture.cpp in Sources */,
+				70BBC9D81EAB38430074C493 /* ltimer.cpp in Sources */,
+				70BBC9D91EAB38430074C493 /* lwindow.cpp in Sources */,
+				70BBC9DA1EAB38430074C493 /* helper.cpp in Sources */,
+				70BBC9DB1EAB38430074C493 /* particle.cpp in Sources */,
+				70BBC9DC1EAB38430074C493 /* gamemanager.cpp in Sources */,
 				700E30CE1E86888300C698A3 /* main.cpp in Sources */,
-				701563661EA3665D006DA97F /* helper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

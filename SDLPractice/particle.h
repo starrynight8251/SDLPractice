@@ -9,6 +9,7 @@
 #ifndef particle_h
 #define particle_h
 
+namespace mygame{
 class Particle
 {
 public:
@@ -21,5 +22,5 @@ private:
     int mFrame;
     LTexture *mTexture;
 };
-
+}
 #endif /* particle_h */

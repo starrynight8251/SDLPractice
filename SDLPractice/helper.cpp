@@ -7,18 +7,17 @@
 //
 
 #include "helper.h"
+#include "gamemanager.h"
 
-extern const int TOTAL_TILES;
-extern const int TILE_CENTER;
-extern const int TILE_TOPLEFT;
+namespace mygame {
 
-bool touchesWall( std::vector<SDL_Rect> boxes, Tile* tiles[] )
+bool touchesWall( std::vector<SDL_Rect>& boxes, std::vector<Tile*>& tiles )
 {
     //Go through the tiles
-    for( int i = 0; i < TOTAL_TILES; ++i )
+    for( int i = 0; i < GameManager::TOTAL_TILES; ++i )
     {
         //If the tile is a wall type tile
-        if( ( tiles[ i ]->getType() >= TILE_CENTER ) && ( tiles[ i ]->getType() <= TILE_TOPLEFT ) )
+        if( ( tiles[ i ]->getType() >= GameManager::TILE_CENTER ) && ( tiles[ i ]->getType() <= GameManager::TILE_TOPLEFT ) )
         {
             for(int j=0; j<boxes.size(); j++){
                 //If the collision box touches the wall tile
@@ -116,4 +115,4 @@ bool checkCollision( std::vector<SDL_Rect>& a, std::vector<SDL_Rect>& b )
     // 重なっていない
     return false;
 }
-
+}

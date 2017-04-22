@@ -8,6 +8,7 @@
 
 #include <SDL2/SDL.h>
 #include "ltimer.h"
+namespace mygame{
 
 LTimer::LTimer()
 {
@@ -86,4 +87,4 @@ bool LTimer::isPaused()
 {
     return mPaused && mStarted;
 }
-
+}

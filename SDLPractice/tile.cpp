@@ -10,13 +10,9 @@
 #include "tile.h"
 #include "ltexture.h"
 #include "helper.h"
+#include "gamemanager.h"
 
-extern const int TILE_WIDTH;
-extern const int TILE_HEIGHT;
-extern LTexture* gTileTexture;
-extern std::vector<SDL_Rect> gTileClips;
-
-
+namespace mygame{
 Tile::Tile( int x, int y, int tileType )
 {
     // オフセット位置
@@ -24,8 +20,8 @@ Tile::Tile( int x, int y, int tileType )
     mBox.y = y;
     
     // 当たり判定用四角
-    mBox.w = TILE_WIDTH;
-    mBox.h = TILE_HEIGHT;
+    mBox.w = GameManager::TILE_WIDTH;
+    mBox.h = GameManager::TILE_HEIGHT;
     
     // タイルの種類を設定
     mType = tileType;
@@ -33,11 +29,13 @@ Tile::Tile( int x, int y, int tileType )
 
 void Tile::render( SDL_Rect& camera )
 {
+    GameManager* gm_manager = &GameManager::getInstance();
+    
     // タイルがスクリーン上にあるなら（クリッピング）
     if( checkCollision( camera, mBox ) )
     {
         // タイル描画
-        gTileTexture->render( mBox.x - camera.x, mBox.y - camera.y, &gTileClips[ mType ] );
+        gm_manager->gTileTexture->render( mBox.x - camera.x, mBox.y - camera.y, &(gm_manager->gTileClips[ mType ]) );
     }
 }
 
@@ -50,4 +48,4 @@ SDL_Rect Tile::getBox()
 {
     return mBox;
 }
-
+}

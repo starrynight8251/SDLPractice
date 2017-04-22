@@ -12,14 +12,9 @@
 #include "ltexture.h"
 #include "particle.h"
 #include "player.h"
+#include "gamemanager.h"
 
-extern const int LEVEL_WIDTH;
-extern const int LEVEL_HEIGHT;
-extern const int SCREEN_WIDTH;
-extern const int SCREEN_HEIGHT;
-extern const int JOYSTICK_DEAD_ZONE;
-extern LWindow* gWindow;
-extern Mix_Chunk *gLow;
+namespace mygame {
 
 Player::Player()
 {
@@ -69,7 +64,7 @@ Player::Player()
     }
     
     //Initialize particles
-    particles.resize( TOTAL_PARTICLES );
+    particles.resize( GameManager::TOTAL_PARTICLES );
 //    for( int i = 0; i < TOTAL_PARTICLES; ++i )
 //    {
 //        particles[ i ] = new Particle( mPosX, mPosY );
@@ -82,7 +77,7 @@ Player::~Player()
     mPlayerTexture->free();
     mPlayerTexture = NULL;
     //Delete particles
-    for( int i = 0; i < TOTAL_PARTICLES; ++i )
+    for( int i = 0; i < GameManager::TOTAL_PARTICLES; ++i )
     {
         delete particles[ i ];
     }
@@ -259,13 +254,13 @@ void Player::handleEvent( SDL_Event& e )
             if( e.jaxis.axis == 0 )
             {
                 // 左
-                if( e.jaxis.value < -JOYSTICK_DEAD_ZONE )
+                if( e.jaxis.value < -GameManager::JOYSTICK_DEAD_ZONE )
                 {
                     mDir = LEFT;
                     mVelX = -PLAYER_VEL;
                 }
                 // 右
-                else if( e.jaxis.value > JOYSTICK_DEAD_ZONE )
+                else if( e.jaxis.value > GameManager::JOYSTICK_DEAD_ZONE )
                 {
                     mDir = RIGHT;
                     mVelX = PLAYER_VEL;
@@ -280,13 +275,13 @@ void Player::handleEvent( SDL_Event& e )
             else if( e.jaxis.axis == 1 )
             {
                 // 上
-                if( e.jaxis.value < -JOYSTICK_DEAD_ZONE )
+                if( e.jaxis.value < -GameManager::JOYSTICK_DEAD_ZONE )
                 {
                     mDir = UP;
                     mVelY = -PLAYER_VEL;
                 }
                 // 下
-                else if( e.jaxis.value > JOYSTICK_DEAD_ZONE )
+                else if( e.jaxis.value > GameManager::JOYSTICK_DEAD_ZONE )
                 {
                     mDir = DOWN;
                     mVelY = PLAYER_VEL;
@@ -306,20 +301,21 @@ void Player::handleEvent( SDL_Event& e )
     if( mVelX == 0 && mVelY > 0 ) mDir = DOWN;
 }
 
-void Player::move( Tile *tiles[] )
+void Player::move( std::vector<Tile*>& tiles )
 {
+    GameManager* gm_manager = &GameManager::getInstance();
     // 移動処理　X
     mPosX += mVelX;
     shiftColliders();
 
     // ウィンドウ境界と壁との当たり判定　X
-    if( ( mPosX < 0 ) || ( mPosX + PLAYER_WIDTH > LEVEL_WIDTH ) || touchesWall( mColliders, tiles ) )
+    if( ( mPosX < 0 ) || ( mPosX + PLAYER_WIDTH > GameManager::LEVEL_WIDTH ) || touchesWall( mColliders, tiles ) )
     {
         // 壁に入ってしまうので戻す
         mPosX -= mVelX;
         shiftColliders();
         if(Mix_Playing(1) != 1){
-            Mix_PlayChannel( 1, gLow, 0);
+            Mix_PlayChannel( 1, gm_manager->gLow, 0);
         }
     }
 
@@ -328,19 +324,19 @@ void Player::move( Tile *tiles[] )
     shiftColliders();
     
     // ウィンドウ境界と壁との当たり判定　Y
-    if( ( mPosY < 0 ) || ( mPosY + PLAYER_HEIGHT > LEVEL_HEIGHT ) || touchesWall( mColliders, tiles ) )
+    if( ( mPosY < 0 ) || ( mPosY + PLAYER_HEIGHT > GameManager::LEVEL_HEIGHT ) || touchesWall( mColliders, tiles ) )
     {
         // 壁に入ってしまうので戻す
         mPosY -= mVelY;
         shiftColliders();
         if(Mix_Playing(1) != 1){
-            Mix_PlayChannel( 1, gLow, 0);
+            Mix_PlayChannel( 1, gm_manager->gLow, 0);
         }
     }
 }
 
 void Player::renderParticles(SDL_Rect& camera){
-    for( int i = 0; i < TOTAL_PARTICLES; ++i )
+    for( int i = 0; i < GameManager::TOTAL_PARTICLES; ++i )
     {
         if( particles[ i ] == NULL )
         {
@@ -348,7 +344,7 @@ void Player::renderParticles(SDL_Rect& camera){
         }
     }
     //Go through particles
-    for( int i = 0; i < TOTAL_PARTICLES; ++i )
+    for( int i = 0; i < GameManager::TOTAL_PARTICLES; ++i )
     {
         //Delete and replace dead particles
         if( particles[ i ]->isDead() )
@@ -359,7 +355,7 @@ void Player::renderParticles(SDL_Rect& camera){
     }
     
     //Show particles
-    for( int i = 0; i < TOTAL_PARTICLES; ++i )
+    for( int i = 0; i < GameManager::TOTAL_PARTICLES; ++i )
     {
         particles[ i ]->render(camera);
     }
@@ -369,8 +365,8 @@ void Player::renderParticles(SDL_Rect& camera){
 void Player::setCamera( SDL_Rect& camera )
 {
     //Center the camera over the dot
-    camera.x = ( mPosX + PLAYER_WIDTH / 2 ) - SCREEN_WIDTH / 2;
-    camera.y = ( mPosY + PLAYER_HEIGHT / 2 ) - SCREEN_HEIGHT / 2;
+    camera.x = ( mPosX + PLAYER_WIDTH / 2 ) - GameManager::SCREEN_WIDTH / 2;
+    camera.y = ( mPosY + PLAYER_HEIGHT / 2 ) - GameManager::SCREEN_HEIGHT / 2;
     
     //Keep the camera in bounds
     if( camera.x < 0 )
@@ -381,13 +377,13 @@ void Player::setCamera( SDL_Rect& camera )
     {
         camera.y = 0;
     }
-    if( camera.x > LEVEL_WIDTH - camera.w )
+    if( camera.x > GameManager::LEVEL_WIDTH - camera.w )
     {
-        camera.x = LEVEL_WIDTH - camera.w;
+        camera.x = GameManager::LEVEL_WIDTH - camera.w;
     }
-    if( camera.y > LEVEL_HEIGHT - camera.h )
+    if( camera.y > GameManager::LEVEL_HEIGHT - camera.h )
     {
-        camera.y = LEVEL_HEIGHT - camera.h;
+        camera.y = GameManager::LEVEL_HEIGHT - camera.h;
     }
 }
 
@@ -428,4 +424,6 @@ void Player::shiftColliders(){
 std::vector<SDL_Rect>& Player::getColliders()
 {
     return mColliders;
+}
+
 }
