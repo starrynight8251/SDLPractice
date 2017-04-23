@@ -75,11 +75,11 @@ public:
     TTF_Font* gFont;
     
     // **** サウンド　****
-    Mix_Music *gMusic;
-    Mix_Chunk *gScratch;
-    Mix_Chunk *gHigh;
-    Mix_Chunk *gMedium;
-    Mix_Chunk *gLow;
+//    Mix_Music *gMusic;
+//    Mix_Chunk *gScratch;
+//    Mix_Chunk *gHigh;
+//    Mix_Chunk *gMedium;
+//    Mix_Chunk *gLow;
     
     // **** コントローラー ****
     // コントローラアナログスティックの無反応範囲
@@ -93,10 +93,10 @@ public:
         return inst;
     }
     
-    bool init(void);
-    bool loadMedia(void);
-    void mainloop(void);
-    void cleanup(void);
+    bool init();
+    bool loadMedia();
+    void mainloop();
+    void cleanup();
     
 };
     

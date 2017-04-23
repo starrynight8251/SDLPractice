@@ -13,6 +13,7 @@
 #include "particle.h"
 #include "player.h"
 #include "gamemanager.h"
+#include "soundmanager.h"
 
 namespace mygame {
 
@@ -303,7 +304,8 @@ void Player::handleEvent( SDL_Event& e )
 
 void Player::move( std::vector<Tile*>& tiles )
 {
-    GameManager* gm_manager = &GameManager::getInstance();
+    SoundManager* snd_manager = &SoundManager::getInstance();
+    
     // 移動処理　X
     mPosX += mVelX;
     shiftColliders();
@@ -315,7 +317,7 @@ void Player::move( std::vector<Tile*>& tiles )
         mPosX -= mVelX;
         shiftColliders();
         if(Mix_Playing(1) != 1){
-            Mix_PlayChannel( 1, gm_manager->gLow, 0);
+            Mix_PlayChannel( 1, snd_manager->gLow, 0);
         }
     }
 
@@ -330,7 +332,7 @@ void Player::move( std::vector<Tile*>& tiles )
         mPosY -= mVelY;
         shiftColliders();
         if(Mix_Playing(1) != 1){
-            Mix_PlayChannel( 1, gm_manager->gLow, 0);
+            Mix_PlayChannel( 1, snd_manager->gLow, 0);
         }
     }
 }

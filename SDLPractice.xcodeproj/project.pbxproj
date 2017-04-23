@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7001568E1EAC1EB800702842 /* soundmanager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7001568D1EAC1EB800702842 /* soundmanager.cpp */; };
 		700E30CE1E86888300C698A3 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 700E30CC1E8687F900C698A3 /* main.cpp */; };
 		70BBC9D51EAB38430074C493 /* tile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 700D0AD61EA62C2200584920 /* tile.cpp */; };
 		70BBC9D61EAB38430074C493 /* player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70F6FD0C1E9A204A00DFBBDE /* player.cpp */; };
@@ -38,6 +39,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		7001568D1EAC1EB800702842 /* soundmanager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = soundmanager.cpp; sourceTree = "<group>"; };
+		7001568F1EAC1ED600702842 /* soundmanager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = soundmanager.h; sourceTree = "<group>"; };
 		7006D42F1EA7941100B6466F /* particle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = particle.cpp; sourceTree = "<group>"; };
 		7006D4311EA7942100B6466F /* particle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = particle.h; sourceTree = "<group>"; };
 		700D0AD61EA62C2200584920 /* tile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tile.cpp; sourceTree = "<group>"; };
@@ -120,6 +123,8 @@
 				7006D4311EA7942100B6466F /* particle.h */,
 				70BBC9D21EAB0A650074C493 /* gamemanager.cpp */,
 				70BBC9D41EAB0A730074C493 /* gamemanager.h */,
+				7001568D1EAC1EB800702842 /* soundmanager.cpp */,
+				7001568F1EAC1ED600702842 /* soundmanager.h */,
 			);
 			path = SDLPractice;
 			sourceTree = "<group>";
@@ -200,6 +205,7 @@
 				70BBC9D71EAB38430074C493 /* ltexture.cpp in Sources */,
 				70BBC9D81EAB38430074C493 /* ltimer.cpp in Sources */,
 				70BBC9D91EAB38430074C493 /* lwindow.cpp in Sources */,
+				7001568E1EAC1EB800702842 /* soundmanager.cpp in Sources */,
 				70BBC9DA1EAB38430074C493 /* helper.cpp in Sources */,
 				70BBC9DB1EAB38430074C493 /* particle.cpp in Sources */,
 				70BBC9DC1EAB38430074C493 /* gamemanager.cpp in Sources */,
