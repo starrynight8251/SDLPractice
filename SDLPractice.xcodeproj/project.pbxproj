@@ -25,6 +25,7 @@
 		70E747201E829E6A000FEBED /* SDL2_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E7471F1E829E6A000FEBED /* SDL2_ttf.framework */; };
 		70E747221E82C04C000FEBED /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747211E82C04C000FEBED /* GLUT.framework */; };
 		70E747241E82C056000FEBED /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747231E82C056000FEBED /* OpenGL.framework */; };
+		70EFA2D31EAC965A006718CC /* person.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70EFA2D21EAC965A006718CC /* person.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -67,6 +68,8 @@
 		70E7471F1E829E6A000FEBED /* SDL2_ttf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_ttf.framework; path = ../../../../Library/Frameworks/SDL2_ttf.framework; sourceTree = "<group>"; };
 		70E747211E82C04C000FEBED /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		70E747231E82C056000FEBED /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		70EFA2D21EAC965A006718CC /* person.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = person.cpp; sourceTree = "<group>"; };
+		70EFA2D41EAC966A006718CC /* person.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = person.h; sourceTree = "<group>"; };
 		70F6FD0B1E9A18A400DFBBDE /* player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = player.h; sourceTree = "<group>"; };
 		70F6FD0C1E9A204A00DFBBDE /* player.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = player.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -130,6 +133,8 @@
 				7001568F1EAC1ED600702842 /* soundmanager.h */,
 				700156901EAC30BA00702842 /* graphicmanager.cpp */,
 				700156921EAC30CB00702842 /* graphicmanager.h */,
+				70EFA2D21EAC965A006718CC /* person.cpp */,
+				70EFA2D41EAC966A006718CC /* person.h */,
 			);
 			path = SDLPractice;
 			sourceTree = "<group>";
@@ -205,6 +210,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70EFA2D31EAC965A006718CC /* person.cpp in Sources */,
 				70BBC9D51EAB38430074C493 /* tile.cpp in Sources */,
 				70BBC9D61EAB38430074C493 /* player.cpp in Sources */,
 				70BBC9D71EAB38430074C493 /* ltexture.cpp in Sources */,

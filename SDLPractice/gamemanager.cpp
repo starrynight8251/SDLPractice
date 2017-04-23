@@ -195,18 +195,17 @@ bool GameManager::loadMedia()
         
     }
     
-    // セーブデータからデータ設定
-    GraphicManager* grp_manager = &GraphicManager::getInstance();
-    grp_manager->setPlayerPos(gData[0], gData[1]);
-
     // **** グラフィックロード ****
+    GraphicManager* grp_manager = &GraphicManager::getInstance();
     grp_manager->loadMedia();
-    
+
     // **** サウンドロード ****
     SoundManager* snd_manager = &SoundManager::getInstance();
     snd_manager->loadMedia();
     snd_manager->musicstart();
     
+    // セーブデータからデータ設定
+    grp_manager->setPlayerPos(gData[0], gData[1]);
     
     return success;
 }
@@ -276,7 +275,7 @@ void GameManager::mainloop()
             
             // **** 更新処理　****
             // プレイヤー・カメラ位置更新
-            grp_manager->move();
+            grp_manager->move(frame);
             grp_manager->setCamera();
             
             // FPS情報更新

@@ -17,6 +17,7 @@ namespace mygame {
 
 Player::Player()
 {
+    GraphicManager* grp_manager = &GraphicManager::getInstance();
     mPosX = PLAYER_X;
     mPosY = PLAYER_Y;
     mDir  = DOWN;
@@ -33,34 +34,27 @@ Player::Player()
     }
     shiftColliders();
     
-    mPlayerTexture = new LTexture();
-    mPlayerTexture->loadFromFile( "graphics/walk.png" );
-    if( mPlayerTexture == NULL )
-    {
-        printf( "Failed to load walking animation texture!\n" );
-    }
-    else
-    {
-        mPlayerClips[ 0 ].x =   0;
-        mPlayerClips[ 0 ].y =   0;
-        mPlayerClips[ 0 ].w =  32;
-        mPlayerClips[ 0 ].h =  32;
-        
-        mPlayerClips[ 1 ].x =  32;
-        mPlayerClips[ 1 ].y =   0;
-        mPlayerClips[ 1 ].w =  32;
-        mPlayerClips[ 1 ].h =  32;
-        
-        mPlayerClips[ 2 ].x =  64;
-        mPlayerClips[ 2 ].y =   0;
-        mPlayerClips[ 2 ].w =  32;
-        mPlayerClips[ 2 ].h =  32;
-        
-        mPlayerClips[ 3 ].x =  32;
-        mPlayerClips[ 3 ].y =   0;
-        mPlayerClips[ 3 ].w =  32;
-        mPlayerClips[ 3 ].h =  32;
-    }
+    mPlayerTexture = grp_manager->gPersonTexture;
+    
+    mPlayerClips[ 0 ].x =   0;
+    mPlayerClips[ 0 ].y =   0;
+    mPlayerClips[ 0 ].w =  32;
+    mPlayerClips[ 0 ].h =  32;
+    
+    mPlayerClips[ 1 ].x =  32;
+    mPlayerClips[ 1 ].y =   0;
+    mPlayerClips[ 1 ].w =  32;
+    mPlayerClips[ 1 ].h =  32;
+    
+    mPlayerClips[ 2 ].x =  64;
+    mPlayerClips[ 2 ].y =   0;
+    mPlayerClips[ 2 ].w =  32;
+    mPlayerClips[ 2 ].h =  32;
+    
+    mPlayerClips[ 3 ].x =  32;
+    mPlayerClips[ 3 ].y =   0;
+    mPlayerClips[ 3 ].w =  32;
+    mPlayerClips[ 3 ].h =  32;
     
     // パーティクル用領域確保
     particles.resize( GraphicManager::TOTAL_PARTICLES );
@@ -68,8 +62,6 @@ Player::Player()
 
 Player::~Player()
 {
-    mPlayerTexture->free();
-    mPlayerTexture = NULL;
     // パーティクル解放
     for( int i = 0; i < GraphicManager::TOTAL_PARTICLES; ++i )
     {
@@ -379,9 +371,9 @@ void Player::render( int frame, SDL_Rect& camera )
 {
     // プレイヤーの表示
     int all_frames = WALKING_ANIM_DISPFRAME * WALKING_ANIM_CNT;
-	SDL_Rect* currentClip = &mPlayerClips[ (frame % all_frames)/WALKING_ANIM_DISPFRAME ];
-	currentClip->y = mDir*currentClip->w;
-	mPlayerTexture->render( mPosX-camera.x, mPosY-camera.y, currentClip, mDegrees, NULL, mFlipType );
+	SDL_Rect currentClip = mPlayerClips[ (frame % all_frames)/WALKING_ANIM_DISPFRAME ];
+	currentClip.y += mDir*currentClip.h;
+	mPlayerTexture->render( mPosX-camera.x, mPosY-camera.y, &currentClip, mDegrees, NULL, mFlipType );
     renderParticles(camera);
 }
 

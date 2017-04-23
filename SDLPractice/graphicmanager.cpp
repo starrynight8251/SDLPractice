@@ -15,6 +15,7 @@ namespace mygame{// start of namespace
 bool GraphicManager::init()
 {
     gPlayer = NULL;
+    gPersonTexture = NULL;
     gTileTexture = NULL;
     gTextTexture = NULL;
     gBGTexture = NULL;
@@ -25,7 +26,7 @@ bool GraphicManager::init()
     
     gFont = NULL;
 
-    gPlayer = new Player();
+    gPersonTexture = new LTexture();
     gTileTexture = new LTexture();
     gTextTexture = new LTexture();
     gBGTexture = new LTexture();
@@ -43,6 +44,12 @@ bool GraphicManager::init()
 bool GraphicManager::loadMedia()
 {
     bool success = true;
+    
+    if( !gPersonTexture->loadFromFile( "graphics/walk.png" ) )
+    {
+        printf( "Failed to load walking animation texture!\n" );
+    }
+    
     // タイルマップ用テクスチャ読込
     if( !gTileTexture->loadFromFile( "graphics/tiles2.png" ) )
     {
@@ -93,7 +100,8 @@ bool GraphicManager::loadMedia()
     
     
     // 背景
-    if( !gBGTexture->loadFromFile( "graphics/BG.png" ) )
+    //if( !gBGTexture->loadFromFile( "graphics/BG.png" ) )
+    if( !gBGTexture->loadFromFile( "graphics/sweetbear_1280_960_f.jpg" ) )
     {
         printf( "Failed to load background texture!\n" );
         success = false;
@@ -106,6 +114,8 @@ bool GraphicManager::loadMedia()
         printf( "Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError() );
         success = false;
     }
+    
+    gPlayer = new Player();
 
     return success;
 }
@@ -281,7 +291,7 @@ void GraphicManager::handleEvent(SDL_Event e)
     gPlayer->handleEvent(e);
 }
     
-void GraphicManager::move()
+void GraphicManager::move(int frame)
 {
     gPlayer->move(gTiles);
 }
@@ -318,6 +328,7 @@ void GraphicManager::cleanup(){
         }
     }
 
+    delete gPersonTexture;
     delete gTileTexture;
     delete gTextTexture;
     delete gBGTexture;

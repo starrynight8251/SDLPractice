@@ -55,6 +55,7 @@ public:
     SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
     
     Player* gPlayer;
+    LTexture* gPersonTexture;
     LTexture* gTileTexture;
     LTexture* gTextTexture;
     LTexture* gBGTexture;
@@ -78,7 +79,7 @@ public:
     bool setTiles(std::vector<Tile*>& tiles);
     void render(int frame);
     void handleEvent(SDL_Event e);
-    void move();
+    void move(int frame);
     void setCamera();
     void setFPS(std::stringstream& timeText, SDL_Color& textColor);
     void setData(std::vector<int>& data);
