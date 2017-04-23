@@ -9,17 +9,13 @@
 #ifndef soundmanager_h
 #define soundmanager_h
 
-
-#include <SDL2/SDL.h>
 #include <SDL2_mixer/SDL_mixer.h>
-#include "lwindow.h"
-#include "ltexture.h"
-#include "player.h"
 
 namespace mygame{// start of namespace
 // サウンドマネージャ
 // シングルトン
-class SoundManager{
+class SoundManager
+{
 private:
     SoundManager(){}
     SoundManager(const SoundManager&);
@@ -27,16 +23,14 @@ private:
     ~SoundManager(){}
     
 public:
-    LWindow* gWindow;
-    SDL_Renderer* gRenderer;
-    
     Mix_Music *gMusic;
     Mix_Chunk *gScratch;
     Mix_Chunk *gHigh;
     Mix_Chunk *gMedium;
     Mix_Chunk *gLow;
     
-    static SoundManager& getInstance(){
+    static SoundManager& getInstance()
+    {
         static SoundManager inst;
         return inst;
     }

@@ -8,6 +8,7 @@
 
 #ifndef tile_h
 #define tile_h
+#include <SDL2/SDL.h>
 
 namespace mygame{
 class Tile

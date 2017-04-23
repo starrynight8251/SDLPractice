@@ -5,12 +5,10 @@
 //  Created by starrynight on 2017/04/17.
 //  Copyright © 2017年 NoCompany. All rights reserved.
 //
-#include <SDL2/SDL.h>
-#include <vector>
+
 #include "tile.h"
-#include "ltexture.h"
+#include "graphicmanager.h"
 #include "helper.h"
-#include "gamemanager.h"
 
 namespace mygame{
 Tile::Tile( int x, int y, int tileType )
@@ -20,8 +18,8 @@ Tile::Tile( int x, int y, int tileType )
     mBox.y = y;
     
     // 当たり判定用四角
-    mBox.w = GameManager::TILE_WIDTH;
-    mBox.h = GameManager::TILE_HEIGHT;
+    mBox.w = GraphicManager::TILE_WIDTH;
+    mBox.h = GraphicManager::TILE_HEIGHT;
     
     // タイルの種類を設定
     mType = tileType;
@@ -29,13 +27,13 @@ Tile::Tile( int x, int y, int tileType )
 
 void Tile::render( SDL_Rect& camera )
 {
-    GameManager* gm_manager = &GameManager::getInstance();
+    GraphicManager* grp_manager = &GraphicManager::getInstance();
     
     // タイルがスクリーン上にあるなら（クリッピング）
     if( checkCollision( camera, mBox ) )
     {
         // タイル描画
-        gm_manager->gTileTexture->render( mBox.x - camera.x, mBox.y - camera.y, &(gm_manager->gTileClips[ mType ]) );
+        grp_manager->gTileTexture->render( mBox.x - camera.x, mBox.y - camera.y, &(grp_manager->gTileClips[ mType ]) );
     }
 }
 

@@ -5,14 +5,12 @@
 //  Created by starrynight on 2017/04/08.
 //  Copyright © 2017年 NoCompany. All rights reserved.
 //
+#include "player.h"
 #include <SDL2_image/SDL_image.h>
 #include <SDL2_mixer/SDL_mixer.h>
 #include "helper.h"
-#include "lwindow.h"
-#include "ltexture.h"
-#include "particle.h"
-#include "player.h"
 #include "gamemanager.h"
+#include "graphicmanager.h"
 #include "soundmanager.h"
 
 namespace mygame {
@@ -64,21 +62,16 @@ Player::Player()
         mPlayerClips[ 3 ].h =  32;
     }
     
-    //Initialize particles
-    particles.resize( GameManager::TOTAL_PARTICLES );
-//    for( int i = 0; i < TOTAL_PARTICLES; ++i )
-//    {
-//        particles[ i ] = new Particle( mPosX, mPosY );
-//    }
-
+    // パーティクル用領域確保
+    particles.resize( GraphicManager::TOTAL_PARTICLES );
 }
 
 Player::~Player()
 {
     mPlayerTexture->free();
     mPlayerTexture = NULL;
-    //Delete particles
-    for( int i = 0; i < GameManager::TOTAL_PARTICLES; ++i )
+    // パーティクル解放
+    for( int i = 0; i < GraphicManager::TOTAL_PARTICLES; ++i )
     {
         delete particles[ i ];
     }
@@ -311,7 +304,7 @@ void Player::move( std::vector<Tile*>& tiles )
     shiftColliders();
 
     // ウィンドウ境界と壁との当たり判定　X
-    if( ( mPosX < 0 ) || ( mPosX + PLAYER_WIDTH > GameManager::LEVEL_WIDTH ) || touchesWall( mColliders, tiles ) )
+    if( ( mPosX < 0 ) || ( mPosX + PLAYER_WIDTH > GraphicManager::LEVEL_WIDTH ) || touchesWall( mColliders, tiles ) )
     {
         // 壁に入ってしまうので戻す
         mPosX -= mVelX;
@@ -326,7 +319,7 @@ void Player::move( std::vector<Tile*>& tiles )
     shiftColliders();
     
     // ウィンドウ境界と壁との当たり判定　Y
-    if( ( mPosY < 0 ) || ( mPosY + PLAYER_HEIGHT > GameManager::LEVEL_HEIGHT ) || touchesWall( mColliders, tiles ) )
+    if( ( mPosY < 0 ) || ( mPosY + PLAYER_HEIGHT > GraphicManager::LEVEL_HEIGHT ) || touchesWall( mColliders, tiles ) )
     {
         // 壁に入ってしまうので戻す
         mPosY -= mVelY;
@@ -338,26 +331,19 @@ void Player::move( std::vector<Tile*>& tiles )
 }
 
 void Player::renderParticles(SDL_Rect& camera){
-    for( int i = 0; i < GameManager::TOTAL_PARTICLES; ++i )
-    {
-        if( particles[ i ] == NULL )
-        {
-            particles[ i ] = new Particle( mPosX, mPosY );
-        }
-    }
-    //Go through particles
-    for( int i = 0; i < GameManager::TOTAL_PARTICLES; ++i )
+    // パーティクル生成、再生成
+    for( int i = 0; i < GraphicManager::TOTAL_PARTICLES; ++i )
     {
         //Delete and replace dead particles
-        if( particles[ i ]->isDead() )
+        if( particles[ i ] == NULL || particles[ i ]->isDead() )
         {
             delete particles[ i ];
             particles[ i ] = new Particle( mPosX, mPosY );
         }
     }
     
-    //Show particles
-    for( int i = 0; i < GameManager::TOTAL_PARTICLES; ++i )
+    // パーティクル描画
+    for( int i = 0; i < GraphicManager::TOTAL_PARTICLES; ++i )
     {
         particles[ i ]->render(camera);
     }
@@ -366,11 +352,11 @@ void Player::renderParticles(SDL_Rect& camera){
 
 void Player::setCamera( SDL_Rect& camera )
 {
-    //Center the camera over the dot
-    camera.x = ( mPosX + PLAYER_WIDTH / 2 ) - GameManager::SCREEN_WIDTH / 2;
-    camera.y = ( mPosY + PLAYER_HEIGHT / 2 ) - GameManager::SCREEN_HEIGHT / 2;
+    // カメラ位置設定
+    camera.x = ( mPosX + PLAYER_WIDTH / 2 ) - GraphicManager::SCREEN_WIDTH / 2;
+    camera.y = ( mPosY + PLAYER_HEIGHT / 2 ) - GraphicManager::SCREEN_HEIGHT / 2;
     
-    //Keep the camera in bounds
+    // カメラを境界で止める
     if( camera.x < 0 )
     {
         camera.x = 0;
@@ -379,13 +365,13 @@ void Player::setCamera( SDL_Rect& camera )
     {
         camera.y = 0;
     }
-    if( camera.x > GameManager::LEVEL_WIDTH - camera.w )
+    if( camera.x > GraphicManager::LEVEL_WIDTH - camera.w )
     {
-        camera.x = GameManager::LEVEL_WIDTH - camera.w;
+        camera.x = GraphicManager::LEVEL_WIDTH - camera.w;
     }
-    if( camera.y > GameManager::LEVEL_HEIGHT - camera.h )
+    if( camera.y > GraphicManager::LEVEL_HEIGHT - camera.h )
     {
-        camera.y = GameManager::LEVEL_HEIGHT - camera.h;
+        camera.y = GraphicManager::LEVEL_HEIGHT - camera.h;
     }
 }
 

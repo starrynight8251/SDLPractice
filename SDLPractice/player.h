@@ -11,30 +11,14 @@
 
 #include <SDL2/SDL.h>
 #include <vector>
-#include "tile.h"
+#include "ltexture.h"
 #include "particle.h"
+#include "tile.h"
 
 namespace mygame{
 
 class Player
 {
-public:
-    static const int PLAYER_WIDTH  = 32;
-    static const int PLAYER_HEIGHT = 32;
-
-    Player();
-    ~Player();
-    
-    void handleEvent( SDL_Event& e );
-    void move( std::vector<Tile*>& tiles );
-    void setCamera(SDL_Rect& camera);
-    void render( int frame , SDL_Rect& camera );
-    int getPosX();
-    int getPosY();
-    void setPosX(int posX);
-    void setPosY(int posY);
-    std::vector<SDL_Rect>& getColliders();
-
 private:
 	static const int WALKING_ANIM_CNT = 4;
     static const int WALKING_ANIM_DISPFRAME = 8;
@@ -72,7 +56,23 @@ private:
     SDL_RendererFlip mFlipType;
     std::vector<SDL_Rect> mColliders;
     void shiftColliders();
-
+    
+public:
+    static const int PLAYER_WIDTH  = 32;
+    static const int PLAYER_HEIGHT = 32;
+    
+    Player();
+    ~Player();
+    
+    void handleEvent( SDL_Event& e );
+    void move( std::vector<Tile*>& tiles );
+    void setCamera(SDL_Rect& camera);
+    void render( int frame , SDL_Rect& camera );
+    int getPosX();
+    int getPosY();
+    void setPosX(int posX);
+    void setPosY(int posY);
+    std::vector<SDL_Rect>& getColliders();
 };
 }
 

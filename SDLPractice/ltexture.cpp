@@ -1,5 +1,6 @@
 #include "ltexture.h"
 #include "gamemanager.h"
+#include "graphicmanager.h"
 
 namespace mygame{
 
@@ -58,12 +59,13 @@ bool LTexture::loadFromFile( std::string path )
 bool LTexture::loadFromRenderedText( std::string textureText, SDL_Color textColor )
 {
     GameManager* gm_manager = &GameManager::getInstance();
+    GraphicManager* grp_manager = &GraphicManager::getInstance();
     
     // すでに確保されていたら解放する
     free();
     
     // テキストから一時サーフェス作成
-    SDL_Surface* textSurface = TTF_RenderUTF8_Blended(gm_manager->gFont, textureText.c_str(), textColor);
+    SDL_Surface* textSurface = TTF_RenderUTF8_Blended(grp_manager->gFont, textureText.c_str(), textColor);
     if( textSurface == NULL )
     {
         printf( "Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError() );

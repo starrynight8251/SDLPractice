@@ -9,6 +9,9 @@
 #ifndef particle_h
 #define particle_h
 
+#include <SDL2/SDL.h>
+#include "ltexture.h"
+
 namespace mygame{
 class Particle
 {

@@ -10,17 +10,18 @@
 
 namespace mygame{// start of namespace
     
-bool SoundManager::init(){
+bool SoundManager::init()
+{
     gMusic = NULL;
     gScratch = NULL;
     gHigh = NULL;
     gMedium = NULL;
     gLow = NULL;
-    
     return true;
 }
 
-bool SoundManager::loadMedia(){
+bool SoundManager::loadMedia()
+{
     bool success = true;
     
     gMusic = Mix_LoadMUS( "sounds/mario.mp3" );
@@ -58,15 +59,11 @@ bool SoundManager::loadMedia(){
         success = false;
     }
     
-    if( Mix_PlayingMusic() == 0 )
-    {
-        // 音楽を再生
-        Mix_PlayMusic( gMusic, -1 );
-    }
     return success;
 }
     
-void SoundManager::musicstart(){
+void SoundManager::musicstart()
+{
     // 再生中かチェック
     if( Mix_PlayingMusic() == 0 )
     {
@@ -75,17 +72,18 @@ void SoundManager::musicstart(){
     }
 }
 
-void SoundManager::musicstop(){
+void SoundManager::musicstop()
+{
     // 再生中かチェック
     if( Mix_PlayingMusic() != 0 )
     {
         // 音楽を停止
         Mix_HaltMusic();
     }
-    
 }
     
-void SoundManager::musicpause(){
+void SoundManager::musicpause()
+{
     // 再生中かチェック
     if( Mix_PlayingMusic() != 0 )
     {
@@ -97,7 +95,8 @@ void SoundManager::musicpause(){
     }
 }
     
-void SoundManager::musicresume(){
+void SoundManager::musicresume()
+{
     // 再生中かチェック
     if( Mix_PlayingMusic() != 0 )
     {
@@ -109,7 +108,8 @@ void SoundManager::musicresume(){
     }
 }
 
-void SoundManager::cleanup(){
+void SoundManager::cleanup()
+{
     musicpause();
     musicstop();
     Mix_FreeChunk( gScratch );

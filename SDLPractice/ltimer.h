@@ -8,7 +8,9 @@
 
 #ifndef ltimer_h
 #define ltimer_h
+
 #include <SDL2/SDL.h>
+
 namespace mygame{
 class LTimer
 {

@@ -5,11 +5,9 @@
 //  Created by starrynight on 2017/04/08.
 //  Copyright © 2017年 NoCompany. All rights reserved.
 //
-
-#include <SDL2/SDL.h>
 #include "ltimer.h"
-namespace mygame{
 
+namespace mygame{
 LTimer::LTimer()
 {
     mStartTicks = 0;

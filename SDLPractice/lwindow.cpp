@@ -8,6 +8,7 @@
 
 #include "lwindow.h"
 #include "gamemanager.h"
+#include "graphicmanager.h"
 
 namespace mygame{
 
@@ -25,13 +26,13 @@ LWindow::LWindow()
 bool LWindow::init()
 {
     // ウィンドウ作成
-    mWindow = SDL_CreateWindow( "ゲームっぽいなにか", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, GameManager::SCREEN_WIDTH, GameManager::SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
+    mWindow = SDL_CreateWindow( "2Dゲームエンジン", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, GraphicManager::SCREEN_WIDTH, GraphicManager::SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
     if( mWindow != NULL )
     {
         mMouseFocus = true;
         mKeyboardFocus = true;
-        mWidth = GameManager::SCREEN_WIDTH;
-        mHeight = GameManager::SCREEN_HEIGHT;
+        mWidth = GraphicManager::SCREEN_WIDTH;
+        mHeight = GraphicManager::SCREEN_HEIGHT;
     }
     
     return mWindow != NULL;

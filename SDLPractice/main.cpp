@@ -1,6 +1,7 @@
 #include "gamemanager.h"
 
 int main( int argc, char* args[] ){
+    // ゲーム管理用クラスを起動
     mygame::GameManager* gm_manager = &mygame::GameManager::getInstance();
     if( !gm_manager->init() )
     {

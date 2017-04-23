@@ -7,20 +7,21 @@
 //
 
 #include "helper.h"
-#include "gamemanager.h"
+#include "graphicmanager.h"
 
 namespace mygame {
 
+// タイルマップとの当たり判定
 bool touchesWall( std::vector<SDL_Rect>& boxes, std::vector<Tile*>& tiles )
 {
-    //Go through the tiles
-    for( int i = 0; i < GameManager::TOTAL_TILES; ++i )
+    // 全タイルに対して判定
+    for( int i = 0; i < GraphicManager::TOTAL_TILES; ++i )
     {
-        //If the tile is a wall type tile
-        if( ( tiles[ i ]->getType() >= GameManager::TILE_CENTER ) && ( tiles[ i ]->getType() <= GameManager::TILE_TOPLEFT ) )
+        // タイルの種類判定
+        if( ( tiles[ i ]->getType() >= GraphicManager::TILE_CENTER ) && ( tiles[ i ]->getType() <= GraphicManager::TILE_TOPLEFT ) )
         {
             for(int j=0; j<boxes.size(); j++){
-                //If the collision box touches the wall tile
+                // 四角形同士で当たり判定
                 if( checkCollision( boxes[ j ], tiles[ i ]->getBox() ) )
                 {
                     return true;
@@ -29,7 +30,7 @@ bool touchesWall( std::vector<SDL_Rect>& boxes, std::vector<Tile*>& tiles )
         }
     }
     
-    //If no wall tiles were touched
+    // 全てのタイルに重なっていない
     return false;
 }
 
