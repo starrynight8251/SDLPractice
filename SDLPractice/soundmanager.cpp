@@ -12,11 +12,11 @@ namespace mygame{// start of namespace
     
 bool SoundManager::init()
 {
-    gMusic = NULL;
-    gScratch = NULL;
-    gHigh = NULL;
-    gMedium = NULL;
-    gLow = NULL;
+    mMusic = NULL;
+    mScratch = NULL;
+    mHigh = NULL;
+    mMedium = NULL;
+    mLow = NULL;
     return true;
 }
 
@@ -24,36 +24,36 @@ bool SoundManager::loadMedia()
 {
     bool success = true;
     
-    gMusic = Mix_LoadMUS( "sounds/mario.mp3" );
-    if( gMusic == NULL )
+    mMusic = Mix_LoadMUS( "sounds/mario.mp3" );
+    if( mMusic == NULL )
     {
         printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
         success = false;
     }
     
-    gScratch = Mix_LoadWAV( "sounds/scratch.wav" );
-    if( gScratch == NULL )
+    mScratch = Mix_LoadWAV( "sounds/scratch.wav" );
+    if( mScratch == NULL )
     {
         printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
         success = false;
     }
     
-    gHigh = Mix_LoadWAV( "sounds/high.wav" );
-    if( gHigh == NULL )
+    mHigh = Mix_LoadWAV( "sounds/high.wav" );
+    if( mHigh == NULL )
     {
         printf( "Failed to load high sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
         success = false;
     }
     
-    gMedium = Mix_LoadWAV( "sounds/medium.wav" );
-    if( gMedium == NULL )
+    mMedium = Mix_LoadWAV( "sounds/medium.wav" );
+    if( mMedium == NULL )
     {
         printf( "Failed to load medium sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
         success = false;
     }
     
-    gLow = Mix_LoadWAV( "sounds/low.wav" );
-    if( gLow == NULL )
+    mLow = Mix_LoadWAV( "sounds/low.wav" );
+    if( mLow == NULL )
     {
         printf( "Failed to load low sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
         success = false;
@@ -68,7 +68,7 @@ void SoundManager::musicstart()
     if( Mix_PlayingMusic() == 0 )
     {
         // 音楽を再生
-        Mix_PlayMusic( gMusic, -1 );
+        Mix_PlayMusic( mMusic, -1 );
     }
 }
 
@@ -112,16 +112,16 @@ void SoundManager::cleanup()
 {
     musicpause();
     musicstop();
-    Mix_FreeChunk( gScratch );
-    Mix_FreeChunk( gHigh );
-    Mix_FreeChunk( gMedium );
-    Mix_FreeChunk( gLow );
-    Mix_FreeMusic( gMusic );
-    gScratch = NULL;
-    gHigh = NULL;
-    gMedium = NULL;
-    gLow = NULL;
-    gMusic = NULL;
+    Mix_FreeChunk( mScratch );
+    Mix_FreeChunk( mHigh );
+    Mix_FreeChunk( mMedium );
+    Mix_FreeChunk( mLow );
+    Mix_FreeMusic( mMusic );
+    mScratch = NULL;
+    mHigh = NULL;
+    mMedium = NULL;
+    mLow = NULL;
+    mMusic = NULL;
 }
 
 }// end of namespace

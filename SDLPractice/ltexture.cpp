@@ -35,7 +35,7 @@ bool LTexture::loadFromFile( std::string path )
         SDL_SetColorKey( loadedSurface, SDL_TRUE, SDL_MapRGB( loadedSurface->format, 0, 0xFF, 0xFF ) );
         
         // サーフェスからテクスチャを作成する
-        mTexture = SDL_CreateTextureFromSurface( gm_manager->gRenderer, loadedSurface );
+        mTexture = SDL_CreateTextureFromSurface( gm_manager->mRenderer, loadedSurface );
         if( mTexture == NULL )
         {
             printf( "Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
@@ -65,7 +65,7 @@ bool LTexture::loadFromRenderedText( std::string textureText, SDL_Color textColo
     free();
     
     // テキストから一時サーフェス作成
-    SDL_Surface* textSurface = TTF_RenderUTF8_Blended(grp_manager->gFont, textureText.c_str(), textColor);
+    SDL_Surface* textSurface = TTF_RenderUTF8_Blended(grp_manager->mFont, textureText.c_str(), textColor);
     if( textSurface == NULL )
     {
         printf( "Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError() );
@@ -73,7 +73,7 @@ bool LTexture::loadFromRenderedText( std::string textureText, SDL_Color textColo
     else
     {
         // サーフェスからテクスチャを作成する
-        mTexture = SDL_CreateTextureFromSurface( gm_manager->gRenderer, textSurface );
+        mTexture = SDL_CreateTextureFromSurface( gm_manager->mRenderer, textSurface );
         if( mTexture == NULL )
         {
             printf( "Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError() );
@@ -139,7 +139,7 @@ void LTexture::render( int x, int y, SDL_Rect* clip, double angle, SDL_Point* ce
     }
 
     // スクリーンに描画する
-    SDL_RenderCopyEx( gm_manager->gRenderer, mTexture, clip, &renderQuad, angle, center, flip );
+    SDL_RenderCopyEx( gm_manager->mRenderer, mTexture, clip, &renderQuad, angle, center, flip );
 }
 
 int LTexture::getWidth()

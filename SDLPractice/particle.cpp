@@ -20,12 +20,14 @@ Particle::Particle( int x, int y )
     mFrame = rand() % 5;
     
     // パーティクル種類初期化
-    switch( rand() % 3 )
-    {
-        case 0: mTexture = grp_manager->gRedTexture;break;
-        case 1: mTexture = grp_manager->gGreenTexture; break;
-        case 2: mTexture = grp_manager->gBlueTexture; break;
-    }
+    mTexture = grp_manager->mParticleTextures[ rand() % 3 ];
+//    
+//    switch( rand() % 3 )
+//    {
+//        case 0: mTexture = grp_manager->gRedTexture;break;
+//        case 1: mTexture = grp_manager->gGreenTexture; break;
+//        case 2: mTexture = grp_manager->gBlueTexture; break;
+//    }
 }
 
 void Particle::render(SDL_Rect& camera)
@@ -37,7 +39,7 @@ void Particle::render(SDL_Rect& camera)
     // パーティクル輝　描画
     if( mFrame % 2 == 0 )
     {
-        grp_manager->gShimmerTexture->render( mPosX-camera.x, mPosY-camera.y );
+        grp_manager->mParticleTextures[3]->render( mPosX-camera.x, mPosY-camera.y );
     }
     
     mFrame++;
@@ -45,6 +47,6 @@ void Particle::render(SDL_Rect& camera)
 
 bool Particle::isDead()
 {
-    return mFrame > 10;
+    return mFrame > 20;
 }
 }

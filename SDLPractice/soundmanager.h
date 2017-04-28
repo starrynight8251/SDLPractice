@@ -23,11 +23,11 @@ private:
     ~SoundManager(){}
     
 public:
-    Mix_Music *gMusic;
-    Mix_Chunk *gScratch;
-    Mix_Chunk *gHigh;
-    Mix_Chunk *gMedium;
-    Mix_Chunk *gLow;
+    Mix_Music *mMusic;
+    Mix_Chunk *mScratch;
+    Mix_Chunk *mHigh;
+    Mix_Chunk *mMedium;
+    Mix_Chunk *mLow;
     
     static SoundManager& getInstance()
     {

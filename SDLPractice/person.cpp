@@ -43,7 +43,7 @@ Person::Person( int idx, std::vector<Tile*>& tiles )
         }
     }
     
-    mPersonTexture = grp_manager->gPersonTexture;
+    mPersonTexture = grp_manager->mSpriteSheetTextures[0];
     int offset_x = 96*(idx%5);
     int offset_y = 128*(idx/5);
     
@@ -111,7 +111,7 @@ void Person::move( int frame, std::vector<Tile*>& tiles )
     shiftColliders();
     
     // ウィンドウ境界と壁との当たり判定　X
-    if( ( mPosX < 0 ) || ( mPosX + Person_WIDTH > GraphicManager::LEVEL_WIDTH ) || touchesWall( mColliders, tiles ) )
+    if( ( mPosX < 0 ) || ( mPosX + Person_WIDTH > GameManager::MAP_WIDTH ) || touchesWall( mColliders, tiles ) )
     {
         // 壁に入ってしまうので戻す
         mPosX -= mVelX;
@@ -123,7 +123,7 @@ void Person::move( int frame, std::vector<Tile*>& tiles )
     shiftColliders();
     
     // ウィンドウ境界と壁との当たり判定　Y
-    if( ( mPosY < 0 ) || ( mPosY + Person_HEIGHT > GraphicManager::LEVEL_HEIGHT ) || touchesWall( mColliders, tiles ) )
+    if( ( mPosY < 0 ) || ( mPosY + Person_HEIGHT > GameManager::MAP_HEIGHT ) || touchesWall( mColliders, tiles ) )
     {
         // 壁に入ってしまうので戻す
         mPosY -= mVelY;
@@ -171,13 +171,13 @@ void Person::setCamera( SDL_Rect& camera )
     {
         camera.y = 0;
     }
-    if( camera.x > GraphicManager::LEVEL_WIDTH - camera.w )
+    if( camera.x > GameManager::MAP_WIDTH - camera.w )
     {
-        camera.x = GraphicManager::LEVEL_WIDTH - camera.w;
+        camera.x = GameManager::MAP_WIDTH - camera.w;
     }
-    if( camera.y > GraphicManager::LEVEL_HEIGHT - camera.h )
+    if( camera.y > GameManager::MAP_HEIGHT - camera.h )
     {
-        camera.y = GraphicManager::LEVEL_HEIGHT - camera.h;
+        camera.y = GameManager::MAP_HEIGHT - camera.h;
     }
 }
 

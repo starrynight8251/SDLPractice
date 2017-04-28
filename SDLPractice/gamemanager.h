@@ -12,6 +12,7 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include "lwindow.h"
+#include "player.h"
 
 namespace mygame{// start of namespace
     
@@ -26,18 +27,29 @@ private:
     ~GameManager(){}
     
 public:
-    LWindow* gWindow;
-    SDL_Renderer* gRenderer;
-    // **** ゲームセーブ ****
-    static const int TOTAL_DATA = 10;
-    std::vector<Sint32> gData;
-    
+    LWindow* mWindow;
+    SDL_Renderer* mRenderer;
+
     // **** コントローラー ****
     // コントローラアナログスティックの無反応範囲
     static const int JOYSTICK_DEAD_ZONE = 8000;
     // コントローラ１
-    SDL_Joystick* gGameController;
-    SDL_Haptic* gControllerHaptic;
+    SDL_Joystick* mGameController;
+    SDL_Haptic* mControllerHaptic;
+    
+    // **** ゲームセーブ ****
+    static const int TOTAL_DATA = 10;
+    std::vector<Sint32> mData;
+    
+    // **** ゲームマップ ****
+    std::vector<Tile*> mMap;
+    static const int MAP_WIDTH = 1280;
+    static const int MAP_HEIGHT = 960;
+    static const int TOTAL_TILES = 192;
+
+    // **** プレーヤー ****
+    Player* mPlayer;
+    
     
     static GameManager& getInstance()
     {
@@ -48,6 +60,9 @@ public:
     bool init();
     bool loadMedia();
     void mainloop();
+    bool dataLoad();
+    bool dataSave();
+    bool loadMap(std::vector<Tile*>& map);
     void cleanup();
     
 };

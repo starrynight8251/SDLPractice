@@ -13,19 +13,14 @@
 #include "graphicmanager.h"
 #include "soundmanager.h"
 
-namespace mygame {
+namespace mygame {// start of namespace
 
 Player::Player()
 {
-    GraphicManager* grp_manager = &GraphicManager::getInstance();
-    mPosX = PLAYER_X;
-    mPosY = PLAYER_Y;
-    mDir  = DOWN;
-
+    // ゲーム内状態
+    mPosX = PLAYER_X; mPosY = PLAYER_Y;
     mVelX = mVelY = 0;
-    mR = mG = mB = mA = 255;
-    mDegrees = 0;
-    mFlipType = SDL_FLIP_NONE;
+    mDir  = DOWN;
 
     mColliders.resize( COLLISION_NUM );
     for(int i=0; i<COLLISION_NUM; i++){
@@ -33,29 +28,15 @@ Player::Player()
         mColliders[i].h = collisions[i].h;
     }
     shiftColliders();
-    
-    mPlayerTexture = grp_manager->gPersonTexture;
-    
-    mPlayerClips[ 0 ].x =   0;
-    mPlayerClips[ 0 ].y =   0;
-    mPlayerClips[ 0 ].w =  32;
-    mPlayerClips[ 0 ].h =  32;
-    
-    mPlayerClips[ 1 ].x =  32;
-    mPlayerClips[ 1 ].y =   0;
-    mPlayerClips[ 1 ].w =  32;
-    mPlayerClips[ 1 ].h =  32;
-    
-    mPlayerClips[ 2 ].x =  64;
-    mPlayerClips[ 2 ].y =   0;
-    mPlayerClips[ 2 ].w =  32;
-    mPlayerClips[ 2 ].h =  32;
-    
-    mPlayerClips[ 3 ].x =  32;
-    mPlayerClips[ 3 ].y =   0;
-    mPlayerClips[ 3 ].w =  32;
-    mPlayerClips[ 3 ].h =  32;
-    
+
+    // 表示用状態
+    mSpriteSheetIndex = 0;
+    mSheetCharaIndex = 0;
+    mSheetAnimIndex = 0;
+    mR = mG = mB = mA = 255;
+    mDegrees = 0;
+    mFlipType = SDL_FLIP_NONE;
+
     // パーティクル用領域確保
     particles.resize( GraphicManager::TOTAL_PARTICLES );
 }
@@ -216,8 +197,6 @@ void Player::handleEvent( SDL_Event& e )
                 mFlipType = SDL_FLIP_VERTICAL;
                 break;
         }
-        mPlayerTexture->setColor(mR, mG, mB);
-        mPlayerTexture->setAlpha(mA);
     }
 
     else if( e.type == SDL_KEYUP && e.key.repeat == 0 )
@@ -281,13 +260,21 @@ void Player::handleEvent( SDL_Event& e )
         }
     }
     // 向き補正
-    if( mVelX < 0 && mVelY == 0 ) mDir = LEFT;
-    if( mVelX > 0 && mVelY == 0 ) mDir = RIGHT;
-    if( mVelX == 0 && mVelY < 0 ) mDir = UP;
-    if( mVelX == 0 && mVelY > 0 ) mDir = DOWN;
+    if( mVelX < 0 && mVelY == 0 ){
+        mDir = LEFT;
+    }
+    if( mVelX > 0 && mVelY == 0 ){
+        mDir = RIGHT;
+    }
+    if( mVelX == 0 && mVelY < 0 ){
+        mDir = UP;
+    }
+    if( mVelX == 0 && mVelY > 0 ){
+        mDir = DOWN;
+    }
 }
 
-void Player::move( std::vector<Tile*>& tiles )
+void Player::move( int frame, std::vector<Tile*>& tiles )
 {
     SoundManager* snd_manager = &SoundManager::getInstance();
     
@@ -296,13 +283,13 @@ void Player::move( std::vector<Tile*>& tiles )
     shiftColliders();
 
     // ウィンドウ境界と壁との当たり判定　X
-    if( ( mPosX < 0 ) || ( mPosX + PLAYER_WIDTH > GraphicManager::LEVEL_WIDTH ) || touchesWall( mColliders, tiles ) )
+    if( ( mPosX < 0 ) || ( mPosX + PLAYER_WIDTH > GameManager::MAP_WIDTH ) || touchesWall( mColliders, tiles ) )
     {
         // 壁に入ってしまうので戻す
         mPosX -= mVelX;
         shiftColliders();
         if(Mix_Playing(1) != 1){
-            Mix_PlayChannel( 1, snd_manager->gLow, 0);
+            Mix_PlayChannel( 1, snd_manager->mLow, 0);
         }
     }
 
@@ -311,15 +298,19 @@ void Player::move( std::vector<Tile*>& tiles )
     shiftColliders();
     
     // ウィンドウ境界と壁との当たり判定　Y
-    if( ( mPosY < 0 ) || ( mPosY + PLAYER_HEIGHT > GraphicManager::LEVEL_HEIGHT ) || touchesWall( mColliders, tiles ) )
+    if( ( mPosY < 0 ) || ( mPosY + PLAYER_HEIGHT > GameManager::MAP_HEIGHT ) || touchesWall( mColliders, tiles ) )
     {
         // 壁に入ってしまうので戻す
         mPosY -= mVelY;
         shiftColliders();
         if(Mix_Playing(1) != 1){
-            Mix_PlayChannel( 1, snd_manager->gLow, 0);
+            Mix_PlayChannel( 1, snd_manager->mLow, 0);
         }
     }
+    
+    // スプライトシート上の位置を決定する
+    int all_frames = WALKING_ANIM_DISPFRAME * WALKING_ANIM_CNT;
+    mSheetAnimIndex = (frame % all_frames)/WALKING_ANIM_DISPFRAME ;
 }
 
 void Player::renderParticles(SDL_Rect& camera){
@@ -341,40 +332,35 @@ void Player::renderParticles(SDL_Rect& camera){
     }
 
 }
-
-void Player::setCamera( SDL_Rect& camera )
-{
-    // カメラ位置設定
-    camera.x = ( mPosX + PLAYER_WIDTH / 2 ) - GraphicManager::SCREEN_WIDTH / 2;
-    camera.y = ( mPosY + PLAYER_HEIGHT / 2 ) - GraphicManager::SCREEN_HEIGHT / 2;
     
-    // カメラを境界で止める
-    if( camera.x < 0 )
+void Player::shiftColliders(){
+    for( int i = 0; i < mColliders.size(); i++ )
     {
-        camera.x = 0;
-    }
-    if( camera.y < 0 )
-    {
-        camera.y = 0;
-    }
-    if( camera.x > GraphicManager::LEVEL_WIDTH - camera.w )
-    {
-        camera.x = GraphicManager::LEVEL_WIDTH - camera.w;
-    }
-    if( camera.y > GraphicManager::LEVEL_HEIGHT - camera.h )
-    {
-        camera.y = GraphicManager::LEVEL_HEIGHT - camera.h;
+        mColliders[i].x = mPosX + collisions[i].x;
+        mColliders[i].y = mPosY + collisions[i].y;
     }
 }
 
-void Player::render( int frame, SDL_Rect& camera )
+std::vector<SDL_Rect>& Player::getColliders()
 {
-    // プレイヤーの表示
-    int all_frames = WALKING_ANIM_DISPFRAME * WALKING_ANIM_CNT;
-	SDL_Rect currentClip = mPlayerClips[ (frame % all_frames)/WALKING_ANIM_DISPFRAME ];
-	currentClip.y += mDir*currentClip.h;
-	mPlayerTexture->render( mPosX-camera.x, mPosY-camera.y, &currentClip, mDegrees, NULL, mFlipType );
-    renderParticles(camera);
+    return mColliders;
+}
+
+
+int Player::getRed(){
+    return mR;
+}
+
+int Player::getGreen(){
+    return mG;
+}
+    
+int Player::getBlue(){
+    return mB;
+}
+    
+int Player::getAlpha(){
+    return mA;
 }
 
 int Player::getPosX(){
@@ -392,18 +378,4 @@ void Player::setPosX(int posX){
 void Player::setPosY(int posY){
     mPosY = posY;
 }
-
-void Player::shiftColliders(){
-    for( int i = 0; i < mColliders.size(); i++ )
-    {
-        mColliders[i].x = mPosX + collisions[i].x;
-        mColliders[i].y = mPosY + collisions[i].y;
-   }
-}
-
-std::vector<SDL_Rect>& Player::getColliders()
-{
-    return mColliders;
-}
-
-}
+}// end of namespace

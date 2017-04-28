@@ -55,12 +55,12 @@ void LWindow::handleEvent( SDL_Event& e )
             case SDL_WINDOWEVENT_SIZE_CHANGED:
                 mWidth = e.window.data1;
                 mHeight = e.window.data2;
-                SDL_RenderPresent( gm_manager->gRenderer );
+                SDL_RenderPresent( gm_manager->mRenderer );
                 break;
                 
             // エクスポージャで再描画
             case SDL_WINDOWEVENT_EXPOSED:
-                SDL_RenderPresent( gm_manager->gRenderer );
+                SDL_RenderPresent( gm_manager->mRenderer );
                 break;
                 
             // マウスがウィンドウに入った

@@ -25,29 +25,26 @@ private:
  
     static const int PLAYER_X      = 0;
     static const int PLAYER_Y      = 0;
+    static const int PLAYER_VEL    = 8;
     
     static const int COLLISION_NUM = 1;
     SDL_Rect collisions[COLLISION_NUM] = {
         {8,0,16,32}};
  
-    static const int PLAYER_VEL = 8;
 
     enum Dir{
-        LEFT  = 3,
+        LEFT  = 0,
         RIGHT = 1,
-        UP    = 0,
-        DOWN  = 2,
+        UP    = 2,
+        DOWN  = 3,
     };
-
-	LTexture* mPlayerTexture;
+    
 	SDL_Rect  mPlayerClips[ WALKING_ANIM_CNT ];
 
     std::vector<Particle*> particles;
     void renderParticles(SDL_Rect& camera);
     
     int mPosX, mPosY;
-    Dir mDir;
-
     int mVelX, mVelY;
     int mR, mG, mB;
     int mA;
@@ -64,10 +61,21 @@ public:
     Player();
     ~Player();
     
+    //SpriteData
+    int mSpriteSheetIndex;
+    int mSheetCharaIndex;
+    int mSheetAnimIndex;
+    Dir mDir;
+
     void handleEvent( SDL_Event& e );
-    void move( std::vector<Tile*>& tiles );
+    void move( int frame, std::vector<Tile*>& tiles );
     void setCamera(SDL_Rect& camera);
-    void render( int frame , SDL_Rect& camera );
+ 
+    int getRed();
+    int getGreen();
+    int getBlue();
+    int getAlpha();
+    
     int getPosX();
     int getPosY();
     void setPosX(int posX);
