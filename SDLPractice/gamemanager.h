@@ -16,56 +16,62 @@
 
 namespace mygame{// start of namespace
     
-// ゲームマネージャ
-// シングルトン
-class GameManager
-{
-private:
-    GameManager(){}
-    GameManager(const GameManager&);
-    GameManager& operator=(const GameManager&);
-    ~GameManager(){}
-    
-public:
-    LWindow* mWindow;
-    SDL_Renderer* mRenderer;
-
-    // **** コントローラー ****
-    // コントローラアナログスティックの無反応範囲
-    static const int JOYSTICK_DEAD_ZONE = 8000;
-    // コントローラ１
-    SDL_Joystick* mGameController;
-    SDL_Haptic* mControllerHaptic;
-    
-    // **** ゲームセーブ ****
-    static const int TOTAL_DATA = 10;
-    std::vector<Sint32> mData;
-    
-    // **** ゲームマップ ****
-    std::vector<Tile*> mMap;
-    static const int MAP_WIDTH = 1280;
-    static const int MAP_HEIGHT = 960;
-    static const int TOTAL_TILES = 192;
-
-    // **** プレーヤー ****
-    Player* mPlayer;
-    
-    
-    static GameManager& getInstance()
+    // ゲームマネージャ
+    // シングルトン
+    class GameManager
     {
-        static GameManager inst;
-        return inst;
-    }
-    
-    bool init();
-    bool loadMedia();
-    void mainloop();
-    bool dataLoad();
-    bool dataSave();
-    bool loadMap(std::vector<Tile*>& map);
-    void cleanup();
-    
-};
+    private:
+        // **** ゲームセーブ ****
+        // セーブデータ受け渡し用領域
+        static const int TOTAL_DATA = 10;
+        
+        GameManager(){}
+        GameManager(const GameManager&);
+        GameManager& operator=(const GameManager&);
+        ~GameManager(){}
+        
+        LWindow* mWindow;
+        SDL_Renderer* mRenderer;
+        
+        // コントローラ
+        SDL_Joystick* mGameController;
+        SDL_Haptic* mControllerHaptic;
+        
+        // ゲーム用データ
+        std::vector<Sint32> mData;
+        std::vector<Tile*> mMap;
+        Player* mPlayer;
+        
+    public:
+        // **** コントローラー ****
+        // コントローラアナログスティックの無反応範囲
+        static const int JOYSTICK_DEAD_ZONE = 8000;
+
+        // **** ゲームマップ ****
+        static const int MAP_WIDTH = 1280;
+        static const int MAP_HEIGHT = 960;
+        static const int TOTAL_TILES = 192;
+        
+        static GameManager& getInstance()
+        {
+            static GameManager inst;
+            return inst;
+        }
+        
+        bool init();
+        bool loadMedia();
+        void mainloop();
+        bool dataLoad();
+        bool dataSave();
+        bool loadMap(std::vector<Tile*>& map);
+        void cleanup();
+        
+        // アクセス関数
+        SDL_Renderer* getRenderer();
+        std::vector<Tile*>& getMap();
+        Player* getPlayer();
+        
+    };
     
 }// end of namaspace
 

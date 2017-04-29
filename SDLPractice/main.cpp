@@ -1,3 +1,11 @@
+//
+//  main.cpp
+//  SDLPractice
+//
+//  Created by starrynight on 2017/04/08.
+//  Copyright © 2017年 NoCompany. All rights reserved.
+//
+
 #include "gamemanager.h"
 
 int main( int argc, char* args[] ){

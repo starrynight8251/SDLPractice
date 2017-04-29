@@ -9,44 +9,40 @@
 #include "graphicmanager.h"
 
 namespace mygame{
-Particle::Particle( int x, int y )
-{
-    GraphicManager* grp_manager = &GraphicManager::getInstance();
-    // オフセット設定
-    mPosX = x + 8 + ( rand() % 12 );
-    mPosY = y + ( rand() % 28 );
-    
-    // アニメーション初期化
-    mFrame = rand() % 5;
-    
-    // パーティクル種類初期化
-    mTexture = grp_manager->mParticleTextures[ rand() % 3 ];
-//    
-//    switch( rand() % 3 )
-//    {
-//        case 0: mTexture = grp_manager->gRedTexture;break;
-//        case 1: mTexture = grp_manager->gGreenTexture; break;
-//        case 2: mTexture = grp_manager->gBlueTexture; break;
-//    }
-}
-
-void Particle::render(SDL_Rect& camera)
-{
-    GraphicManager* grp_manager = &GraphicManager::getInstance();
-    // パーティクル描画
-    mTexture->render( mPosX-camera.x, mPosY-camera.y);
-    
-    // パーティクル輝　描画
-    if( mFrame % 2 == 0 )
+    Particle::Particle( int x, int y )
     {
-        grp_manager->mParticleTextures[3]->render( mPosX-camera.x, mPosY-camera.y );
+        // オフセット設定
+        mPosX = x + 8 + ( rand() % 12 );
+        mPosY = y + ( rand() % 28 );
+        
+        // アニメーション初期化
+        mLife = 15 + rand() % 5;
+        
+        // パーティクル種類初期化
+        mTexIndex = rand() % 3;
     }
     
-    mFrame++;
-}
-
-bool Particle::isDead()
-{
-    return mFrame > 20;
-}
+    void Particle::decLife(){
+        mLife--;
+    }
+    
+    bool Particle::isDead()
+    {
+        return mLife <= 0;
+    }
+    
+    int Particle::getPosX(){
+        return mPosX;
+    }
+    int Particle::getPosY(){
+        return mPosY;
+    }
+    
+    int Particle::getLife(){
+        return mLife;
+    }
+    
+    int Particle::getTexIndex(){
+        return mTexIndex;
+    }
 }

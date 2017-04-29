@@ -13,17 +13,23 @@
 #include "ltexture.h"
 
 namespace mygame{
-class Particle
-{
-public:
-    Particle( int x, int y );
-    void render(SDL_Rect& camera);
-    bool isDead();
-    
-private:
-    int mPosX, mPosY;
-    int mFrame;
-    LTexture *mTexture;
-};
+    class Particle
+    {
+    private:
+        int mPosX, mPosY;
+        int mLife;
+        int mTexIndex;
+        
+    public:
+        Particle( int x, int y );
+        void decLife();
+        
+        // アクセス関数
+        bool isDead();
+        int getPosX();
+        int getPosY();
+        int getLife();
+        int getTexIndex();
+    };
 }
 #endif /* particle_h */

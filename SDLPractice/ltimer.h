@@ -12,28 +12,29 @@
 #include <SDL2/SDL.h>
 
 namespace mygame{
-class LTimer
-{
-public:
-    LTimer();
-
-    void start();
-    void stop();
-    void pause();
-    void unpause();
-
-    Uint32 getTicks();
-
-    bool isStarted();
-    bool isPaused();
-    
-private:
-    Uint32 mStartTicks;
-    Uint32 mPausedTicks;
-
-    bool mPaused;
-    bool mStarted;
-};
+    class LTimer
+    {
+    private:
+        Uint32 mStartTicks;
+        Uint32 mPausedTicks;
+        
+        bool mPaused;
+        bool mStarted;
+        
+    public:
+        LTimer();
+        
+        void start();
+        void stop();
+        void pause();
+        void unpause();
+        
+        // アクセス関数
+        Uint32 getTicks();
+        bool isStarted();
+        bool isPaused();
+        
+    };
 }
 
 #endif /* ltimer_h */

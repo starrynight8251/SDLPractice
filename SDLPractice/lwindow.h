@@ -12,36 +12,34 @@
 #include <SDL2/SDL.h>
 
 namespace mygame{
-class LWindow
-{
-public:
-    LWindow();
- 
-    bool init();
-
-    SDL_Renderer* createRenderer();
-
-    void handleEvent( SDL_Event& e );
-    void free();
-
-    int getWidth();
-    int getHeight();
-
-    bool hasMouseFocus();
-    bool hasKeyboardFocus();
-    bool isMinimized();
-    
-private:
-    SDL_Window* mWindow;
- 
-    int mWidth;
-    int mHeight;
-
-    bool mMouseFocus;
-    bool mKeyboardFocus;
-    bool mMinimized;
-    bool mFullScreen;
-
-};
+    class LWindow
+    {
+    private:
+        SDL_Window* mWindow;
+        
+        int mWidth;
+        int mHeight;
+        
+        bool mMouseFocus;
+        bool mKeyboardFocus;
+        bool mMinimized;
+        bool mFullScreen;
+        
+    public:
+        LWindow();
+        void free();
+        bool init();
+        void handleEvent( SDL_Event& e );
+        SDL_Renderer* createRenderer();
+        
+        // アクセス関数
+        int getWidth();
+        int getHeight();
+        
+        bool hasMouseFocus();
+        bool hasKeyboardFocus();
+        bool isMinimized();
+        
+    };
 }
 #endif /* lwindow_h */
