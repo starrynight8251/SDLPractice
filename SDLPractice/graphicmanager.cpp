@@ -102,6 +102,7 @@ namespace mygame{
     {
         GameManager* gm_manager = &GameManager::getInstance();
         SDL_Renderer* gm_renderer = gm_manager->getRenderer();
+        std::vector<Tile*> gm_map = gm_manager->getMap();
         Player* plyer = gm_manager->getPlayer();
         
         // カメラ位置設定
@@ -116,8 +117,6 @@ namespace mygame{
         mBGTextures[0]->render( 0, 0, &mCamera);
         
         // **** マップ描画 ****
-        std::vector<Tile*> gm_map = gm_manager->getMap();
-        
         int chips[] = {0,1,2,7,6,9,10,11,8,5,4,3};
         for( int i = 0; i < gm_map.size(); ++i )
         {
@@ -126,8 +125,10 @@ namespace mygame{
             // タイルがスクリーン上にあるなら（クリッピング）
             if( checkCollision( mCamera, pTile->getBox() ) )
             {
+                int w = Tile::TILE_WIDTH;
+                int h = Tile::TILE_HEIGHT;
                 // テクスチャクリップ位置指定
-                SDL_Rect currentClip = {80*(chips[pTile->getType()]/3),80*(chips[pTile->getType()]%3),80,80};
+                SDL_Rect currentClip = {w*(chips[pTile->getType()]/3),h*(chips[pTile->getType()]%3),w,h};
                 // タイル描画
                 mMapSheetTextures[0]->render( pTile->getBox().x - mCamera.x, pTile->getBox().y - mCamera.y, &currentClip );
             }
@@ -144,7 +145,9 @@ namespace mygame{
         // テクスチャクリップ位置設定
         int dir[] = { 3, 1, 0, 2 };
         int anim[] = { 0, 1, 2, 1};
-        SDL_Rect currentClip = {32*anim[animIndex],32*dir[dirIndex],32,32};
+        int w = Player::PLAYER_WIDTH;
+        int h = Player::PLAYER_HEIGHT;
+        SDL_Rect currentClip = {w*anim[animIndex],h*dir[dirIndex],w,h};
         
         // スプライト描画
         mSpriteSheetTextures[sheetIndex]->render(plyer->getPosX()-mCamera.x, plyer->getPosY()-mCamera.y, &currentClip);
@@ -153,16 +156,15 @@ namespace mygame{
         for( int i = 0; i < Player::TOTAL_PARTICLES; ++i )
         {
             std::vector<Particle*> part = plyer->getParticles();
-            
             // パーティクル描画
-            mParticleTextures[part[i]->getTexIndex()]->render( part[i]->getPosX() - mCamera.x, part[i]->getPosY() - mCamera.y);
-            
-            // パーティクル輝　描画
             if( part[i]->getLife() % 2 == 0 )
             {
+                // パーティクル輝　描画
                 mParticleTextures[3]->render( part[i]->getPosX()-mCamera.x, part[i]->getPosY()-mCamera.y );
+            }else{
+                // パーティクル赤、緑、青　描画
+                mParticleTextures[part[i]->getTexIndex()]->render( part[i]->getPosX() - mCamera.x, part[i]->getPosY() - mCamera.y);
             }
-            
             part[i]->decLife();
         }
         

@@ -137,6 +137,9 @@ namespace mygame{
         
         
         // ゲームデータ初期化
+        // カレントディレクトリが実行ファイルのディレクトリと違うケースが有るため
+        // 実行ファイルのディレクトリを保持しておく
+        mBasePath = SDL_GetBasePath();
         mData.resize( TOTAL_DATA );// セーブデータ用
         mMap.resize( TOTAL_TILES );
         mPlayer = new Player();
@@ -171,18 +174,21 @@ namespace mygame{
             success = false;
         }
         
-        // **** データ読込 ****
-        mPlayer->setPosX(mData[0]);
-        mPlayer->setPosY(mData[1]);
-        
         // **** グラフィックロード ****
         GraphicManager* grp_manager = &GraphicManager::getInstance();
-        success = grp_manager->loadMedia();
+        if(!grp_manager->loadMedia())
+        {
+            printf( "Failed to grp_manager->loadMedia!\n" );
+            success = false;
+        };
         
         // **** サウンドロード ****
         SoundManager* snd_manager = &SoundManager::getInstance();
-        success = snd_manager->loadMedia();
-        snd_manager->musicstart();
+        if(!snd_manager->loadMedia())
+        {
+            printf( "Failed to snd_manager->loadMedia!\n" );
+            success = false;
+        }
         
         return success;
     }
@@ -204,6 +210,13 @@ namespace mygame{
         LTimer fpsTimer;// タイマー
         int prev_frame = 0;// 最小化したときのフレーム
         float avgFPS = 0.0f;// FPS計算結果
+        
+        // 音楽を開始する
+        snd_manager->musicstart();
+        
+        // **** データ読込 ****
+        mPlayer->setPosX(mData[0]);
+        mPlayer->setPosY(mData[1]);
         
         // メインイベントループ
         while( !quit )
@@ -266,14 +279,30 @@ namespace mygame{
                 avgFPS = (frame - prev_frame) / ( fpsTimer.getTicks() / 1000.f );
             }
         }
+        
+        // **** データ書込 ****
+        mData[0] = mPlayer->getPosX();
+        mData[1] = mPlayer->getPosY();
+        for(int i=2; i<mData.size(); ++i){
+            mData[i] = 0;
+        }
+        
+        // ファイルに書き出す
+        if(!dataSave()){
+            printf( "Error: Unable to dataSave! %s\n", SDL_GetError() );
+        }
+       
     }
     
     bool GameManager::dataLoad()
     {
         bool success = true;
         
+        std::string path = mBasePath;// 実行ファイルディレクトリ取得
+        path += "save/nums.dat";
+        
         // バイナリファイルを読み込みモードで開く
-        SDL_RWops* file = SDL_RWFromFile( "save/nums.bin", "r+b" );
+        SDL_RWops* file = SDL_RWFromFile( path.c_str(), "r+b" );
         
         // ファイルが存在しなかった
         if( file == NULL )
@@ -281,7 +310,7 @@ namespace mygame{
             printf( "Warning: Unable to open file! SDL Error: %s\n", SDL_GetError() );
             
             // バイナリファイルを書き込みモードで開く（新規作成）
-            file = SDL_RWFromFile( "save/nums.bin", "w+b" );
+            file = SDL_RWFromFile( path.c_str(), "w+b" );
             if( file != NULL )
             {
                 printf( "New file created!\n" );
@@ -318,6 +347,33 @@ namespace mygame{
         return success;
     }
     
+    bool GameManager::dataSave()
+    {
+        bool success = true;
+        
+        std::string path = mBasePath;// 実行ファイルディレクトリ取得
+        path += "save/nums.dat";
+        
+        // バイナリファイルを書き込みモードで開く
+        SDL_RWops* file = SDL_RWFromFile( path.c_str(), "w+b" );
+        if( file != NULL )
+        {
+            // データをセーブする
+            for( int i = 0; i < TOTAL_DATA; ++i )
+            {
+                SDL_RWwrite( file, &mData[ i ], sizeof(Sint32), 1 );
+            }
+            
+            // ファイルを閉じる
+            SDL_RWclose( file );
+        }
+        else
+        {
+            success = false;
+        }
+        return success;
+    }
+
     bool GameManager::loadMap(std::vector<Tile*>& map)
     {
         bool mapLoaded = true;
@@ -325,8 +381,11 @@ namespace mygame{
         // タイルのオフセット
         int x = 0, y = 0;
         
+        std::string path = mBasePath;// 実行ファイルディレクトリ取得
+        path += "graphics/lazy2.map";
+        
         // マップ用ファイルを開く
-        std::ifstream map_file( "graphics/lazy2.map" );
+        std::ifstream map_file( path.c_str() );
         if( !map_file )
         {
             printf( "Unable to load map file!\n" );
@@ -378,30 +437,18 @@ namespace mygame{
                     y += Tile::TILE_HEIGHT;
                 }
             }
+            // ファイルを閉じる
+            map_file.close();
         }
-        
-        // ファイルを閉じる
-        map_file.close();
         
         return mapLoaded;
     }
     
     void GameManager::cleanup()
     {
-        // データ書込
-        mData[0] = mPlayer->getPosX();
-        mData[1] = mPlayer->getPosY();
-        for(int i=2; i<mData.size(); ++i){
-            mData[i] = 0;
-        }
-        
-        // **** データセーブ ****
-        if(!dataSave()){
-            printf( "Error: Unable to dataSave! %s\n", SDL_GetError() );
-        }
-        mData.clear();
-        
         // **** 開放処理 ****
+        mData.clear();
+
         // ゲームデータ
         if(mPlayer != NULL)
         {
@@ -443,29 +490,6 @@ namespace mygame{
         Mix_Quit();
         IMG_Quit();
         SDL_Quit();
-    }
-    
-    bool GameManager::dataSave()
-    {
-        bool success = true;
-        // バイナリファイルを書き込みモードで開く
-        SDL_RWops* file = SDL_RWFromFile( "save/nums.bin", "w+b" );
-        if( file != NULL )
-        {
-            // データをセーブする
-            for( int i = 0; i < TOTAL_DATA; ++i )
-            {
-                SDL_RWwrite( file, &mData[ i ], sizeof(Sint32), 1 );
-            }
-            
-            // ファイルを閉じる
-            SDL_RWclose( file );
-        }
-        else
-        {
-            success = false;
-        }
-        return success;
     }
     
     SDL_Renderer* GameManager::getRenderer()

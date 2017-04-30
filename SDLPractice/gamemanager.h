@@ -43,6 +43,7 @@ namespace mygame{
         std::vector<Tile*> mMap;
         Player* mPlayer;
         std::stringstream mFPSText;
+        std::string mBasePath;// カレントディレクトリ取得用
         
     public:
         // **** コントローラー ****
@@ -73,6 +74,7 @@ namespace mygame{
         std::vector<Tile*>& getMap();
         Player* getPlayer();
         std::stringstream& getFPSText();
+        char* getBasePath();
     };
     
 }
