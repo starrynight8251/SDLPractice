@@ -7,8 +7,9 @@
 //
 
 #include "soundmanager.h"
+#include "gamemanager.h"
 
-namespace mygame{// start of namespace
+namespace mygame{
     
     bool SoundManager::init()
     {
@@ -108,6 +109,22 @@ namespace mygame{// start of namespace
         }
     }
     
+    // ***********************************
+    //          サウンドメイン処理
+    // ***********************************
+    void SoundManager::update(int frame)
+    {
+        GameManager* gm_manager = &GameManager::getInstance();
+        Player* plyer = gm_manager->getPlayer();
+        
+        if(plyer->getHitWall())
+        {
+            if(Mix_Playing(1) != 1){
+                Mix_PlayChannel( 1, mLow, 0);
+            }
+        }
+    }
+    
     void SoundManager::cleanup()
     {
         musicpause();
@@ -124,4 +141,4 @@ namespace mygame{// start of namespace
         mMusic = NULL;
     }
     
-}// end of namespace
+}

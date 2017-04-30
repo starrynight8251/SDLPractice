@@ -12,7 +12,8 @@
 #include "gamemanager.h"
 #include "helper.h"
 
-namespace mygame{// start of namespace
+namespace mygame{
+    
     bool GraphicManager::init()
     {
         mFont = NULL;
@@ -94,20 +95,27 @@ namespace mygame{// start of namespace
         return success;
     }
     
-    void GraphicManager::render( int frame )
+    // ***********************************
+    //         グラフィックメイン処理
+    // ***********************************
+    void GraphicManager::update( int frame )
     {
         GameManager* gm_manager = &GameManager::getInstance();
         SDL_Renderer* gm_renderer = gm_manager->getRenderer();
+        Player* plyer = gm_manager->getPlayer();
+        
+        // カメラ位置設定
+        setCamera(plyer->getPosX(),plyer->getPosY(),Player::PLAYER_WIDTH,Player::PLAYER_HEIGHT);
         
         // **** 描画前処理 ****
         //　設定したクリア色でクリアする
         SDL_SetRenderDrawColor( gm_renderer, 0xFF, 0xFF, 0xFF, 0xFF );
         SDL_RenderClear( gm_renderer );
         
-        // 背景
+        // **** 背景 ****
         mBGTextures[0]->render( 0, 0, &mCamera);
         
-        // マップ描画
+        // **** マップ描画 ****
         std::vector<Tile*> gm_map = gm_manager->getMap();
         
         int chips[] = {0,1,2,7,6,9,10,11,8,5,4,3};
@@ -126,14 +134,12 @@ namespace mygame{// start of namespace
         }
         
         // **** スプライト描画 ****
-        Player* p = gm_manager->getPlayer();
-        
         // テクスチャ色設定
-        int sheetIndex = p->getSpriteSheetIndex();
-        int animIndex  = p->getSpriteAnimIndex();
-        int dirIndex   = p->getDir();
-        mSpriteSheetTextures[sheetIndex]->setColor(p->getRed(), p->getGreen(), p->getBlue());
-        mSpriteSheetTextures[sheetIndex]->setAlpha(p->getAlpha());
+        int sheetIndex = plyer->getSpriteSheetIndex();
+        int animIndex  = plyer->getSpriteAnimIndex();
+        int dirIndex   = plyer->getDir();
+        mSpriteSheetTextures[sheetIndex]->setColor(plyer->getRed(), plyer->getGreen(), plyer->getBlue());
+        mSpriteSheetTextures[sheetIndex]->setAlpha(plyer->getAlpha());
         
         // テクスチャクリップ位置設定
         int dir[] = { 3, 1, 0, 2 };
@@ -141,12 +147,12 @@ namespace mygame{// start of namespace
         SDL_Rect currentClip = {32*anim[animIndex],32*dir[dirIndex],32,32};
         
         // スプライト描画
-        mSpriteSheetTextures[sheetIndex]->render(p->getPosX()-mCamera.x, p->getPosY()-mCamera.y, &currentClip);
+        mSpriteSheetTextures[sheetIndex]->render(plyer->getPosX()-mCamera.x, plyer->getPosY()-mCamera.y, &currentClip);
         
         // パーティクル描画
         for( int i = 0; i < Player::TOTAL_PARTICLES; ++i )
         {
-            std::vector<Particle*> part = p->getParticles();
+            std::vector<Particle*> part = plyer->getParticles();
             
             // パーティクル描画
             mParticleTextures[part[i]->getTexIndex()]->render( part[i]->getPosX() - mCamera.x, part[i]->getPosY() - mCamera.y);
@@ -160,7 +166,9 @@ namespace mygame{// start of namespace
             part[i]->decLife();
         }
         
-        // **** FPS ****
+        // **** FPSテキスト描画 ****
+        SDL_Color FPSTextColor = { 255, 0, 255 };
+        setText(gm_manager->getFPSText(), FPSTextColor);
         mTextTextures[0]->render( SCREEN_WIDTH - mTextTextures[0]->getWidth(), 0 );
         
         // **** 描画後処理 ****
@@ -168,7 +176,8 @@ namespace mygame{// start of namespace
         SDL_RenderPresent( gm_renderer );
     }
     
-    void GraphicManager::setCamera( int px, int py, int pw, int ph ){
+    void GraphicManager::setCamera( int px, int py, int pw, int ph )
+    {
         // カメラ位置設定
         mCamera.x = ( px + pw / 2 ) - SCREEN_WIDTH / 2;
         mCamera.y = ( py + ph / 2 ) - SCREEN_HEIGHT / 2;
@@ -201,7 +210,8 @@ namespace mygame{// start of namespace
         }
     }
     
-    void GraphicManager::cleanup(){
+    void GraphicManager::cleanup()
+    {
         for (int i = 0; i < mBGTextures.size(); ++i) {
             if( mBGTextures[i] != NULL )
             {
@@ -250,4 +260,5 @@ namespace mygame{// start of namespace
         TTF_CloseFont( mFont );
         mFont = NULL;
     }
-}// end of namespace
+    
+}

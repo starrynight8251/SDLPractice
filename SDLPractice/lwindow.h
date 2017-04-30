@@ -12,6 +12,7 @@
 #include <SDL2/SDL.h>
 
 namespace mygame{
+    
     class LWindow
     {
     private:
@@ -41,5 +42,7 @@ namespace mygame{
         bool isMinimized();
         
     };
+    
 }
+
 #endif /* lwindow_h */

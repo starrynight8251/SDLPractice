@@ -34,8 +34,11 @@ namespace mygame{
         // SDL_INIT_AUDIO サウンド
         // SDL_INIT_JOYSTICK コントローラ
         // SDL_INIT_HAPTIC コントローラ振動機能
-        if( SDL_Init( SDL_INIT_VIDEO    | SDL_INIT_AUDIO |
-                     SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC ) < 0 )
+        if( SDL_Init( SDL_INIT_VIDEO    |
+                      SDL_INIT_AUDIO    |
+                      SDL_INIT_JOYSTICK |
+                      SDL_INIT_HAPTIC
+                     ) < 0 )
         {
             printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
             success = false;
@@ -53,8 +56,6 @@ namespace mygame{
             else
             {
                 // レンダラ作成
-                // SDL_RENDERER_ACCELERATED ハードウェア支援機能有り
-                // SDL_RENDERER_PRESENTVSYNC 画面の更新タイミングを待つ(垂直同期)
                 mRenderer = mWindow->createRenderer();
                 if( mRenderer == NULL )
                 {
@@ -67,7 +68,8 @@ namespace mygame{
                     SDL_SetRenderDrawColor( mRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
                     
                     // JPG,PNG 読込のために SDL_image を初期化
-                    int imgFlags = IMG_INIT_JPG | IMG_INIT_PNG ;
+                    int imgFlags =  IMG_INIT_JPG |
+                                    IMG_INIT_PNG ;
                     if( !( IMG_Init( imgFlags ) & imgFlags ) )
                     {
                         printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
@@ -132,12 +134,13 @@ namespace mygame{
             
         }
         
-        // セーブデータ用領域確保
-        mData.resize( TOTAL_DATA );
+        
         
         // ゲームデータ初期化
+        mData.resize( TOTAL_DATA );// セーブデータ用
         mMap.resize( TOTAL_TILES );
         mPlayer = new Player();
+        mFPSText.str( "" );
         
         // グラフィックマネージャ初期化
         GraphicManager* grp_manager = &GraphicManager::getInstance();
@@ -184,25 +187,23 @@ namespace mygame{
         return success;
     }
     
+    // ***********************************
+    //           ゲームメイン処理
+    // ***********************************
     void GameManager::mainloop()
     {
         GraphicManager* grp_manager = &GraphicManager::getInstance();
         SoundManager* snd_manager = &SoundManager::getInstance();
         
         bool quit = false;
-        
         SDL_Event e;
         
         // 現在のフレーム
         int frame = 0;
-        
-        
         // FPS計測用
         LTimer fpsTimer;// タイマー
         int prev_frame = 0;// 最小化したときのフレーム
         float avgFPS = 0.0f;// FPS計算結果
-        std::stringstream timeText;// 表示用テキスト
-        SDL_Color textColor = { 255, 0, 255 };// テキストカラー
         
         // メインイベントループ
         while( !quit )
@@ -248,18 +249,16 @@ namespace mygame{
                 // 音楽を再開する
                 snd_manager->musicresume();
                 
-                // **** 更新処理　****
-                // プレイヤー・カメラ位置更新
-                mPlayer->move(frame, mMap);
-                grp_manager->setCamera(mPlayer->getPosX(),mPlayer->getPosY(),Player::PLAYER_WIDTH,Player::PLAYER_HEIGHT);
+                // **** 状態更新処理　****
+                // プレイヤー状態
+                mPlayer->changeState(frame);
+                // FPS計測状態
+                mFPSText.str( "" );
+                mFPSText << std::fixed << std::setprecision(2) << avgFPS << "fps";
                 
-                // FPS情報更新
-                timeText.str( "" );
-                timeText << std::fixed << std::setprecision(2) << avgFPS << "fps";
-                grp_manager->setText(timeText,textColor);
-                
-                // **** 描画処理 ****
-                grp_manager->render(frame);
+                // **** 状態反映処理 ****
+                grp_manager->update(frame);
+                snd_manager->update(frame);
                 
                 // 次フレーム
                 ++frame;
@@ -269,7 +268,8 @@ namespace mygame{
         }
     }
     
-    bool GameManager::dataLoad(){
+    bool GameManager::dataLoad()
+    {
         bool success = true;
         
         // バイナリファイルを読み込みモードで開く
@@ -445,7 +445,8 @@ namespace mygame{
         SDL_Quit();
     }
     
-    bool GameManager::dataSave(){
+    bool GameManager::dataSave()
+    {
         bool success = true;
         // バイナリファイルを書き込みモードで開く
         SDL_RWops* file = SDL_RWFromFile( "save/nums.bin", "w+b" );
@@ -482,4 +483,9 @@ namespace mygame{
         return mPlayer;
     }
     
-}// end of namespace
+    std::stringstream& GameManager::getFPSText()
+    {
+        return mFPSText;
+    }
+    
+}

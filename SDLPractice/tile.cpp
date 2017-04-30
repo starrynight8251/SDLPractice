@@ -12,6 +12,7 @@
 #include "helper.h"
 
 namespace mygame{
+    
     Tile::Tile( int x, int y, int tileType )
     {
         // オフセット位置
@@ -35,4 +36,5 @@ namespace mygame{
     {
         return mBox;
     }
+    
 }

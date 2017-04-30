@@ -9,6 +9,7 @@
 #include "ltimer.h"
 
 namespace mygame{
+    
     LTimer::LTimer()
     {
         mStartTicks = 0;
@@ -86,4 +87,5 @@ namespace mygame{
     {
         return mPaused && mStarted;
     }
+    
 }

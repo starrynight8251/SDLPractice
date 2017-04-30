@@ -14,6 +14,7 @@
 #include <string>
 
 namespace mygame{
+    
     class LTexture
     {
     private:
@@ -41,6 +42,7 @@ namespace mygame{
         int getWidth();
         int getHeight();
     };
+    
 }
 
 #endif /* ltexture_h */

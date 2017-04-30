@@ -14,7 +14,7 @@
 #include "graphicmanager.h"
 #include "soundmanager.h"
 
-namespace mygame {
+namespace mygame{
     
     Player::Player()
     {
@@ -40,6 +40,9 @@ namespace mygame {
         
         // パーティクル用領域確保
         mParticles.resize( TOTAL_PARTICLES );
+        
+        // 効果音用状態
+        mHitWall = false;
     }
     
     Player::~Player()
@@ -275,23 +278,25 @@ namespace mygame {
         }
     }
     
-    void Player::move( int frame, std::vector<Tile*>& tiles )
+    void Player::changeState( int frame )
     {
-        SoundManager* snd_manager = &SoundManager::getInstance();
+        GameManager* gm_manager = &GameManager::getInstance();
+        std::vector<Tile*> map = gm_manager->getMap();
+        
+        // 効果音フラグクリア
+        mHitWall = false;
         
         // 移動処理　X
         mPosX += mVelX;
         shiftColliders();
         
         // ウィンドウ境界と壁との当たり判定　X
-        if( ( mPosX < 0 ) || ( mPosX + PLAYER_WIDTH > GameManager::MAP_WIDTH ) || touchesWall( mColliders, tiles ) )
+        if( ( mPosX < 0 ) || ( mPosX + PLAYER_WIDTH > GameManager::MAP_WIDTH ) || touchesWall( mColliders, map ) )
         {
             // 壁に入ってしまうので戻す
             mPosX -= mVelX;
             shiftColliders();
-            if(Mix_Playing(1) != 1){
-                Mix_PlayChannel( 1, snd_manager->mLow, 0);
-            }
+            mHitWall = true;
         }
         
         // 移動処理 Y
@@ -299,14 +304,12 @@ namespace mygame {
         shiftColliders();
         
         // ウィンドウ境界と壁との当たり判定　Y
-        if( ( mPosY < 0 ) || ( mPosY + PLAYER_HEIGHT > GameManager::MAP_HEIGHT ) || touchesWall( mColliders, tiles ) )
+        if( ( mPosY < 0 ) || ( mPosY + PLAYER_HEIGHT > GameManager::MAP_HEIGHT ) || touchesWall( mColliders, map ) )
         {
             // 壁に入ってしまうので戻す
             mPosY -= mVelY;
             shiftColliders();
-            if(Mix_Playing(1) != 1){
-                Mix_PlayChannel( 1, snd_manager->mLow, 0);
-            }
+            mHitWall = true;
         }
         
         // スプライトシート上の位置を決定する
@@ -326,7 +329,8 @@ namespace mygame {
         
     }
     
-    void Player::shiftColliders(){
+    void Player::shiftColliders()
+    {
         for( int i = 0; i < mColliders.size(); i++ )
         {
             mColliders[i].x = mPosX + collisions[i].x;
@@ -334,19 +338,23 @@ namespace mygame {
         }
     }
     
-    int Player::getPosX(){
+    int Player::getPosX()
+    {
         return mPosX;
     }
     
-    int Player::getPosY(){
+    int Player::getPosY()
+    {
         return mPosY;
     }
     
-    void Player::setPosX(int posX){
+    void Player::setPosX(int posX)
+    {
         mPosX = posX;
     }
     
-    void Player::setPosY(int posY){
+    void Player::setPosY(int posY)
+    {
         mPosY = posY;
     }
     
@@ -355,31 +363,38 @@ namespace mygame {
         return mColliders;
     }
     
-    int Player::getRed(){
+    int Player::getRed()
+    {
         return mR;
     }
     
-    int Player::getGreen(){
+    int Player::getGreen()
+    {
         return mG;
     }
     
-    int Player::getBlue(){
+    int Player::getBlue()
+    {
         return mB;
     }
     
-    int Player::getAlpha(){
+    int Player::getAlpha()
+    {
         return mA;
     }
     
-    int Player::getSpriteSheetIndex(){
+    int Player::getSpriteSheetIndex()
+    {
         return mSpriteSheetIndex;
     }
     
-    int Player::getSpriteAnimIndex(){
+    int Player::getSpriteAnimIndex()
+    {
         return mSheetAnimIndex;
     }
     
-    int Player::getDir(){
+    int Player::getDir()
+    {
         return mDir;
     }
     
@@ -388,4 +403,9 @@ namespace mygame {
         return mParticles;
     }
     
+    bool Player::getHitWall()
+    {
+        return mHitWall;
+    }
+
 }

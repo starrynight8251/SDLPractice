@@ -13,6 +13,7 @@
 #include "ltexture.h"
 
 namespace mygame{
+    
     class Particle
     {
     private:
@@ -31,5 +32,7 @@ namespace mygame{
         int getLife();
         int getTexIndex();
     };
+    
 }
+
 #endif /* particle_h */

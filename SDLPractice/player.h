@@ -55,6 +55,9 @@ namespace mygame{
         
         std::vector<Particle*> mParticles;
         
+        // 効果音用フラグ
+        bool mHitWall;
+        
     public:
         static const int PLAYER_WIDTH  = 32;
         static const int PLAYER_HEIGHT = 32;
@@ -64,7 +67,7 @@ namespace mygame{
         ~Player();
         
         void handleEvent( SDL_Event& e );
-        void move( int frame, std::vector<Tile*>& tiles );
+        void changeState( int frame );
         
         // アクセス関数
         int getPosX();
@@ -81,7 +84,10 @@ namespace mygame{
         int getSpriteAnimIndex();
         int getDir();
         std::vector<Particle*>& getParticles();
+        
+        bool getHitWall();
     };
+    
 }
 
 #endif /* player_h */

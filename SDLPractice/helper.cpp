@@ -11,20 +11,20 @@
 #include "gamemanager.h"
 #include "graphicmanager.h"
 
-namespace mygame {
+namespace mygame{
     
-    // タイルマップとの当たり判定
-    bool touchesWall( std::vector<SDL_Rect>& boxes, std::vector<Tile*>& tiles )
+    // 壁との当たり判定
+    bool touchesWall( std::vector<SDL_Rect>& boxes, std::vector<Tile*>& map )
     {
         // 全タイルに対して判定
         for( int i = 0; i < GameManager::TOTAL_TILES; ++i )
         {
             // タイルの種類判定
-            if( ( tiles[ i ]->getType() >= Tile::TILE_CENTER ) && ( tiles[ i ]->getType() <= Tile::TILE_TOPLEFT ) )
+            if( ( map[ i ]->getType() >= Tile::TILE_CENTER ) && ( map[ i ]->getType() <= Tile::TILE_TOPLEFT ) )
             {
                 for(int j=0; j<boxes.size(); j++){
                     // 四角形同士で当たり判定
-                    if( checkCollision( boxes[ j ], tiles[ i ]->getBox() ) )
+                    if( checkCollision( boxes[ j ], map[ i ]->getBox() ) )
                     {
                         return true;
                     }
@@ -36,6 +36,7 @@ namespace mygame {
         return false;
     }
     
+    // 四角形同士の当たり判定
     bool checkCollision( SDL_Rect a, SDL_Rect b )
     {
         // 四角形の各辺
@@ -81,6 +82,7 @@ namespace mygame {
         return true;
     }
     
+    // 複数の四角形同士の当たり判定
     bool checkCollision( std::vector<SDL_Rect>& a, std::vector<SDL_Rect>& b )
     {
         // 四角形の各辺
@@ -118,4 +120,5 @@ namespace mygame {
         // 重なっていない
         return false;
     }
+    
 }

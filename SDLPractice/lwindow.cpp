@@ -40,7 +40,11 @@ namespace mygame{
     
     SDL_Renderer* LWindow::createRenderer()
     {
-        return SDL_CreateRenderer( mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
+        // SDL_RENDERER_ACCELERATED ハードウェア支援機能有り
+        // SDL_RENDERER_PRESENTVSYNC 画面の更新タイミングを待つ(垂直同期)
+        return SDL_CreateRenderer( mWindow, -1,
+                                  SDL_RENDERER_ACCELERATED |
+                                  SDL_RENDERER_PRESENTVSYNC );
     }
     
     void LWindow::handleEvent( SDL_Event& e )
@@ -155,4 +159,5 @@ namespace mygame{
     {
         return mMinimized;
     }
+    
 }

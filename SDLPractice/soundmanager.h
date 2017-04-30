@@ -11,24 +11,25 @@
 
 #include <SDL2_mixer/SDL_mixer.h>
 
-namespace mygame{// start of namespace
+namespace mygame{
+    
     // サウンドマネージャ
     // シングルトン、オブザーバー
     class SoundManager
     {
     private:
-        SoundManager(){}
-        SoundManager(const SoundManager&);
-        SoundManager& operator=(const SoundManager&);
-        ~SoundManager(){}
-        
-    public:
         Mix_Music *mMusic;
         Mix_Chunk *mScratch;
         Mix_Chunk *mHigh;
         Mix_Chunk *mMedium;
         Mix_Chunk *mLow;
         
+        SoundManager(){}
+        SoundManager(const SoundManager&);
+        SoundManager& operator=(const SoundManager&);
+        ~SoundManager(){}
+        
+    public:
         static SoundManager& getInstance()
         {
             static SoundManager inst;
@@ -43,7 +44,10 @@ namespace mygame{// start of namespace
         void musicpause();
         void cleanup();
         
+        void update(int frame);
+        
     };
-}// end of namaspace
+    
+}
 
 #endif /* soundmanager_h */

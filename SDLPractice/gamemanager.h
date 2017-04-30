@@ -10,11 +10,12 @@
 #define gamemanager_h
 
 #include <SDL2/SDL.h>
+#include <sstream>
 #include <vector>
 #include "lwindow.h"
 #include "player.h"
 
-namespace mygame{// start of namespace
+namespace mygame{
     
     // ゲームマネージャ
     // シングルトン
@@ -41,6 +42,7 @@ namespace mygame{// start of namespace
         std::vector<Sint32> mData;
         std::vector<Tile*> mMap;
         Player* mPlayer;
+        std::stringstream mFPSText;
         
     public:
         // **** コントローラー ****
@@ -70,9 +72,9 @@ namespace mygame{// start of namespace
         SDL_Renderer* getRenderer();
         std::vector<Tile*>& getMap();
         Player* getPlayer();
-        
+        std::stringstream& getFPSText();
     };
     
-}// end of namaspace
+}
 
 #endif /* gamemanager_h */

@@ -121,13 +121,15 @@ namespace mygame{
     }
     
     // 色混合モード設定
-    void LTexture::setBlendMode( SDL_BlendMode blending ){
+    void LTexture::setBlendMode( SDL_BlendMode blending )
+    {
         // 色混合モード
         SDL_SetTextureBlendMode( mTexture, blending );
     }
     
     // アルファ値設定
-    void LTexture::setAlpha( Uint8 alpha ){
+    void LTexture::setAlpha( Uint8 alpha )
+    {
         // アルファ値
         SDL_SetTextureAlphaMod( mTexture, alpha );
     }
@@ -159,4 +161,5 @@ namespace mygame{
     {
         return mHeight;
     }
+    
 }

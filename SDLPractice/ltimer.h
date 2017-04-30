@@ -12,6 +12,7 @@
 #include <SDL2/SDL.h>
 
 namespace mygame{
+    
     class LTimer
     {
     private:
@@ -35,6 +36,7 @@ namespace mygame{
         bool isPaused();
         
     };
+    
 }
 
 #endif /* ltimer_h */

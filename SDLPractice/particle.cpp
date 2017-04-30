@@ -9,6 +9,7 @@
 #include "graphicmanager.h"
 
 namespace mygame{
+    
     Particle::Particle( int x, int y )
     {
         // オフセット設定
@@ -22,7 +23,8 @@ namespace mygame{
         mTexIndex = rand() % 3;
     }
     
-    void Particle::decLife(){
+    void Particle::decLife()
+    {
         mLife--;
     }
     
@@ -31,18 +33,23 @@ namespace mygame{
         return mLife <= 0;
     }
     
-    int Particle::getPosX(){
+    int Particle::getPosX()
+    {
         return mPosX;
     }
-    int Particle::getPosY(){
+    int Particle::getPosY()
+    {
         return mPosY;
     }
     
-    int Particle::getLife(){
+    int Particle::getLife()
+    {
         return mLife;
     }
     
-    int Particle::getTexIndex(){
+    int Particle::getTexIndex()
+    {
         return mTexIndex;
     }
+    
 }
