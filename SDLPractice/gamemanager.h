@@ -2,7 +2,7 @@
 //  gamemanager.h
 //  SDLPractice
 //
-//  Created by starrynight on 2017/04/22.
+//  Created by starrynight on 2017/05/04.
 //  Copyright © 2017年 NoCompany. All rights reserved.
 //
 
@@ -12,7 +12,7 @@
 #include <SDL2/SDL.h>
 #include <sstream>
 #include <vector>
-#include "lwindow.h"
+#include "ltimer.h"
 #include "player.h"
 
 namespace mygame{
@@ -23,20 +23,8 @@ namespace mygame{
     {
     private:
         // **** ゲームセーブ ****
-        // セーブデータ受け渡し用領域
+        // セーブデータ一時保存領域
         static const int TOTAL_DATA = 10;
-        
-        GameManager(){}
-        GameManager(const GameManager&);
-        GameManager& operator=(const GameManager&);
-        ~GameManager(){}
-        
-        LWindow* mWindow;
-        SDL_Renderer* mRenderer;
-        
-        // コントローラ
-        SDL_Joystick* mGameController;
-        SDL_Haptic* mControllerHaptic;
         
         // ゲーム用データ
         std::vector<Sint32> mData;
@@ -45,15 +33,29 @@ namespace mygame{
         std::stringstream mFPSText;
         std::string mBasePath;// カレントディレクトリ取得用
         
+        GameManager(){}
+        GameManager(const GameManager&);
+        GameManager& operator=(const GameManager&);
+        ~GameManager(){}
+        
     public:
-        // **** コントローラー ****
-        // コントローラアナログスティックの無反応範囲
-        static const int JOYSTICK_DEAD_ZONE = 8000;
-
         // **** ゲームマップ ****
         static const int MAP_WIDTH = 1280;
         static const int MAP_HEIGHT = 960;
         static const int TOTAL_TILES = 192;
+        
+        int mFrame;
+        // FPS計測用
+        LTimer mFPSTimer;// タイマー
+        int mPrevFrame;// 最小化したときのフレーム
+        float mAvgFPS;// FPS計算結果
+        
+        // **** ゲームシーン ****
+        enum SCENE {
+            INIT,
+            LEVEL1,
+            LEVEL_,
+        };
         
         static GameManager& getInstance()
         {
@@ -62,19 +64,33 @@ namespace mygame{
         }
         
         bool init();
+        
         bool loadMedia();
-        void mainloop();
-        bool dataLoad();
-        bool dataSave();
-        bool loadMap(std::vector<Tile*>& map);
+        bool loadData();
+        bool loadMap();
+        void load();
+        
+        void handleEvent(SDL_Event& e);
+        void FPSStart();
+        void FPSStop();
+        void changeState();
+        void advanceFrame();
+        
+        void saveMedia();
+        bool saveData();
+        
         void cleanup();
         
+        SCENE mScene;
+        bool mSceneLoaded;
+        
         // アクセス関数
-        SDL_Renderer* getRenderer();
         std::vector<Tile*>& getMap();
         Player* getPlayer();
         std::stringstream& getFPSText();
         char* getBasePath();
+        void setSceneLoaded(bool loaded);
+        bool getSceneLoaded();
     };
     
 }

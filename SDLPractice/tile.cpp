@@ -7,7 +7,7 @@
 //
 
 #include "tile.h"
-#include "gamemanager.h"
+#include "sdlmanager.h"
 #include "graphicmanager.h"
 #include "helper.h"
 

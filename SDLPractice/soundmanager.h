@@ -10,6 +10,7 @@
 #define soundmanager_h
 
 #include <SDL2_mixer/SDL_mixer.h>
+#include "gamemanager.h"
 
 namespace mygame{
     
@@ -37,14 +38,14 @@ namespace mygame{
         }
         
         bool init();
-        bool loadMedia();
+        bool loadMedia(GameManager::SCENE scene);
         void musicstart();
         void musicstop();
         void musicresume();
         void musicpause();
         void cleanup();
         
-        void update(int frame);
+        void update();
         
     };
     

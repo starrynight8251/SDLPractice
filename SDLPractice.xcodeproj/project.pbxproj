@@ -17,7 +17,8 @@
 		70BBC9D91EAB38430074C493 /* lwindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 703531801E9E56D9003DE43D /* lwindow.cpp */; };
 		70BBC9DA1EAB38430074C493 /* helper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 701563651EA3665D006DA97F /* helper.cpp */; };
 		70BBC9DB1EAB38430074C493 /* particle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7006D42F1EA7941100B6466F /* particle.cpp */; };
-		70BBC9DC1EAB38430074C493 /* gamemanager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70BBC9D21EAB0A650074C493 /* gamemanager.cpp */; };
+		70BBC9DC1EAB38430074C493 /* sdlmanager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70BBC9D21EAB0A650074C493 /* sdlmanager.cpp */; };
+		70DFD5E61EBB4823000093D4 /* gamemanager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70DFD5E51EBB4823000093D4 /* gamemanager.cpp */; };
 		70E747181E829E19000FEBED /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747171E829E19000FEBED /* SDL2.framework */; };
 		70E7471A1E829E39000FEBED /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E747191E829E39000FEBED /* SDL2_image.framework */; };
 		70E7471C1E829E47000FEBED /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E7471B1E829E47000FEBED /* SDL2_mixer.framework */; };
@@ -55,10 +56,12 @@
 		702E648D1E988DD000C41058 /* ltimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ltimer.h; sourceTree = "<group>"; };
 		703531801E9E56D9003DE43D /* lwindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lwindow.cpp; sourceTree = "<group>"; };
 		703531811E9E56D9003DE43D /* lwindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lwindow.h; sourceTree = "<group>"; };
-		70BBC9D21EAB0A650074C493 /* gamemanager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gamemanager.cpp; sourceTree = "<group>"; };
-		70BBC9D41EAB0A730074C493 /* gamemanager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gamemanager.h; sourceTree = "<group>"; };
+		70BBC9D21EAB0A650074C493 /* sdlmanager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sdlmanager.cpp; sourceTree = "<group>"; };
+		70BBC9D41EAB0A730074C493 /* sdlmanager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sdlmanager.h; sourceTree = "<group>"; };
 		70C040961E86B79C000977A5 /* ltexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ltexture.cpp; sourceTree = "<group>"; };
 		70C040971E86B79C000977A5 /* ltexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ltexture.h; sourceTree = "<group>"; };
+		70DFD5E51EBB4823000093D4 /* gamemanager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gamemanager.cpp; sourceTree = "<group>"; };
+		70DFD5E71EBB4837000093D4 /* gamemanager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gamemanager.h; sourceTree = "<group>"; };
 		70E7470C1E829DFB000FEBED /* SDLPractice */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLPractice; sourceTree = BUILT_PRODUCTS_DIR; };
 		70E747171E829E19000FEBED /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
 		70E747191E829E39000FEBED /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../Library/Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
@@ -124,12 +127,14 @@
 				701563671EA36670006DA97F /* helper.h */,
 				7006D42F1EA7941100B6466F /* particle.cpp */,
 				7006D4311EA7942100B6466F /* particle.h */,
-				70BBC9D21EAB0A650074C493 /* gamemanager.cpp */,
-				70BBC9D41EAB0A730074C493 /* gamemanager.h */,
+				70BBC9D21EAB0A650074C493 /* sdlmanager.cpp */,
+				70BBC9D41EAB0A730074C493 /* sdlmanager.h */,
 				7001568D1EAC1EB800702842 /* soundmanager.cpp */,
 				7001568F1EAC1ED600702842 /* soundmanager.h */,
 				700156901EAC30BA00702842 /* graphicmanager.cpp */,
 				700156921EAC30CB00702842 /* graphicmanager.h */,
+				70DFD5E51EBB4823000093D4 /* gamemanager.cpp */,
+				70DFD5E71EBB4837000093D4 /* gamemanager.h */,
 			);
 			path = SDLPractice;
 			sourceTree = "<group>";
@@ -213,7 +218,8 @@
 				7001568E1EAC1EB800702842 /* soundmanager.cpp in Sources */,
 				70BBC9DA1EAB38430074C493 /* helper.cpp in Sources */,
 				70BBC9DB1EAB38430074C493 /* particle.cpp in Sources */,
-				70BBC9DC1EAB38430074C493 /* gamemanager.cpp in Sources */,
+				70BBC9DC1EAB38430074C493 /* sdlmanager.cpp in Sources */,
+				70DFD5E61EBB4823000093D4 /* gamemanager.cpp in Sources */,
 				700E30CE1E86888300C698A3 /* main.cpp in Sources */,
 				700156911EAC30BA00702842 /* graphicmanager.cpp in Sources */,
 			);

@@ -9,6 +9,7 @@
 #ifndef graphicmanager_h
 #define graphicmanager_h
 #include <SDL2/SDL.h>
+#include "gamemanager.h"
 #include "ltexture.h"
 #include "player.h"
 
@@ -49,8 +50,8 @@ namespace mygame{
         }
         
         bool init();
-        bool loadMedia();
-        void update(int frame);
+        bool loadMedia( GameManager::SCENE scene );
+        void update();
         void setCamera(int px, int py, int pw, int ph);
         void setText(std::stringstream& text, SDL_Color& textColor);
         void cleanup();

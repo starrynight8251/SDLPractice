@@ -6,27 +6,27 @@
 //  Copyright © 2017年 NoCompany. All rights reserved.
 //
 
-#include "gamemanager.h"
+#include "sdlmanager.h"
 
 int main( int argc, char* args[] )
 {
     // ゲーム管理用クラスを起動
-    mygame::GameManager* gm_manager = &mygame::GameManager::getInstance();
-    if( !gm_manager->init() )
+    mygame::SDLManager* sdl_manager = &mygame::SDLManager::getInstance();
+    if( !sdl_manager->init() )
     {
         printf( "Failed to initialize!\n" );
     }
     else
     {
-        if( !gm_manager->loadMedia() )
+        if( !sdl_manager->loadMedia() )
         {
             printf( "Failed to load media!\n" );
         }
         else
         {
-            gm_manager->mainloop();
+            sdl_manager->mainloop();
         }
     }
-    gm_manager->cleanup();
+    sdl_manager->cleanup();
     return 0;
 }

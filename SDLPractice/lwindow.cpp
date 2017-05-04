@@ -7,7 +7,7 @@
 //
 
 #include "lwindow.h"
-#include "gamemanager.h"
+#include "sdlmanager.h"
 #include "graphicmanager.h"
 
 namespace mygame{
@@ -49,7 +49,7 @@ namespace mygame{
     
     void LWindow::handleEvent( SDL_Event& e )
     {
-        GameManager* gm_manager = &GameManager::getInstance();
+        SDLManager* sdl_manager = &SDLManager::getInstance();
         // イベント判別処理
         if( e.type == SDL_WINDOWEVENT )
         {
@@ -59,12 +59,12 @@ namespace mygame{
                 case SDL_WINDOWEVENT_SIZE_CHANGED:
                     mWidth = e.window.data1;
                     mHeight = e.window.data2;
-                    SDL_RenderPresent( gm_manager->getRenderer() );
+                    SDL_RenderPresent( sdl_manager->getRenderer() );
                     break;
                     
                     // エクスポージャで再描画
                 case SDL_WINDOWEVENT_EXPOSED:
-                    SDL_RenderPresent( gm_manager->getRenderer() );
+                    SDL_RenderPresent( sdl_manager->getRenderer() );
                     break;
                     
                     // マウスがウィンドウに入った

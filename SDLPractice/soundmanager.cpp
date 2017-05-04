@@ -21,45 +21,57 @@ namespace mygame{
         return true;
     }
     
-    bool SoundManager::loadMedia()
+    bool SoundManager::loadMedia( GameManager::SCENE scene )
     {
         bool success = true;
         
-        mMusic = Mix_LoadMUS( "sounds/mario.mp3" );
-        if( mMusic == NULL )
-        {
-            printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
-            success = false;
+        if( scene == GameManager::SCENE::INIT ){
+            mScratch = Mix_LoadWAV( "sounds/scratch.wav" );
+            if( mScratch == NULL )
+            {
+                printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+                success = false;
+            }
+            
+            mHigh = Mix_LoadWAV( "sounds/high.wav" );
+            if( mHigh == NULL )
+            {
+                printf( "Failed to load high sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+                success = false;
+            }
+            
+            mMedium = Mix_LoadWAV( "sounds/medium.wav" );
+            if( mMedium == NULL )
+            {
+                printf( "Failed to load medium sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+                success = false;
+            }
+            
+            mLow = Mix_LoadWAV( "sounds/low.wav" );
+            if( mLow == NULL )
+            {
+                printf( "Failed to load low sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+                success = false;
+            }
         }
-        
-        mScratch = Mix_LoadWAV( "sounds/scratch.wav" );
-        if( mScratch == NULL )
+        else
         {
-            printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
-            success = false;
+            if(mMusic != NULL){
+                musicpause();
+                musicstop();
+                Mix_FreeMusic( mMusic );
+            }
+            
+            GameManager* gm_manager = &GameManager::getInstance();
+            std::string path = ("sounds/mario" + std::to_string(gm_manager->mScene) + ".mp3");
+            
+            mMusic = Mix_LoadMUS( path.c_str() );
+            if( mMusic == NULL )
+            {
+                printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
+                success = false;
+            }
         }
-        
-        mHigh = Mix_LoadWAV( "sounds/high.wav" );
-        if( mHigh == NULL )
-        {
-            printf( "Failed to load high sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
-            success = false;
-        }
-        
-        mMedium = Mix_LoadWAV( "sounds/medium.wav" );
-        if( mMedium == NULL )
-        {
-            printf( "Failed to load medium sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
-            success = false;
-        }
-        
-        mLow = Mix_LoadWAV( "sounds/low.wav" );
-        if( mLow == NULL )
-        {
-            printf( "Failed to load low sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
-            success = false;
-        }
-        
         return success;
     }
     
@@ -112,7 +124,7 @@ namespace mygame{
     // ***********************************
     //          サウンドメイン処理
     // ***********************************
-    void SoundManager::update(int frame)
+    void SoundManager::update()
     {
         GameManager* gm_manager = &GameManager::getInstance();
         Player* plyer = gm_manager->getPlayer();

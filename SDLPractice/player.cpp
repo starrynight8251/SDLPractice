@@ -10,7 +10,7 @@
 #include <SDL2_image/SDL_image.h>
 #include <SDL2_mixer/SDL_mixer.h>
 #include "helper.h"
-#include "gamemanager.h"
+#include "sdlmanager.h"
 #include "graphicmanager.h"
 #include "soundmanager.h"
 
@@ -200,6 +200,18 @@ namespace mygame{
                     // 上下反転
                     mFlipType = SDL_FLIP_VERTICAL;
                     break;
+                    
+                case SDLK_p:
+                    GameManager* gm_manager = &GameManager::getInstance();
+                    if(gm_manager->mScene == GameManager::SCENE::LEVEL_){
+                        gm_manager->mScene = GameManager::SCENE::LEVEL1;
+                    }
+                    else{
+                        gm_manager->mScene = (GameManager::SCENE)(gm_manager->mScene + 1);
+                    }
+                    gm_manager->setSceneLoaded(false);
+                    mPosX = 0; mPosY = 0;
+                    break;
             }
         }
         
@@ -223,13 +235,13 @@ namespace mygame{
                 if( e.jaxis.axis == 0 )
                 {
                     // 左
-                    if( e.jaxis.value < -GameManager::JOYSTICK_DEAD_ZONE )
+                    if( e.jaxis.value < -SDLManager::JOYSTICK_DEAD_ZONE )
                     {
                         mDir = LEFT;
                         mVelX = -PLAYER_VEL;
                     }
                     // 右
-                    else if( e.jaxis.value > GameManager::JOYSTICK_DEAD_ZONE )
+                    else if( e.jaxis.value > SDLManager::JOYSTICK_DEAD_ZONE )
                     {
                         mDir = RIGHT;
                         mVelX = PLAYER_VEL;
@@ -244,13 +256,13 @@ namespace mygame{
                 else if( e.jaxis.axis == 1 )
                 {
                     // 上
-                    if( e.jaxis.value < -GameManager::JOYSTICK_DEAD_ZONE )
+                    if( e.jaxis.value < -SDLManager::JOYSTICK_DEAD_ZONE )
                     {
                         mDir = UP;
                         mVelY = -PLAYER_VEL;
                     }
                     // 下
-                    else if( e.jaxis.value > GameManager::JOYSTICK_DEAD_ZONE )
+                    else if( e.jaxis.value > SDLManager::JOYSTICK_DEAD_ZONE )
                     {
                         mDir = DOWN;
                         mVelY = PLAYER_VEL;

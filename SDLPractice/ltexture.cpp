@@ -7,7 +7,7 @@
 //
 
 #include "ltexture.h"
-#include "gamemanager.h"
+#include "sdlmanager.h"
 #include "graphicmanager.h"
 
 namespace mygame{
@@ -26,7 +26,7 @@ namespace mygame{
     
     bool LTexture::loadFromFile( std::string path )
     {
-        GameManager* gm_manager = &GameManager::getInstance();
+        SDLManager* sdl_manager = &SDLManager::getInstance();
         
         // すでに確保されていたら解放する
         free();
@@ -43,7 +43,7 @@ namespace mygame{
             SDL_SetColorKey( loadedSurface, SDL_TRUE, SDL_MapRGB( loadedSurface->format, 0, 0xFF, 0xFF ) );
             
             // サーフェスからテクスチャを作成する
-            mTexture = SDL_CreateTextureFromSurface( gm_manager->getRenderer(), loadedSurface );
+            mTexture = SDL_CreateTextureFromSurface( sdl_manager->getRenderer(), loadedSurface );
             if( mTexture == NULL )
             {
                 printf( "Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
@@ -66,7 +66,7 @@ namespace mygame{
 #ifdef _SDL_TTF_H
     bool LTexture::loadFromRenderedText( std::string textureText, SDL_Color textColor )
     {
-        GameManager* gm_manager = &GameManager::getInstance();
+        SDLManager* sdl_manager = &SDLManager::getInstance();
         GraphicManager* grp_manager = &GraphicManager::getInstance();
         
         // すでに確保されていたら解放する
@@ -81,7 +81,7 @@ namespace mygame{
         else
         {
             // サーフェスからテクスチャを作成する
-            mTexture = SDL_CreateTextureFromSurface( gm_manager->getRenderer(), textSurface );
+            mTexture = SDL_CreateTextureFromSurface( sdl_manager->getRenderer(), textSurface );
             if( mTexture == NULL )
             {
                 printf( "Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError() );
@@ -137,7 +137,7 @@ namespace mygame{
     
     void LTexture::render( int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip )
     {
-        GameManager* gm_manager = &GameManager::getInstance();
+        SDLManager* sdl_manager = &SDLManager::getInstance();
         // スクリーン表示位置
         SDL_Rect renderQuad = { x, y, mWidth, mHeight };
         
@@ -149,7 +149,7 @@ namespace mygame{
         }
         
         // スクリーンに描画する
-        SDL_RenderCopyEx( gm_manager->getRenderer(), mTexture, clip, &renderQuad, angle, center, flip );
+        SDL_RenderCopyEx( sdl_manager->getRenderer(), mTexture, clip, &renderQuad, angle, center, flip );
     }
     
     int LTexture::getWidth()
