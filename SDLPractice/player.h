@@ -9,6 +9,8 @@
 #ifndef player_h
 #define player_h
 
+#pragma execution_character_set("utf-8")
+
 #include <SDL2/SDL.h>
 #include <vector>
 #include "ltexture.h"
@@ -27,9 +29,6 @@ namespace mygame{
         static const int PLAYER_Y      = 0;
         static const int PLAYER_VEL    = 8;
         
-        static const int COLLISION_NUM = 1;
-        SDL_Rect collisions[COLLISION_NUM] = {
-            {8,0,16,32}};
         
         enum Dir{
             LEFT  = 0,
@@ -41,8 +40,9 @@ namespace mygame{
         int mPosX, mPosY;
         int mVelX, mVelY;
         Dir mDir;
+        std::vector<SDL_Rect> mCollisions;
         std::vector<SDL_Rect> mColliders;
-        void shiftColliders();
+        
         
         //SpriteData
         int mSpriteSheetIndex;
@@ -57,6 +57,9 @@ namespace mygame{
         
         // 効果音用フラグ
         bool mHitWall;
+        
+        // 当たり判定用四角形更新
+        void shiftColliders();
         
     public:
         static const int PLAYER_WIDTH  = 32;

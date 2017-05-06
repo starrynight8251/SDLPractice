@@ -6,6 +6,8 @@
 //  Copyright © 2017年 NoCompany. All rights reserved.
 //
 
+#pragma execution_character_set("utf-8")
+
 #include "graphicmanager.h"
 #include <fstream>
 #include <sstream>
@@ -17,6 +19,7 @@ namespace mygame{
     
     bool GraphicManager::init()
     {
+        mCamera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
         mFont = NULL;
         return true;
     }
@@ -25,69 +28,82 @@ namespace mygame{
     {
         bool success = true;
         
+        GameManager* gm_manager = &GameManager::getInstance();
+        std::string base_path = gm_manager->BASE_PATH;
+        std::string grp_path  = gm_manager->GRP_PATH;
+        std::string fnt_path  = gm_manager->FNT_PATH;
+        std::string path;
+        
         if( scene == GameManager::SCENE::INIT ){
             // 背景
             // if( !mBGTextures.back()->loadFromFile( "graphics/BG.png" ) )
+            path = base_path + grp_path + "sweetbear_1280_960_f.jpg";
             mBGTextures.push_back(new LTexture());
-            if( !mBGTextures.back()->loadFromFile( "graphics/sweetbear_1280_960_f.jpg" ) )
+            if( !mBGTextures.back()->loadFromFile( path.c_str() ) )
             {
                 printf( "Failed to load background texture!\n" );
                 success = false;
             }
             
             // マップ用テクスチャ読込
+            path = base_path + grp_path + "tiles2.png";
             mMapSheetTextures.push_back(new LTexture());
-            if( !mMapSheetTextures.back()->loadFromFile( "graphics/tiles2.png" ) )
+            if( !mMapSheetTextures.back()->loadFromFile( path.c_str() ) )
             {
                 printf( "Failed to load tile set texture!\n" );
                 success = false;
             }
             
             // スプライト用テクスチャ読込
+            path = base_path + grp_path + "walk.png";
             mSpriteSheetTextures.push_back(new LTexture());
-            if( !mSpriteSheetTextures.back()->loadFromFile( "graphics/walk.png" ) )
+            if( !mSpriteSheetTextures.back()->loadFromFile( path.c_str() ) )
             {
                 printf( "Failed to load walking animation texture!\n" );
             }
             
             // パーティクル用テクスチャ読込
             // パーティクル赤
+            path = base_path + grp_path + "red.bmp";
             mParticleTextures.push_back(new LTexture());
-            if( !mParticleTextures.back()->loadFromFile( "graphics/red.bmp" ) )
+            if( !mParticleTextures.back()->loadFromFile( path.c_str() ) )
             {
                 printf( "Failed to load red texture!\n" );
                 success = false;
             }
             // パーティクル緑
+            path = base_path + grp_path + "green.bmp";
             mParticleTextures.push_back(new LTexture());
-            if( !mParticleTextures.back()->loadFromFile( "graphics/green.bmp" ) )
+            if( !mParticleTextures.back()->loadFromFile( path.c_str() ) )
             {
                 printf( "Failed to load green texture!\n" );
                 success = false;
             }
             // パーティクル青
+            path = base_path + grp_path + "blue.bmp";
             mParticleTextures.push_back(new LTexture());
-            if( !mParticleTextures.back()->loadFromFile( "graphics/blue.bmp" ) )
+            if( !mParticleTextures.back()->loadFromFile( path.c_str() ) )
             {
                 printf( "Failed to load blue texture!\n" );
                 success = false;
             }
             // パーティクル輝
+            path = base_path + grp_path + "shimmer.bmp";
             mParticleTextures.push_back(new LTexture());
-            if( !mParticleTextures.back()->loadFromFile( "graphics/shimmer.bmp" ) )
+            if( !mParticleTextures.back()->loadFromFile( path.c_str() ) )
             {
                 printf( "Failed to load shimmer texture!\n" );
                 success = false;
             }
             // アルファ値設定
-            for (int i=0; i<mParticleTextures.size(); ++i) {
+            for (int i=0; i < (int)mParticleTextures.size(); ++i) {
                 mParticleTextures[i]->setAlpha( 192 );
             }
-            // テキスト用テクスチャ初期化
-            mTextTextures.push_back(new LTexture());
             
-            // テキスト
-            mFont = TTF_OpenFont( "fonts/ipagp-mona.ttf", 18 );
+            // テキスト用テクスチャ
+            path = base_path + fnt_path + "ipagp-mona.ttf";
+            mTextTextures.push_back(new LTexture());
+            mFont = TTF_OpenFont( path.c_str(), 18 );
             if( mFont == NULL )
             {
                 printf( "Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError() );
@@ -123,7 +139,7 @@ namespace mygame{
         
         // **** マップ描画 ****
         int chips[] = {0,1,2,7,6,9,10,11,8,5,4,3};
-        for( int i = 0; i < gm_map.size(); ++i )
+        for( int i = 0; i < (int)gm_map.size(); ++i )
         {
             Tile* pTile = gm_map[i];
             
@@ -219,7 +235,7 @@ namespace mygame{
     
     void GraphicManager::cleanup()
     {
-        for (int i = 0; i < mBGTextures.size(); ++i) {
+        for (int i = 0; i < (int)mBGTextures.size(); ++i) {
             if( mBGTextures[i] != NULL )
             {
                 delete mBGTextures[ i ];
@@ -228,7 +244,7 @@ namespace mygame{
         }
         mBGTextures.clear();
         
-        for (int i = 0; i < mMapSheetTextures.size(); ++i) {
+        for (int i = 0; i < (int)mMapSheetTextures.size(); ++i) {
             if( mMapSheetTextures[i] != NULL )
             {
                 delete mMapSheetTextures[ i ];
@@ -237,7 +253,7 @@ namespace mygame{
         }
         mMapSheetTextures.clear();
         
-        for (int i = 0; i < mSpriteSheetTextures.size(); ++i) {
+        for (int i = 0; i < (int)mSpriteSheetTextures.size(); ++i) {
             if( mSpriteSheetTextures[i] != NULL )
             {
                 delete mSpriteSheetTextures[ i ];
@@ -246,7 +262,7 @@ namespace mygame{
         }
         mSpriteSheetTextures.clear();
         
-        for (int i = 0; i < mParticleTextures.size(); ++i) {
+        for (int i = 0; i < (int)mParticleTextures.size(); ++i) {
             if( mParticleTextures[i] != NULL )
             {
                 delete mParticleTextures[ i ];
@@ -255,7 +271,7 @@ namespace mygame{
         }
         mParticleTextures.clear();
         
-        for (int i = 0; i < mTextTextures.size(); ++i) {
+        for (int i = 0; i < (int)mTextTextures.size(); ++i) {
             if( mTextTextures[i] != NULL )
             {
                 delete mTextTextures[ i ];

@@ -6,8 +6,12 @@
 //  Copyright © 2017年 NoCompany. All rights reserved.
 //
 
+
 #ifndef tile_h
 #define tile_h
+
+#pragma execution_character_set("utf-8")
+
 #include <SDL2/SDL.h>
 
 namespace mygame{

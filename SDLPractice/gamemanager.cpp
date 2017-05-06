@@ -6,6 +6,8 @@
 //  Copyright © 2017年 NoCompany. All rights reserved.
 //
 
+#pragma execution_character_set("utf-8")
+
 #include "gamemanager.h"
 #include <fstream>
 #include <iomanip>
@@ -23,7 +25,21 @@ namespace mygame{
         mFPSText.str( "" );// FPS表示用テキスト
         
         // 実行ファイルのあるパスを記録
-        mBasePath = SDL_GetBasePath();
+        BASE_PATH = SDL_GetBasePath();
+        
+        // 各ファイルのディレクトリを記録
+#if WIN32
+        GRP_PATH = "graphic¥¥";
+        SND_PATH = "sound¥¥";
+        FNT_PATH = "font¥¥";
+        SAV_PATH = "save¥¥";
+#else
+        GRP_PATH = "graphic/";
+        SND_PATH = "sound/";
+        FNT_PATH = "font/";
+        SAV_PATH = "save/";
+#endif
+        
         // セーブデータ一時保存領域
         mData.resize( TOTAL_DATA );
         // マップデータ
@@ -72,8 +88,9 @@ namespace mygame{
         bool success = true;
         if( mScene == SCENE::INIT )
         {
-            std::string path = mBasePath;// 実行ファイルディレクトリ取得
-            path += "save/nums.dat";
+            std::string path = BASE_PATH;// 実行ファイルディレクトリ取得
+            path += SAV_PATH;
+            path += "nums.dat";
             
             // バイナリファイルを読み込みモードで開く
             SDL_RWops* file = SDL_RWFromFile( path.c_str(), "r+b" );
@@ -130,8 +147,9 @@ namespace mygame{
             // タイルのオフセット
             int x = 0, y = 0;
             
-            std::string path = mBasePath;// 実行ファイルディレクトリ取得
-            path += ("graphics/lazy" + std::to_string(mScene) + ".map");
+            std::string path = BASE_PATH;// 実行ファイルディレクトリ取得
+            path += GRP_PATH;
+            path += ("lazy" + std::to_string(mScene) + ".map");
             
             // マップ用ファイルを開く
             std::ifstream map_file( path.c_str() );
@@ -248,7 +266,7 @@ namespace mygame{
         mData[0] = mPlayer->getPosX();
         mData[1] = mPlayer->getPosY();
         mData[2] = mScene - 1;
-        for(int i=3; i<mData.size(); ++i){
+        for(int i=3; i < (int)mData.size(); ++i){
             mData[i] = 0;
         }
         
@@ -262,8 +280,9 @@ namespace mygame{
     {
         bool success = true;
         if( mScene != SCENE::INIT ){
-            std::string path = mBasePath;// 実行ファイルディレクトリ取得
-            path += "save/nums.dat";
+            std::string path = BASE_PATH;// 実行ファイルディレクトリ取得
+            path += SAV_PATH;
+            path += "nums.dat";
             
             // バイナリファイルを書き込みモードで開く
             SDL_RWops* file = SDL_RWFromFile( path.c_str(), "w+b" );
@@ -325,7 +344,6 @@ namespace mygame{
     {
         mSceneLoaded = loaded;
     }
-    
     bool GameManager::getSceneLoaded()
     {
         return mSceneLoaded;

@@ -6,6 +6,8 @@
 //  Copyright © 2017年 NoCompany. All rights reserved.
 //
 
+#pragma execution_character_set("utf-8")
+
 #include "soundmanager.h"
 #include "gamemanager.h"
 
@@ -24,30 +26,38 @@ namespace mygame{
     bool SoundManager::loadMedia( GameManager::SCENE scene )
     {
         bool success = true;
+        GameManager* gm_manager = &GameManager::getInstance();
+        std::string base_path = gm_manager->BASE_PATH;
+        std::string snd_path  = gm_manager->SND_PATH;
+        std::string path;
         
         if( scene == GameManager::SCENE::INIT ){
-            mScratch = Mix_LoadWAV( "sounds/scratch.wav" );
+            path = base_path + snd_path + "scratch.wav";
+            mScratch = Mix_LoadWAV( path.c_str() );
             if( mScratch == NULL )
             {
                 printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
                 success = false;
             }
             
-            mHigh = Mix_LoadWAV( "sounds/high.wav" );
+            path = base_path + snd_path + "high.wav";
+            mHigh = Mix_LoadWAV( path.c_str() );
             if( mHigh == NULL )
             {
                 printf( "Failed to load high sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
                 success = false;
             }
             
-            mMedium = Mix_LoadWAV( "sounds/medium.wav" );
+            path = base_path + snd_path + "medium.wav";
+            mMedium = Mix_LoadWAV( path.c_str() );
             if( mMedium == NULL )
             {
                 printf( "Failed to load medium sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
                 success = false;
             }
             
-            mLow = Mix_LoadWAV( "sounds/low.wav" );
+            path = base_path + snd_path + "low.wav";
+            mLow = Mix_LoadWAV( path.c_str() );
             if( mLow == NULL )
             {
                 printf( "Failed to load low sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
@@ -62,9 +72,7 @@ namespace mygame{
                 Mix_FreeMusic( mMusic );
             }
             
-            GameManager* gm_manager = &GameManager::getInstance();
-            std::string path = ("sounds/mario" + std::to_string(gm_manager->mScene) + ".mp3");
-            
+            path = base_path + snd_path + ("mario" + std::to_string(gm_manager->mScene) + ".mp3");
             mMusic = Mix_LoadMUS( path.c_str() );
             if( mMusic == NULL )
             {

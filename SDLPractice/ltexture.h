@@ -9,6 +9,8 @@
 #ifndef ltexture_h
 #define ltexture_h
 
+#pragma execution_character_set("utf-8")
+
 #include <SDL2_image/SDL_image.h>
 #include <SDL2_ttf/SDL_ttf.h>
 #include <string>

@@ -9,6 +9,8 @@
 #ifndef sdlmanager_h
 #define sdlmanager_h
 
+#pragma execution_character_set("utf-8")
+
 #include <SDL2/SDL.h>
 #include <sstream>
 #include <vector>

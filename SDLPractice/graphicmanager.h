@@ -8,6 +8,9 @@
 
 #ifndef graphicmanager_h
 #define graphicmanager_h
+
+#pragma execution_character_set("utf-8")
+
 #include <SDL2/SDL.h>
 #include "gamemanager.h"
 #include "ltexture.h"
@@ -23,7 +26,7 @@ namespace mygame{
         static const int TOTAL_SPRITE_SHEETS = 1;
         static const int TOTAL_MAP_SHEETS = 1;
         
-        SDL_Rect mCamera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+        SDL_Rect mCamera;
         
         std::vector<LTexture*> mBGTextures;
         std::vector<LTexture*> mMapSheetTextures;

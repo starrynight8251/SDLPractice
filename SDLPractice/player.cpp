@@ -6,6 +6,8 @@
 //  Copyright © 2017年 NoCompany. All rights reserved.
 //
 
+#pragma execution_character_set("utf-8")
+
 #include "player.h"
 #include <SDL2_image/SDL_image.h>
 #include <SDL2_mixer/SDL_mixer.h>
@@ -15,7 +17,7 @@
 #include "soundmanager.h"
 
 namespace mygame{
-    
+
     Player::Player()
     {
         // ゲーム内状態
@@ -23,10 +25,12 @@ namespace mygame{
         mVelX = mVelY = 0;
         mDir  = DOWN;
         
-        mColliders.resize( COLLISION_NUM );
-        for(int i=0; i<COLLISION_NUM; i++){
-            mColliders[i].w = collisions[i].w;
-            mColliders[i].h = collisions[i].h;
+        mCollisions.push_back( {8,0,16,32} );
+        
+        mColliders.resize( mCollisions.size() );
+        for(int i=0; i < (int)mCollisions.size(); i++){
+            mColliders[i].w = mCollisions[i].w;
+            mColliders[i].h = mCollisions[i].h;
         }
         shiftColliders();
         
@@ -343,10 +347,10 @@ namespace mygame{
     
     void Player::shiftColliders()
     {
-        for( int i = 0; i < mColliders.size(); i++ )
+        for( int i = 0; i < (int)mColliders.size(); i++ )
         {
-            mColliders[i].x = mPosX + collisions[i].x;
-            mColliders[i].y = mPosY + collisions[i].y;
+            mColliders[i].x = mPosX + mCollisions[i].x;
+            mColliders[i].y = mPosY + mCollisions[i].y;
         }
     }
     

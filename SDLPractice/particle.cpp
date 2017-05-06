@@ -5,6 +5,9 @@
 //  Created by starrynight on 2017/04/19.
 //  Copyright © 2017年 NoCompany. All rights reserved.
 //
+
+#pragma execution_character_set("utf-8")
+
 #include "particle.h"
 #include "graphicmanager.h"
 

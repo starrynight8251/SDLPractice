@@ -9,6 +9,8 @@
 #ifndef gamemanager_h
 #define gamemanager_h
 
+#pragma execution_character_set("utf-8")
+
 #include <SDL2/SDL.h>
 #include <sstream>
 #include <vector>
@@ -43,6 +45,13 @@ namespace mygame{
         static const int MAP_WIDTH = 1280;
         static const int MAP_HEIGHT = 960;
         static const int TOTAL_TILES = 192;
+        
+        std::string BASE_PATH;//実行ファイルのあるパス
+        // 各ファイルのパス（BASE_PATHからの相対パス）
+        std::string GRP_PATH;
+        std::string SND_PATH;
+        std::string FNT_PATH;
+        std::string SAV_PATH;
         
         int mFrame;
         // FPS計測用
@@ -88,7 +97,6 @@ namespace mygame{
         std::vector<Tile*>& getMap();
         Player* getPlayer();
         std::stringstream& getFPSText();
-        char* getBasePath();
         void setSceneLoaded(bool loaded);
         bool getSceneLoaded();
     };

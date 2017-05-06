@@ -6,6 +6,8 @@
 //  Copyright © 2017年 NoCompany. All rights reserved.
 //
 
+#pragma execution_character_set("utf-8")
+
 #include "ltexture.h"
 #include "sdlmanager.h"
 #include "graphicmanager.h"

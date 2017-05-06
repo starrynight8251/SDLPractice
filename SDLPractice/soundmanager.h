@@ -9,6 +9,8 @@
 #ifndef soundmanager_h
 #define soundmanager_h
 
+#pragma execution_character_set("utf-8")
+
 #include <SDL2_mixer/SDL_mixer.h>
 #include "gamemanager.h"
 

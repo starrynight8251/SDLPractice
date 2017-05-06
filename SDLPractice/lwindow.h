@@ -9,6 +9,8 @@
 #ifndef lwindow_h
 #define lwindow_h
 
+#pragma execution_character_set("utf-8")
+
 #include <SDL2/SDL.h>
 
 namespace mygame{

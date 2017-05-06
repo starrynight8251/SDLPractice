@@ -9,6 +9,8 @@
 #ifndef particle_h
 #define particle_h
 
+#pragma execution_character_set("utf-8")
+
 #include <SDL2/SDL.h>
 #include "ltexture.h"
 

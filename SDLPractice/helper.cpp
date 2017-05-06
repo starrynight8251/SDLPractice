@@ -6,6 +6,8 @@
 //  Copyright © 2017年 NoCompany. All rights reserved.
 //
 
+#pragma execution_character_set("utf-8")
+
 #include "helper.h"
 #include "tile.h"
 #include "gamemanager.h"
@@ -22,7 +24,7 @@ namespace mygame{
             // タイルの種類判定
             if( ( map[ i ]->getType() >= Tile::TILE_CENTER ) && ( map[ i ]->getType() <= Tile::TILE_TOPLEFT ) )
             {
-                for(int j=0; j<boxes.size(); j++){
+                for(int j=0; j < (int)boxes.size(); j++){
                     // 四角形同士で当たり判定
                     if( checkCollision( boxes[ j ], map[ i ]->getBox() ) )
                     {
@@ -92,7 +94,7 @@ namespace mygame{
         int bottomA, bottomB;
         
         // A側の全四角形をチェック
-        for( int Abox = 0; Abox < a.size(); Abox++ )
+        for( int Abox = 0; Abox < (int)a.size(); Abox++ )
         {
             // 四角形Aの各辺の座標を計算する
             leftA = a[ Abox ].x;
@@ -101,7 +103,7 @@ namespace mygame{
             bottomA = a[ Abox ].y + a[ Abox ].h;
             
             // B側の全四角形をチェック
-            for( int Bbox = 0; Bbox < b.size(); Bbox++ )
+            for( int Bbox = 0; Bbox < (int)b.size(); Bbox++ )
             {
                 //　四角形Bの各辺の座標を計算する
                 leftB = b[ Bbox ].x;
