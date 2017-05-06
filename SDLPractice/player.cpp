@@ -215,6 +215,7 @@ namespace mygame{
                     }
                     gm_manager->setSceneLoaded(false);
                     mPosX = 0; mPosY = 0;
+                    mDir = DOWN;
                     break;
             }
         }

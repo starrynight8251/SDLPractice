@@ -256,8 +256,8 @@ namespace mygame{
     void GameManager::advanceFrame()
     {
         // フレームを進めて、平均FPSを記録
+        mAvgFPS = (mFrame - mPrevFrame + 1) / ( mFPSTimer.getTicks() / 1000.f );
         mFrame++;
-        mAvgFPS = (mFrame - mPrevFrame) / ( mFPSTimer.getTicks() / 1000.f );
     }
     
     void GameManager::saveMedia()
